@@ -1,10 +1,10 @@
 {
-  "name": "restaurant_ordering_beckend",
+  "name": "restaurant_ordering_backend",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+    "dev": "ts-node-dev --respawn --transpile-only src/interfaces/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Juliana García Corredor @JuliGeralDev juliana.c@gmail.com",
