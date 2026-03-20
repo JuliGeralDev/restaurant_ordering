@@ -8,7 +8,7 @@
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
-    "setup": "npm run docker:up && npm run init:db"
+    "setup": "node scripts/setup.js"
   },
   "keywords": [],
   "author": "Juliana García Corredor @JuliGeralDev juliana.c@gmail.com",

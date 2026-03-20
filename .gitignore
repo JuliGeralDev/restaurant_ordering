@@ -11,6 +11,9 @@ yarn.lock
 /dist
 /.serverless
 
+# DynamoDB Local data
+/dynamodb
+
 # Environment files
 .env
 .env.local
