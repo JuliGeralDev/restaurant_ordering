@@ -27,3 +27,15 @@ functions:
       - http:
           path: hello
           method: get
+  getOrderTimeline:
+    handler: src/interfaces/get-order-timeline.handler
+    events:
+      - http:
+          path: /orders/{orderId}/timeline
+          method: get
+  getOrder:
+    handler: src/interfaces/get-order.handler
+    events:
+      - http:
+          path: /orders/{orderId}
+          method: get

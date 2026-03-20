@@ -65,14 +65,18 @@ export class AddItemToCartUseCase {
     }
 
     // Add item to order
+    let eventType: 'CART_ITEM_ADDED' | 'CART_ITEM_UPDATED';
+
     const existingItem = order.items.find(
       (item) => item.productId === newItem.productId
     );
 
     if (existingItem) {
       existingItem.quantity += newItem.quantity;
+      eventType = 'CART_ITEM_UPDATED';
     } else {
       order.items.push(newItem);
+      eventType = 'CART_ITEM_ADDED';
     }
 
     // Recalculate pricing
@@ -95,7 +99,7 @@ export class AddItemToCartUseCase {
       timestamp: new Date().toISOString(),
       orderId: input.orderId,
       userId: input.userId,
-      type: 'CART_ITEM_ADDED',
+      type: eventType,
       source: 'api',
       correlationId: randomUUID(),
       payload: {
