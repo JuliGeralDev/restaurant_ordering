@@ -4,7 +4,7 @@ import { TimelineEvent } from '@/domain/entities/timeline-event.entity';
 import { OrderRepository } from '@/domain/repositories/order.repository';
 import { randomUUID } from 'crypto';
 import { PricingService } from '@/domain/services/pricing.service';
-
+import { TimelineRepository } from '@/domain/repositories/timeline.repository';
 
 /**
  * Input: data coming from outside (API/UI), not validated by domain yet.
@@ -29,8 +29,9 @@ export interface AddItemToCartOutput {
 export class AddItemToCartUseCase {
   constructor(
     private readonly orderRepository: OrderRepository,
-    private readonly pricingService: PricingService
-  ) {}
+    private readonly pricingService: PricingService,
+    private readonly timelineRepository: TimelineRepository
+  ) { }
 
   async execute(input: AddItemToCartInput): Promise<AddItemToCartOutput> {
     // Convert external primitive to domain value object (applies domain rules)
@@ -64,7 +65,15 @@ export class AddItemToCartUseCase {
     }
 
     // Add item to order
-    order.items.push(newItem);
+    const existingItem = order.items.find(
+      (item) => item.productId === newItem.productId
+    );
+
+    if (existingItem) {
+      existingItem.quantity += newItem.quantity;
+    } else {
+      order.items.push(newItem);
+    }
 
     // Recalculate pricing
     const subtotal = this.pricingService.calculateSubtotal(order.items);
@@ -94,6 +103,7 @@ export class AddItemToCartUseCase {
         quantity: input.quantity,
       },
     };
+    await this.timelineRepository.save(event);
 
     // Return the order (cart) with the new item and the event that registers the action
     return { order, event };
