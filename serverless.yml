@@ -1,0 +1,28 @@
+service: restaurant-ordering-api
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+
+custom:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node18
+    platform: node
+    concurrency: 10
+
+functions:
+  hello:
+    handler: src/interfaces/hello.handler
+    events:
+      - http:
+          path: hello
+          method: get
