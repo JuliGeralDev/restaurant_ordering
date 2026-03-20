@@ -1,5 +1,5 @@
-import { InMemoryOrderRepository } from './repositories/in-memory-order.repository';
-import { InMemoryTimelineRepository } from './repositories/in-memory-timeline.repository';
+import { DynamoOrderRepository } from './repositories/dynamo-order.repository';
+import { DynamoTimelineRepository } from './repositories/dynamo-timeline.repository';
 
-export const orderRepository = new InMemoryOrderRepository();
-export const timelineRepository = new InMemoryTimelineRepository();
+export const orderRepository = new DynamoOrderRepository();
+export const timelineRepository = new DynamoTimelineRepository();

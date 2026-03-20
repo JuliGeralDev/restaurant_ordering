@@ -10,6 +10,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.967.0",
+    "@aws-sdk/lib-dynamodb": "^3.967.0",
     "dotenv": "^17.3.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3",
@@ -19,7 +21,6 @@
     "@types/aws-lambda": "^8.10.161",
     "@types/node": "^18.19.130",
     "esbuild": "^0.27.4",
-    "esbuild-plugin-tsconfig-paths": "^1.0.2",
     "serverless": "^3.40.0",
     "serverless-esbuild": "^1.57.0",
     "serverless-offline": "^12.0.4",

@@ -19,6 +19,10 @@ custom:
     platform: node
     concurrency: 10
     plugins: esbuild.plugins.js
+    external:
+      - '@aws-sdk/*'
+    alias:
+      '@': './src'
 
 functions:
   hello:
