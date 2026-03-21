@@ -38,7 +38,7 @@ export class AddItemToCartUseCase {
     private readonly pricingService: PricingService,
     private readonly timelineRepository: TimelineRepository,
     private readonly menuRepository: DynamoMenuRepository
-  ) {}
+  ) { }
 
   async execute(input: AddItemToCartInput): Promise<AddItemToCartOutput> {
     //  1. Get product from DB (source of truth)
@@ -46,6 +46,76 @@ export class AddItemToCartUseCase {
 
     if (!product) {
       throw new Error('Product not found');
+    }
+
+    //  Validate modifiers if product has them
+    if (product.modifiers) {
+      const inputModifiers = input.modifiers || [];
+
+      // Group modifiers by groupId
+      const grouped: Record<string, any[]> = {};
+
+      for (const mod of inputModifiers) {
+        if (!grouped[mod.groupId]) {
+          grouped[mod.groupId] = [];
+        }
+        grouped[mod.groupId].push(mod);
+      }
+
+      // Validate protein (required exactly 1)
+      if (product.modifiers.protein?.required) {
+        const protein = grouped['protein'] || [];
+
+        if (protein.length !== 1) {
+          throw new Error('Protein is required and must be exactly 1');
+        }
+
+        const validOptions = product.modifiers.protein.options;
+
+        if (!validOptions.includes(protein[0].optionId)) {
+          throw new Error('Invalid protein option');
+        }
+      }
+
+      // Validate toppings
+      if (product.modifiers.toppings) {
+        const toppings = grouped['toppings'] || [];
+
+        if (
+          product.modifiers.toppings.max &&
+          toppings.length > product.modifiers.toppings.max
+        ) {
+          throw new Error('Too many toppings selected');
+        }
+
+        const validOptions = product.modifiers.toppings.options;
+
+        for (const t of toppings) {
+          if (!validOptions.includes(t.optionId)) {
+            throw new Error('Invalid topping option');
+          }
+        }
+      }
+
+      // Validate sauces
+      if (product.modifiers.sauces) {
+        const sauces = grouped['sauces'] || [];
+
+        if (
+          product.modifiers.sauces.max &&
+          sauces.length > product.modifiers.sauces.max
+        ) {
+          throw new Error('Too many sauces selected');
+        }
+
+        const validOptions = product.modifiers.sauces.options;
+
+        for (const s of sauces) {
+          if (!validOptions.includes(s.optionId)) {
+            throw new Error('Invalid sauce option');
+          }
+        }
+      }
     }
 
     const basePrice = new Money(product.basePrice);
