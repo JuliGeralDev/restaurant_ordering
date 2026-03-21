@@ -20,7 +20,7 @@ export class RemoveItemFromCartUseCase {
     private readonly orderRepository: OrderRepository,
     private readonly timelineRepository: TimelineRepository,
     private readonly pricingService: PricingService
-  ) {}
+  ) { }
 
   async execute(input: RemoveItemInput): Promise<RemoveItemOutput> {
     const order = await this.orderRepository.findById(input.orderId);
@@ -48,10 +48,13 @@ export class RemoveItemFromCartUseCase {
     const subtotal = this.pricingService.calculateSubtotal(order.items);
     const total = this.pricingService.calculateTotal(subtotal);
 
+    const tax = this.pricingService.calculateTax(subtotal);
+    const serviceFee = this.pricingService.calculateServiceFee(subtotal);
+
     order.pricing = {
       subtotal,
-      tax: new Money(0),
-      serviceFee: new Money(0),
+      tax,
+      serviceFee,
       total,
     };
 

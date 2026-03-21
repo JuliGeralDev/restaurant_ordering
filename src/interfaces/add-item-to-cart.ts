@@ -18,6 +18,35 @@ export const handler = async (event: any) => {
       modifiers = [],
     } = body;
 
+    // Validate basic inputs
+    if (!orderId || !userId || !productId) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: 'orderId, userId, and productId are required',
+        }),
+      };
+    }
+
+    // Convert quantity to number and validate
+    const quantityNum = Number(quantity);
+    if (!Number.isInteger(quantityNum) || quantityNum < 1) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: 'quantity must be a positive integer',
+        }),
+      };
+    }
+
+    // Transform modifiers from simple format {type, value} to full format {groupId, optionId, name, price}
+    const transformedModifiers = modifiers.map((mod: any) => ({
+      groupId: mod.type || mod.groupId,
+      optionId: mod.value || mod.optionId,
+      name: mod.name || mod.value || mod.optionId,
+      price: mod.price || 0,
+    }));
+
     const useCase = new AddItemToCartUseCase(
       orderRepository,
       pricingService,
@@ -29,8 +58,8 @@ export const handler = async (event: any) => {
       orderId,
       userId,
       productId,
-      quantity,
-      modifiers,
+      quantity: quantityNum,
+      modifiers: transformedModifiers,
     });
 
     return {

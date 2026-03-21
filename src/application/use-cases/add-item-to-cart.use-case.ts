@@ -195,10 +195,13 @@ export class AddItemToCartUseCase {
     const subtotal = this.pricingService.calculateSubtotal(order.items);
     const total = this.pricingService.calculateTotal(subtotal);
 
+    const tax = this.pricingService.calculateTax(subtotal);
+    const serviceFee = this.pricingService.calculateServiceFee(subtotal);
+
     order.pricing = {
       subtotal,
-      tax: new Money(0),
-      serviceFee: new Money(0),
+      tax,
+      serviceFee,
       total,
     };
 
