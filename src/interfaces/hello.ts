@@ -1,6 +1,7 @@
 import { orderRepository, timelineRepository } from '@/infrastructure/container';
 import { AddItemToCartUseCase } from '@/application/use-cases/add-item-to-cart.use-case';
 import { PricingService } from '@/domain/services/pricing.service';
+import { toOrderDTO } from './mappers/order.mapper';
 
 const pricingService = new PricingService();
 
@@ -30,7 +31,7 @@ export const handler = async () => {
   return {
     statusCode: 200,
     body: JSON.stringify({
-      order: result.order,
+      order: toOrderDTO(result.order),
       lastEvent: result.event,
       timeline,
     }),

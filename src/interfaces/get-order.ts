@@ -1,4 +1,5 @@
 import { orderRepository } from '@/infrastructure/container';
+import { toOrderDTO } from './mappers/order.mapper';
 
 export const handler = async (event: any) => {
   const { orderId } = event.pathParameters;
@@ -14,6 +15,6 @@ export const handler = async (event: any) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify(order),
+    body: JSON.stringify(toOrderDTO(order)),
   };
 };
