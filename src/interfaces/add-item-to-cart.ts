@@ -14,8 +14,6 @@ export const handler = async (event: any) => {
       orderId,
       userId,
       productId,
-      name,
-      basePrice,
       quantity,
       modifiers = [],
     } = body;
@@ -31,8 +29,6 @@ export const handler = async (event: any) => {
       orderId,
       userId,
       productId,
-      name,
-      basePrice,
       quantity,
       modifiers,
     });

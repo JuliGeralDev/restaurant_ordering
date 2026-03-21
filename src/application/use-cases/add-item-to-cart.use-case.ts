@@ -41,7 +41,7 @@ export class AddItemToCartUseCase {
   ) {}
 
   async execute(input: AddItemToCartInput): Promise<AddItemToCartOutput> {
-    // 🔥 1. Get product from DB (source of truth)
+    //  1. Get product from DB (source of truth)
     const product = await this.menuRepository.findById(input.productId);
 
     if (!product) {
@@ -70,7 +70,7 @@ export class AddItemToCartUseCase {
     const correlationId = randomUUID();
     let isNewOrder = false;
 
-    // 🔥 2. Create order if not exists
+    //  2. Create order if not exists
     if (!order) {
       isNewOrder = true;
 
@@ -106,7 +106,7 @@ export class AddItemToCartUseCase {
       await this.timelineRepository.save(orderCreatedEvent);
     }
 
-    // 🔥 3. Add or update item
+    //  3. Add or update item
     let eventType: 'CART_ITEM_ADDED' | 'CART_ITEM_UPDATED';
 
     const existingItem = order.items.find(
@@ -121,7 +121,7 @@ export class AddItemToCartUseCase {
       eventType = 'CART_ITEM_ADDED';
     }
 
-    // 🔥 4. Recalculate pricing
+    //  4. Recalculate pricing
     const subtotal = this.pricingService.calculateSubtotal(order.items);
     const total = this.pricingService.calculateTotal(subtotal);
 
@@ -136,7 +136,7 @@ export class AddItemToCartUseCase {
 
     await this.orderRepository.save(order);
 
-    // 🔥 5. Item event
+    //  5. Item event
     const itemEvent: TimelineEvent = {
       eventId: randomUUID(),
       timestamp: new Date().toISOString(),
@@ -155,7 +155,7 @@ export class AddItemToCartUseCase {
 
     await this.timelineRepository.save(itemEvent);
 
-    // 🔥 6. Pricing event
+    // 6. Pricing event
     const pricingEvent: TimelineEvent = {
       eventId: randomUUID(),
       timestamp: new Date().toISOString(),
