@@ -1,16 +1,10 @@
-import { Order, OrderItem } from '@/domain/entities/order.entity';
-import { Money } from '@/domain/value-objects/money.vo';
+import { Order } from '@/domain/entities/order.entity';
 import { TimelineEvent } from '@/domain/entities/timeline-event.entity';
-import { OrderRepository } from '@/domain/repositories/order.repository';
 import { randomUUID } from 'crypto';
-import { OrderPricingService } from '@/application/services/order-pricing.service';
-import {
-  ModifierSelectionInput,
-  ModifierSelectionService,
-} from '@/domain/services/modifier-selection.service';
-import { TimelineRepository } from '@/domain/repositories/timeline.repository';
-import { MenuRepository } from '@/domain/repositories/menu.repository';
-import { NotFoundError } from '@/domain/errors/not-found.error';
+import { ModifierSelectionInput } from '@/domain/services/modifier-selection.service';
+import { OrderService } from '@/application/services/order.service';
+import { CartItemService } from '@/application/services/cart-item.service';
+import { CartOperationOrchestrator } from '@/application/services/cart-operation.orchestrator';
 
 /**
  * Input: data for updating an existing cart item
@@ -33,87 +27,54 @@ export interface UpdateItemInCartOutput {
 
 export class UpdateItemInCartUseCase {
   constructor(
-    private readonly orderRepository: OrderRepository,
-    private readonly orderPricingService: OrderPricingService,
-    private readonly timelineRepository: TimelineRepository,
-    private readonly menuRepository: MenuRepository,
-    private readonly modifierSelectionService: ModifierSelectionService
-  ) { }
+    private readonly orderService: OrderService,
+    private readonly cartItemService: CartItemService,
+    private readonly cartOrchestrator: CartOperationOrchestrator
+  ) {}
 
   async execute(input: UpdateItemInCartInput): Promise<UpdateItemInCartOutput> {
-    // 1. Validate order exists
-    const order = await this.orderRepository.findById(input.orderId);
+    const order = await this.orderService.findOrThrow(input.orderId);
+    
+    this.orderService.findItemOrThrow(order, input.productId);
 
-    if (!order) {
-      throw new NotFoundError('Order not found');
-    }
-
-    // 2. Check if item exists
-    const existingItemIndex = order.items.findIndex(
-      (item) => item.productId === input.productId
+    const updatedItem = await this.cartItemService.resolveProductWithModifiers(
+      input.productId,
+      input.quantity,
+      input.modifiers
     );
 
-    if (existingItemIndex === -1) {
-      throw new NotFoundError('Item not found in cart');
-    }
-
-    // 3. Get product from DB (source of truth)
-    const product = await this.menuRepository.findById(input.productId);
-
-    if (!product) {
-      throw new NotFoundError('Product not found');
-    }
-
-    const basePrice = new Money(product.basePrice);
-    const modifiers = this.modifierSelectionService.resolve(product, input.modifiers);
-
-    // 5. Update item in cart
-    const updatedItem: OrderItem = {
-      productId: product.productId,
-      name: product.name,
-      basePrice,
-      quantity: input.quantity,
-      modifiers,
-    };
-
+    const existingItemIndex = order.items.findIndex((item) => item.productId === input.productId);
     order.items[existingItemIndex] = updatedItem;
 
-    // 6. Recalculate pricing
-    const pricingEvent = this.orderPricingService.recalculate({
+    const correlationId = randomUUID();
+
+    await this.cartOrchestrator.saveCartOperation({
       order,
       orderId: input.orderId,
       userId: input.userId,
-      correlationId: randomUUID(),
-    });
-
-    await this.orderRepository.save(order);
-
-    // 7. Create CART_ITEM_UPDATED event
-    const itemEvent: TimelineEvent = {
-      eventId: randomUUID(),
-      timestamp: new Date().toISOString(),
-      orderId: input.orderId,
-      userId: input.userId,
-      type: 'CART_ITEM_UPDATED',
-      source: 'api',
-      correlationId: pricingEvent.correlationId,
-      payload: {
-        productId: product.productId,
-        name: product.name,
+      correlationId,
+      eventType: 'CART_ITEM_UPDATED',
+      eventPayload: {
+        productId: updatedItem.productId,
+        name: updatedItem.name,
         quantity: input.quantity,
-        basePrice: product.basePrice,
-        modifiersCount: modifiers.length,
+        basePrice: updatedItem.basePrice.value,
+        modifiersCount: updatedItem.modifiers.length,
       },
-    };
-
-    await this.timelineRepository.save(itemEvent);
-
-    // 8. Create PRICING_CALCULATED event
-    await this.timelineRepository.save(pricingEvent);
+    });
 
     return {
       order,
-      event: itemEvent,
+      event: {
+        eventId: correlationId,
+        timestamp: new Date().toISOString(),
+        orderId: input.orderId,
+        userId: input.userId,
+        type: 'CART_ITEM_UPDATED',
+        source: 'api',
+        correlationId,
+        payload: {},
+      },
     };
   }
 }

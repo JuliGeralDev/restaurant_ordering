@@ -1,9 +1,7 @@
-import { randomUUID } from 'crypto';
-
 import { OrderRepository } from '@/domain/repositories/order.repository';
 import { TimelineRepository } from '@/domain/repositories/timeline.repository';
-import { TimelineEvent } from '@/domain/entities/timeline-event.entity';
-import { NotFoundError } from '@/domain/errors/not-found.error';
+import { OrderService } from '@/application/services/order.service';
+import { TimelineEventFactory } from '@/domain/factories/timeline-event.factory';
 
 export interface PlaceOrderInput {
   orderId: string;
@@ -19,33 +17,27 @@ export interface PlaceOrderOutput {
 export class PlaceOrderUseCase {
   constructor(
     private readonly orderRepository: OrderRepository,
-    private readonly timelineRepository: TimelineRepository
+    private readonly timelineRepository: TimelineRepository,
+    private readonly orderService: OrderService
   ) {}
 
   async execute(input: PlaceOrderInput): Promise<PlaceOrderOutput> {
-    const order = await this.orderRepository.findById(input.orderId);
-
-    if (!order) {
-      throw new NotFoundError('Order not found');
-    }
+    const order = await this.orderService.findOrThrow(input.orderId);
 
     order.status = 'PLACED';
     order.updatedAt = new Date().toISOString();
 
     await this.orderRepository.save(order);
 
-    const event: TimelineEvent = {
-      eventId: randomUUID(),
-      timestamp: new Date().toISOString(),
+    const event = TimelineEventFactory.create({
       orderId: order.orderId,
       userId: input.userId,
       type: 'ORDER_PLACED',
-      source: 'api',
       correlationId: input.correlationId,
       payload: {
         status: order.status,
       },
-    };
+    });
 
     await this.timelineRepository.save(event);
 
