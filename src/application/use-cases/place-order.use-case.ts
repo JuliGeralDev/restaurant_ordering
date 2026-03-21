@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import { OrderRepository } from '@/domain/repositories/order.repository';
 import { TimelineRepository } from '@/domain/repositories/timeline.repository';
 import { TimelineEvent } from '@/domain/entities/timeline-event.entity';
+import { NotFoundError } from '@/domain/errors/not-found.error';
 
 export interface PlaceOrderInput {
   orderId: string;
@@ -25,7 +26,7 @@ export class PlaceOrderUseCase {
     const order = await this.orderRepository.findById(input.orderId);
 
     if (!order) {
-      throw new Error('Order not found');
+      throw new NotFoundError('Order not found');
     }
 
     order.status = 'PLACED';

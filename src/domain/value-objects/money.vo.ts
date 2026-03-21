@@ -1,13 +1,15 @@
+import { ValidationError } from '@/domain/errors/validation.error';
+
 export class Money {
     private readonly amount: number; // in cents
 
     constructor(amount: number) {
         if (!Number.isInteger(amount)) {
-            throw new Error('Money amount must be an integer (cents)');
+            throw new ValidationError('Money amount must be an integer (cents)');
         }
 
         if (amount < 0) {
-            throw new Error('Money amount cannot be negative');
+            throw new ValidationError('Money amount cannot be negative');
         }
 
         this.amount = amount;
@@ -23,7 +25,7 @@ export class Money {
 
     public multiply(quantity: number): Money {
         if (!Number.isInteger(quantity) || quantity < 0) {
-            throw new Error('Quantity must be a positive integer');
+            throw new ValidationError('Quantity must be a positive integer');
         }
 
         return new Money(this.amount * quantity);

@@ -4,6 +4,8 @@ import { PricingService } from '@/domain/services/pricing.service';
 import { menuRepository } from '@/infrastructure/container';
 import { validatePayloadSize } from './utils/payload-validator';
 import { logSafe } from '@/infrastructure/logging/logger';
+import { ValidationError } from '@/domain/errors/validation.error';
+import { handleError } from './utils/error-response';
 
 const pricingService = new PricingService();
 
@@ -24,23 +26,13 @@ export const handler = async (event: any) => {
 
     // Validate basic inputs (orderId es opcional)
     if (!userId || !productId) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: 'userId and productId are required',
-        }),
-      };
+      throw new ValidationError('userId and productId are required');
     }
 
     // Convert quantity to number and validate
     const quantityNum = Number(quantity);
     if (!Number.isInteger(quantityNum) || quantityNum < 1) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: 'quantity must be a positive integer',
-        }),
-      };
+      throw new ValidationError('quantity must be a positive integer');
     }
 
     // Transform modifiers from simple format {type, value} to full format {groupId, optionId, name, price}
@@ -68,14 +60,9 @@ export const handler = async (event: any) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify(result.order), // Retornar orden completa con orderId generado
+      body: JSON.stringify(result.order),
     };
   } catch (error: any) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: error.message,
-      }),
-    };
+    return handleError(error);
   }
 };

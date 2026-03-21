@@ -1,6 +1,8 @@
 import { orderRepository, timelineRepository, idempotencyRepository } from '@/infrastructure/container';
 import { PlaceOrderUseCase } from '@/application/use-cases/place-order.use-case';
 import { validatePayloadSize } from './utils/payload-validator';
+import { ValidationError } from '@/domain/errors/validation.error';
+import { handleError } from './utils/error-response';
 
 export const handler = async (event: any) => {
   try {
@@ -10,12 +12,7 @@ export const handler = async (event: any) => {
     const { orderId, userId } = body;
 
     if (!orderId || !userId) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: 'orderId and userId are required',
-        }),
-      };
+      throw new ValidationError('orderId and userId are required');
     }
 
     const key =
@@ -23,12 +20,7 @@ export const handler = async (event: any) => {
       event.headers?.['idempotency-key'];
 
     if (!key) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: 'Idempotency-Key header is required',
-        }),
-      };
+      throw new ValidationError('Idempotency-Key header is required');
     }
 
     // Check existing
@@ -43,6 +35,7 @@ export const handler = async (event: any) => {
         return {
           statusCode: 422,
           body: JSON.stringify({
+            error: 'Unprocessable entity',
             message: 'Idempotency key conflict: orderId or userId mismatch',
           }),
         };
@@ -77,11 +70,6 @@ export const handler = async (event: any) => {
       body: JSON.stringify(result),
     };
   } catch (error: any) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: error.message,
-      }),
-    };
+    return handleError(error);
   }
 };

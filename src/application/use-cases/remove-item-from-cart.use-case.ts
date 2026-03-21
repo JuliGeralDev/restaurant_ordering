@@ -4,6 +4,7 @@ import { TimelineEvent } from '@/domain/entities/timeline-event.entity';
 import { PricingService } from '@/domain/services/pricing.service';
 import { Money } from '@/domain/value-objects/money.vo';
 import { Order } from '@/domain/entities/order.entity';
+import { NotFoundError } from '@/domain/errors/not-found.error';
 import { randomUUID } from 'crypto';
 
 export interface RemoveItemInput {
@@ -27,7 +28,7 @@ export class RemoveItemFromCartUseCase {
     const order = await this.orderRepository.findById(input.orderId);
 
     if (!order) {
-      throw new Error('Order not found');
+      throw new NotFoundError('Order not found');
     }
 
     const existingItem = order.items.find(
@@ -35,7 +36,7 @@ export class RemoveItemFromCartUseCase {
     );
 
     if (!existingItem) {
-      throw new Error('Item not found in cart');
+      throw new NotFoundError('Item not found in cart');
     }
 
     const correlationId = randomUUID();

@@ -6,6 +6,8 @@ import { randomUUID } from 'crypto';
 import { PricingService } from '@/domain/services/pricing.service';
 import { TimelineRepository } from '@/domain/repositories/timeline.repository';
 import { DynamoMenuRepository } from '@/infrastructure/repositories/dynamo-menu.repository';
+import { NotFoundError } from '@/domain/errors/not-found.error';
+import { ValidationError } from '@/domain/errors/validation.error';
 
 /**
  * Input: data coming from outside (API/UI)
@@ -48,7 +50,7 @@ export class AddItemToCartUseCase {
     const product = await this.menuRepository.findById(input.productId);
 
     if (!product) {
-      throw new Error('Product not found');
+      throw new NotFoundError('Product not found');
     }
 
     const basePrice = new Money(product.basePrice);
@@ -80,12 +82,12 @@ export class AddItemToCartUseCase {
 
         // Check required
         if (groupConfig.required && userSelections.length === 0) {
-          throw new Error(`${groupId} is required`);
+          throw new ValidationError(`${groupId} is required`);
         }
 
         // Check max
         if (groupConfig.max && userSelections.length > groupConfig.max) {
-          throw new Error(`Too many ${groupId} selected (max: ${groupConfig.max})`);
+          throw new ValidationError(`Too many ${groupId} selected (max: ${groupConfig.max})`);
         }
 
         // Validate each selection and get REAL price from DB
@@ -93,7 +95,7 @@ export class AddItemToCartUseCase {
           const optionConfig = groupConfig.options[userMod.optionId];
           
           if (!optionConfig) {
-            throw new Error(`Invalid ${groupId} option: ${userMod.optionId}`);
+            throw new ValidationError(`Invalid ${groupId} option: ${userMod.optionId}`);
           }
 
           // Use REAL price from database, NEVER trust client

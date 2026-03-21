@@ -1,3 +1,5 @@
+import { ValidationError } from '@/domain/errors/validation.error';
+
 const MAX_PAYLOAD_SIZE = 16 * 1024; // 16KB
 
 export function validatePayloadSize(body: string | undefined) {
@@ -6,6 +8,6 @@ export function validatePayloadSize(body: string | undefined) {
   const size = Buffer.byteLength(body, 'utf8');
 
   if (size > MAX_PAYLOAD_SIZE) {
-    throw new Error(`Payload exceeds ${MAX_PAYLOAD_SIZE / 1024}KB limit`);
+    throw new ValidationError(`Payload exceeds ${MAX_PAYLOAD_SIZE / 1024}KB limit`);
   }
 }
