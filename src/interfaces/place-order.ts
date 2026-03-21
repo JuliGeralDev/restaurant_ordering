@@ -1,9 +1,10 @@
 import { orderRepository, timelineRepository, idempotencyRepository } from '@/infrastructure/container';
 import { PlaceOrderUseCase } from '@/application/use-cases/place-order.use-case';
-import { randomUUID } from 'crypto';
+import { validatePayloadSize } from './utils/payload-validator';
 
 export const handler = async (event: any) => {
   try {
+    validatePayloadSize(event.body);
     const body = JSON.parse(event.body || '{}');
 
     const { orderId, userId } = body;

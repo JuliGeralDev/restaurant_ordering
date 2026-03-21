@@ -1,11 +1,12 @@
 import { orderRepository, timelineRepository } from '@/infrastructure/container';
 import { PricingService } from '@/domain/services/pricing.service';
 import { RemoveItemFromCartUseCase } from '@/application/use-cases/remove-item-from-cart.use-case';
-
+import { validatePayloadSize } from './utils/payload-validator'
 const pricingService = new PricingService();
 
 export const handler = async (event: any) => {
   try {
+    validatePayloadSize(event.body);
     const body = JSON.parse(event.body || '{}');
 
     const { orderId, userId, productId } = body;

@@ -1,13 +1,15 @@
 import { orderRepository, timelineRepository } from '@/infrastructure/container';
 import { AddItemToCartUseCase } from '@/application/use-cases/add-item-to-cart.use-case';
 import { PricingService } from '@/domain/services/pricing.service';
-import { randomUUID } from 'crypto';
 import { menuRepository } from '@/infrastructure/container';
+import { validatePayloadSize } from './utils/payload-validator';
 
 const pricingService = new PricingService();
 
 export const handler = async (event: any) => {
   try {
+    validatePayloadSize(event.body);
+
     const body = JSON.parse(event.body || '{}');
 
     const {
