@@ -5,21 +5,27 @@ import { OrderRepository } from '@/domain/repositories/order.repository';
 import { randomUUID } from 'crypto';
 import { PricingService } from '@/domain/services/pricing.service';
 import { TimelineRepository } from '@/domain/repositories/timeline.repository';
+import { DynamoMenuRepository } from '@/infrastructure/repositories/dynamo-menu.repository';
 
 /**
- * Input: data coming from outside (API/UI), not validated by domain yet.
+ * Input: data coming from outside (API/UI)
+ * Only trusted field is productId, everything else is validated/derived
  */
 export interface AddItemToCartInput {
   orderId: string;
   userId: string;
   productId: string;
-  name: string;
-  basePrice: number;
   quantity: number;
+  modifiers?: Array<{
+    groupId: string;
+    optionId: string;
+    name: string;
+    price: number;
+  }>;
 }
 
 /**
- * Output: result of the use case, already mapped to domain objects.
+ * Output: domain result after operation
  */
 export interface AddItemToCartOutput {
   order: Order;
@@ -30,27 +36,44 @@ export class AddItemToCartUseCase {
   constructor(
     private readonly orderRepository: OrderRepository,
     private readonly pricingService: PricingService,
-    private readonly timelineRepository: TimelineRepository
-  ) { }
+    private readonly timelineRepository: TimelineRepository,
+    private readonly menuRepository: DynamoMenuRepository
+  ) {}
 
   async execute(input: AddItemToCartInput): Promise<AddItemToCartOutput> {
-    // Convert external primitive to domain value object (applies domain rules)
-    const basePrice = new Money(input.basePrice);
+    // 🔥 1. Get product from DB (source of truth)
+    const product = await this.menuRepository.findById(input.productId);
+
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    const basePrice = new Money(product.basePrice);
+
+    // Convert modifiers to domain objects
+    const modifiers = (input.modifiers || []).map((mod) => ({
+      groupId: mod.groupId,
+      optionId: mod.optionId,
+      name: mod.name,
+      price: new Money(mod.price),
+    }));
 
     const newItem: OrderItem = {
-      productId: input.productId,
-      name: input.name,
+      productId: product.productId,
+      name: product.name,
       basePrice,
       quantity: input.quantity,
-      modifiers: [],
+      modifiers,
     };
 
     let order = await this.orderRepository.findById(input.orderId);
     const correlationId = randomUUID();
     let isNewOrder = false;
 
+    // 🔥 2. Create order if not exists
     if (!order) {
       isNewOrder = true;
+
       order = {
         orderId: input.orderId,
         userId: input.userId,
@@ -66,7 +89,6 @@ export class AddItemToCartUseCase {
         updatedAt: new Date().toISOString(),
       };
 
-      // Register order creation event
       const orderCreatedEvent: TimelineEvent = {
         eventId: randomUUID(),
         timestamp: new Date().toISOString(),
@@ -80,10 +102,11 @@ export class AddItemToCartUseCase {
           previousStatus: null,
         },
       };
+
       await this.timelineRepository.save(orderCreatedEvent);
     }
 
-    // Add item to order
+    // 🔥 3. Add or update item
     let eventType: 'CART_ITEM_ADDED' | 'CART_ITEM_UPDATED';
 
     const existingItem = order.items.find(
@@ -98,7 +121,7 @@ export class AddItemToCartUseCase {
       eventType = 'CART_ITEM_ADDED';
     }
 
-    // Recalculate pricing
+    // 🔥 4. Recalculate pricing
     const subtotal = this.pricingService.calculateSubtotal(order.items);
     const total = this.pricingService.calculateTotal(subtotal);
 
@@ -113,7 +136,7 @@ export class AddItemToCartUseCase {
 
     await this.orderRepository.save(order);
 
-    // Register item event
+    // 🔥 5. Item event
     const itemEvent: TimelineEvent = {
       eventId: randomUUID(),
       timestamp: new Date().toISOString(),
@@ -123,15 +146,16 @@ export class AddItemToCartUseCase {
       source: 'api',
       correlationId,
       payload: {
-        productId: input.productId,
-        name: input.name,
+        productId: product.productId,
+        name: product.name,
         quantity: input.quantity,
-        basePrice: input.basePrice,
+        basePrice: product.basePrice,
       },
     };
+
     await this.timelineRepository.save(itemEvent);
 
-    // Register pricing recalculation event
+    // 🔥 6. Pricing event
     const pricingEvent: TimelineEvent = {
       eventId: randomUUID(),
       timestamp: new Date().toISOString(),
@@ -147,9 +171,12 @@ export class AddItemToCartUseCase {
         total: total.value,
       },
     };
+
     await this.timelineRepository.save(pricingEvent);
 
-    // Return the order (cart) with the new item and the last event
-    return { order, event: itemEvent };
+    return {
+      order,
+      event: itemEvent,
+    };
   }
 }

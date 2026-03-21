@@ -25,12 +25,12 @@ custom:
       '@': './src'
 
 functions:
-  hello:
-    handler: src/interfaces/hello.handler
-    events:
-      - http:
-          path: hello
-          method: get
+  # hello:
+  #   handler: src/interfaces/hello.handler
+  #   events:
+  #     - http:
+  #         path: hello
+  #         method: get
   getOrderTimeline:
     handler: src/interfaces/get-order-timeline.handler
     events:
@@ -55,3 +55,9 @@ functions:
       - http:
           path: /menu
           method: get
+  addItemToCart:
+    handler: src/interfaces/add-item-to-cart.handler
+    events:
+      - http:
+          path: /cart/items
+          method: post
