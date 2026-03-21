@@ -117,17 +117,30 @@ const SAMPLE_MENU = [
     modifiers: {
       protein: {
         required: true,
-        options: ['beef', 'chicken', 'veggie'],
+        options: {
+          beef: { name: 'Beef', price: 0 },
+          chicken: { name: 'Chicken', price: 0 },
+          veggie: { name: 'Veggie', price: 0 },
+        },
       },
       toppings: {
         required: false,
         max: 3,
-        options: ['lettuce', 'tomato', 'onion', 'cheese'],
+        options: {
+          lettuce: { name: 'Lettuce', price: 0 },
+          tomato: { name: 'Tomato', price: 0 },
+          onion: { name: 'Onion', price: 0 },
+          cheese: { name: 'Cheese', price: 500 },
+        },
       },
       sauces: {
         required: false,
         max: 2,
-        options: ['ketchup', 'mayo', 'bbq'],
+        options: {
+          ketchup: { name: 'Ketchup', price: 0 },
+          mayo: { name: 'Mayo', price: 300 },
+          bbq: { name: 'BBQ', price: 300 },
+        },
       },
     },
   },
@@ -138,17 +151,34 @@ const SAMPLE_MENU = [
     modifiers: {
       protein: {
         required: true,
-        options: ['pepperoni', 'sausage', 'chicken', 'veggie'],
+        options: {
+          pepperoni: { name: 'Pepperoni', price: 0 },
+          sausage: { name: 'Sausage', price: 0 },
+          chicken: { name: 'Chicken', price: 0 },
+          veggie: { name: 'Veggie', price: 0 },
+        },
       },
       toppings: {
         required: false,
         max: 5,
-        options: ['mushrooms', 'olives', 'peppers', 'onions', 'pineapple', 'extra-cheese'],
+        options: {
+          mushrooms: { name: 'Mushrooms', price: 400 },
+          olives: { name: 'Olives', price: 400 },
+          peppers: { name: 'Peppers', price: 300 },
+          onions: { name: 'Onions', price: 0 },
+          pineapple: { name: 'Pineapple', price: 500 },
+          'extra-cheese': { name: 'Extra Cheese', price: 600 },
+        },
       },
       sauces: {
         required: false,
         max: 2,
-        options: ['marinara', 'alfredo', 'bbq', 'pesto'],
+        options: {
+          marinara: { name: 'Marinara', price: 0 },
+          alfredo: { name: 'Alfredo', price: 500 },
+          bbq: { name: 'BBQ', price: 400 },
+          pesto: { name: 'Pesto', price: 600 },
+        },
       },
     },
   },

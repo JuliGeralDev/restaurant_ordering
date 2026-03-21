@@ -63,13 +63,21 @@ export class UpdateItemInCartUseCase {
       throw new Error('Product not found');
     }
 
-    // 4. Validate modifiers if product has them
+    const basePrice = new Money(product.basePrice);
+
+    // Validate and build modifiers with REAL prices from DB (security: never trust client prices)
+    const modifiers: Array<{
+      groupId: string;
+      optionId: string;
+      name: string;
+      price: Money;
+    }> = [];
+
     if (product.modifiers) {
       const inputModifiers = input.modifiers || [];
 
       // Group modifiers by groupId
       const grouped: Record<string, any[]> = {};
-
       for (const mod of inputModifiers) {
         if (!grouped[mod.groupId]) {
           grouped[mod.groupId] = [];
@@ -77,71 +85,39 @@ export class UpdateItemInCartUseCase {
         grouped[mod.groupId].push(mod);
       }
 
-      // Validate protein (required exactly 1)
-      if (product.modifiers.protein?.required) {
-        const protein = grouped['protein'] || [];
+      // Validate and extract REAL prices for each modifier group
+      for (const groupId of Object.keys(product.modifiers)) {
+        const groupConfig = product.modifiers[groupId];
+        const userSelections = grouped[groupId] || [];
 
-        if (protein.length !== 1) {
-          throw new Error('Protein is required and must be exactly 1');
+        // Check required
+        if (groupConfig.required && userSelections.length === 0) {
+          throw new Error(`${groupId} is required`);
         }
 
-        const validOptions = product.modifiers.protein.options;
-
-        if (!validOptions.includes(protein[0].optionId)) {
-          throw new Error('Invalid protein option');
-        }
-      }
-
-      // Validate toppings
-      if (product.modifiers.toppings) {
-        const toppings = grouped['toppings'] || [];
-
-        if (
-          product.modifiers.toppings.max &&
-          toppings.length > product.modifiers.toppings.max
-        ) {
-          throw new Error('Too many toppings selected');
+        // Check max
+        if (groupConfig.max && userSelections.length > groupConfig.max) {
+          throw new Error(`Too many ${groupId} selected (max: ${groupConfig.max})`);
         }
 
-        const validOptions = product.modifiers.toppings.options;
-
-        for (const t of toppings) {
-          if (!validOptions.includes(t.optionId)) {
-            throw new Error('Invalid topping option');
+        // Validate each selection and get REAL price from DB
+        for (const userMod of userSelections) {
+          const optionConfig = groupConfig.options[userMod.optionId];
+          
+          if (!optionConfig) {
+            throw new Error(`Invalid ${groupId} option: ${userMod.optionId}`);
           }
-        }
-      }
 
-      // Validate sauces
-      if (product.modifiers.sauces) {
-        const sauces = grouped['sauces'] || [];
-
-        if (
-          product.modifiers.sauces.max &&
-          sauces.length > product.modifiers.sauces.max
-        ) {
-          throw new Error('Too many sauces selected');
-        }
-
-        const validOptions = product.modifiers.sauces.options;
-
-        for (const s of sauces) {
-          if (!validOptions.includes(s.optionId)) {
-            throw new Error('Invalid sauce option');
-          }
+          // Use REAL price from database, NEVER trust client
+          modifiers.push({
+            groupId: groupId,
+            optionId: userMod.optionId,
+            name: optionConfig.name,
+            price: new Money(optionConfig.price),
+          });
         }
       }
     }
-
-    const basePrice = new Money(product.basePrice);
-
-    // Convert modifiers to domain objects
-    const modifiers = (input.modifiers || []).map((mod) => ({
-      groupId: mod.groupId,
-      optionId: mod.optionId,
-      name: mod.name,
-      price: new Money(mod.price),
-    }));
 
     // 5. Update item in cart
     const updatedItem: OrderItem = {

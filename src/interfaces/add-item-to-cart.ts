@@ -15,19 +15,19 @@ export const handler = async (event: any) => {
     const body = JSON.parse(event.body || '{}');
 
     const {
-      orderId,
+      orderId, // Opcional - backend generará si no viene
       userId,
       productId,
       quantity,
       modifiers = [],
     } = body;
 
-    // Validate basic inputs
-    if (!orderId || !userId || !productId) {
+    // Validate basic inputs (orderId es opcional)
+    if (!userId || !productId) {
       return {
         statusCode: 400,
         body: JSON.stringify({
-          message: 'orderId, userId, and productId are required',
+          message: 'userId and productId are required',
         }),
       };
     }
@@ -59,7 +59,7 @@ export const handler = async (event: any) => {
     );
 
     const result = await useCase.execute({
-      orderId,
+      orderId: orderId || undefined, // Pasar undefined si no viene
       userId,
       productId,
       quantity: quantityNum,
@@ -68,7 +68,7 @@ export const handler = async (event: any) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify(result),
+      body: JSON.stringify(result.order), // Retornar orden completa con orderId generado
     };
   } catch (error: any) {
     return {
