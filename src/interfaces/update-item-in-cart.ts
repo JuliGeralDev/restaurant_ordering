@@ -1,11 +1,13 @@
 import { orderRepository, timelineRepository, menuRepository } from '@/infrastructure/container';
 import { UpdateItemInCartUseCase } from '@/application/use-cases/update-item-in-cart.use-case';
+import { ModifierSelectionService } from '@/domain/services/modifier-selection.service';
 import { PricingService } from '@/domain/services/pricing.service';
 import { apiHandler } from './utils/api-handler';
 import { logSafe } from '@/infrastructure/logging/logger';
 import { validator } from './utils/field-validator';
 
 const pricingService = new PricingService();
+const modifierSelectionService = new ModifierSelectionService();
 
 export const handler = (event: any) =>
   apiHandler(event, async (event, body) => {
@@ -35,7 +37,8 @@ export const handler = (event: any) =>
       orderRepository,
       pricingService,
       timelineRepository,
-      menuRepository
+      menuRepository,
+      modifierSelectionService
     );
 
     const result = await useCase.execute({
