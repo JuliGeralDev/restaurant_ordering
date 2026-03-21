@@ -27,7 +27,7 @@ export class DynamoTimelineRepository implements TimelineRepository {
           ':orderId': orderId,
         },
         Limit: pageSize,
-        ScanIndexForward: true,
+        ScanIndexForward: false,
       })
     );
 
