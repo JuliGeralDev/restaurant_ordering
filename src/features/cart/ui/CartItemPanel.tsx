@@ -1,6 +1,6 @@
-import type { OrderItemDto } from "../cart.types";
+import type { GroupedCartItem } from "../hooks/useGroupedCartItems";
 
-export const CartItemPanel = ({ item }: { item: OrderItemDto }) => (
+export const CartItemPanel = ({ item }: { item: GroupedCartItem }) => (
   <div className="flex flex-col items-center gap-1.5 rounded-xl border-2 border-zinc-700 bg-zinc-800 p-2">
     {/* Image */}
     <div className="relative h-14 w-full overflow-hidden rounded-lg border-2 border-zinc-700 bg-zinc-900">
@@ -23,6 +23,6 @@ export const CartItemPanel = ({ item }: { item: OrderItemDto }) => (
       {item.name}
     </p>
     {/* Quantity */}
-    <p className="text-xs text-zinc-500">Quantity ×{item.quantity}</p>
+    <p className="text-xs text-zinc-500">×{item.totalQuantity}</p>
   </div>
 );

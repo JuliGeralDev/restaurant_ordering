@@ -4,13 +4,14 @@ import { ShoppingCart } from "lucide-react";
 
 import { Button } from "@/shared/ui/button";
 import { useGetOrder } from "../hooks/useGetOrder";
+import { useGroupedCartItems } from "../hooks/useGroupedCartItems";
 import { CartItemPanel } from "./CartItemPanel";
 const formatPrice = (price: number) => `$${price.toLocaleString("es-CO")}`;
 
 
 export const CartPanel = () => {
   const { data } = useGetOrder();
-
+  const grouped = useGroupedCartItems(data?.items ?? []);
   const isEmpty = !data || data.items.length === 0;
 
   return (
@@ -37,8 +38,8 @@ export const CartPanel = () => {
             </p>
           </div>
         ) : (
-          data!.items.map((item, i) => (
-            <CartItemPanel key={i} item={item} />
+          grouped.map((item) => (
+            <CartItemPanel key={item.productId} item={item} />
           ))
         )}
       </div>
