@@ -1,11 +1,23 @@
 "use client";
 
 import { useGetMenu } from "../hooks/useGetMenu";
-import { RetroMenuCard } from "./RetroMenuCard";
+import { RetroMenuCard } from "@/components/ui/RetroMenuCard";
+import { useAddToCart } from "@/features/cart/hooks/useAddToCart";
 
 
 export const Menu = () => {
     const { data, isLoading, error } = useGetMenu();
+    const { addToCart, isLoading: isAddingToCart } = useAddToCart();
+
+    const handleAddToCart = async (productId: string, quantity: number) => {
+        try {
+            await addToCart(productId, quantity);
+            // Success - you could show a toast notification here in the future
+        } catch (error) {
+            // Error is already handled in the hook
+            console.error("Failed to add item to cart:", error);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -36,10 +48,12 @@ export const Menu = () => {
                     return (
                         <RetroMenuCard
                             key={item.id}
+                            productId={item.id}
                             name={item.name}
                             price={item.price}
                             image={item.imageUrl || "/placeholder-image.jpg"}
                             hasModifiers={hasModifiers}
+                            onAddToCart={(quantity) => handleAddToCart(item.id, quantity)}
                         />
                     );
                 })}

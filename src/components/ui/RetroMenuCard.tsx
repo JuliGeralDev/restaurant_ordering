@@ -1,8 +1,8 @@
 "use client";
 
-import { ShoppingCart } from "lucide-react";
-
+import { useState } from "react";
 import { Button } from "@/shared/ui/button";
+import { ShoppingCart } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui/card";
 
 interface RetroMenuCardProps {
@@ -11,7 +11,7 @@ interface RetroMenuCardProps {
   price: number;
   image: string;
   hasModifiers?: boolean;
-  onAddToCart?: () => void;
+  onAddToCart?: (quantity: number) => void;
 }
 
 const TOP_GRILLE_ITEMS = 6;
@@ -31,8 +31,8 @@ const D_PAD_PARTS = [
 ] as const;
 
 const formatPrice = (price: number) => {
-  const priceInPesos = price / 100;
-  return `$${priceInPesos.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const priceInPesos = price;
+  return `$${priceInPesos.toLocaleString('es-CO')}`;
 };
 
 const SpeakerGrille = ({
@@ -85,19 +85,63 @@ const PriceDisplay = ({ price }: { price: number }) => {
   );
 };
 
-const ActionArea = ({ onAddToCart }: { onAddToCart?: () => void }) => {
-  return (
-    <div className="flex items-center gap-2">
-      <Button 
-        onClick={onAddToCart}
-        className="relative h-11 w-11 rounded-full border-4 border-purple-900 bg-purple-600 text-white shadow-lg transition-all hover:scale-110 hover:bg-purple-700 active:scale-95"
-      >
-        <ShoppingCart className="absolute h-5 w-5" />
-        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-400 text-xs font-bold text-zinc-900">
-          +
-        </span>
-      </Button>
+const ActionArea = ({ quantity, setQuantity, onAddToCart }: { quantity: number; setQuantity: (q: number) => void; onAddToCart?: () => void }) => {
+  const decrementQuantity = () => {
+    if (quantity > 1) setQuantity(quantity - 1);
+  };
 
+  const incrementQuantity = () => {
+    if (quantity < 99) setQuantity(quantity + 1);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value) || 1;
+    setQuantity(Math.max(1, Math.min(99, value)));
+  };
+
+  return (
+    <div className="flex items-center gap-1">
+      {/* Unified Quantity + Cart Control */}
+      <div className="flex items-center gap-1 bg-zinc-700/50 rounded-xl p-1 border-2 border-zinc-800">
+        {/* Decrease Button */}
+        <button
+          onClick={decrementQuantity}
+          className="w-7 h-7 rounded-lg bg-zinc-700 hover:bg-zinc-600 border-2 border-zinc-800 text-green-400 font-bold text-lg transition-colors flex items-center justify-center"
+        >
+          −
+        </button>
+
+        {/* Quantity Input */}
+        <input
+          type="number"
+          min="1"
+          max="99"
+          value={quantity}
+          onChange={handleInputChange}
+          className="w-9 h-7 text-center bg-zinc-800 border-2 border-zinc-900 rounded-md text-green-400 font-press-start text-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-2 focus:ring-green-400/50"
+        />
+
+        {/* Increase Button */}
+        <button
+          onClick={incrementQuantity}
+          className="w-7 h-7 rounded-lg bg-zinc-700 hover:bg-zinc-600 border-2 border-zinc-800 text-green-400 font-bold text-lg transition-colors flex items-center justify-center"
+        >
+          +
+        </button>
+
+        {/* Divider */}
+        <div className="w-px h-7 bg-zinc-800 mx-0.5"></div>
+
+        {/* Add to Cart Button (inside same container) */}
+        <button
+          onClick={onAddToCart}
+          className="w-9 h-9 rounded-lg bg-purple-600 hover:bg-purple-700 border-2 border-purple-900 text-white shadow-md transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
+        >
+          <ShoppingCart className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Decorative Power Button */}
       {/* <div className="h-6 w-6 self-end rounded-full border-2 border-zinc-800 bg-zinc-700 shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)]" /> */}
     </div>
   );
@@ -111,6 +155,14 @@ export const RetroMenuCard = ({
   hasModifiers,
   onAddToCart,
 }: RetroMenuCardProps) => {
+  const [quantity, setQuantity] = useState(1);
+
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart(quantity);
+    }
+  };
+
   return (
     <Card className="relative max-w-sm overflow-hidden rounded-[2rem] border-[10px] border-zinc-500 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 shadow-2xl shadow-zinc-600/50">
       <SpeakerGrille
@@ -123,25 +175,25 @@ export const RetroMenuCard = ({
         {name}
       </div>
 
-      <CardContent className="flex flex-col gap-3 p-3">
-        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border-[6px] border-zinc-700 bg-black shadow-2xl shadow-black/50">
-          <img src={image} alt={name} className="h-full w-full object-cover" />
+      <CardContent className="p-3 flex flex-col gap-3">
+        <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden border-[6px] border-zinc-700 bg-black shadow-2xl shadow-black/50">
+          <img src={image} alt={name} className="w-full h-full object-cover" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
         </div>
 
-        <div className="rounded-2xl border-4 border-zinc-400 bg-zinc-300 p-4 shadow-inner">
+        <div className="bg-zinc-300 rounded-2xl p-4 shadow-inner border-4 border-zinc-400">
           <PriceDisplay price={price} />
 
           <div className="flex items-center justify-between px-1">
             <DPad />
 
             {hasModifiers && (
-              <span className="rounded bg-zinc-600 px-2 py-0.5 font-press-start text-[6px] font-bold tracking-widest text-green-400 shadow-md">
+              <span className="font-press-start text-[6px] font-bold tracking-widest bg-zinc-600 rounded px-2 py-0.5 text-green-400 shadow-md">
                 + OPTIONS
               </span>
             )}
 
-            <ActionArea onAddToCart={onAddToCart} />
+            <ActionArea quantity={quantity} setQuantity={setQuantity} onAddToCart={handleAddToCart} />
           </div>
         </div>
       </CardContent>
