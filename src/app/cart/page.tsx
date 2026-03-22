@@ -6,6 +6,7 @@ import { useGetOrder } from "@/features/cart/hooks/useGetOrder";
 import { useGroupedCartItems, type GroupedCartItem } from "@/features/cart/hooks/useGroupedCartItems";
 import { useAddToCart } from "@/features/cart/hooks/useAddToCart";
 import { useRemoveCartItem } from "@/features/cart/hooks/useRemoveCartItem";
+import { useConfirmOrder } from "@/features/cart/hooks/useConfirmOrder";
 import { useGetMenu } from "@/features/menu/hooks/useGetMenu";
 import { CartItemRow } from "@/features/cart/ui/CartItemRow";
 import { CartOrderSummary } from "@/features/cart/ui/CartOrderSummary";
@@ -16,6 +17,7 @@ export default function CartPage() {
   const { data: menuItems } = useGetMenu();
   const { addToCart } = useAddToCart();
   const { removeCartItem, removeAllItems } = useRemoveCartItem();
+  const { confirmOrder, isLoading: isConfirming } = useConfirmOrder();
   const grouped = useGroupedCartItems(data?.items ?? [], true);
 
   const [modalProduct, setModalProduct] = useState<GroupedCartItem | null>(null);
@@ -90,7 +92,7 @@ export default function CartPage() {
 
           {/* Right: order summary — 40% */}
           <div className="w-full lg:w-[40%] lg:sticky lg:top-20">
-            <CartOrderSummary pricing={data.pricing} items={grouped} />
+            <CartOrderSummary pricing={data.pricing} items={grouped} onConfirm={confirmOrder} isLoading={isConfirming} />
           </div>
         </div>
       )}
