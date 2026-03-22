@@ -33,7 +33,7 @@ const PricingRow = ({
     <span
       className={`font-bold tabular-nums text-green-400 ${large ? "text-base" : "text-xs"}`}
     >
-      ${value.toFixed(2)}
+      ${value.toLocaleString("es-CO")}
     </span>
   </div>
 );

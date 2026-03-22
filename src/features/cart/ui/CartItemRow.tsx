@@ -3,13 +3,13 @@
 import Image from "next/image";
 import { Trash2, Minus, Plus } from "lucide-react";
 import { Button } from "@/shared/ui/button";
-import type { OrderItemDto } from "@/features/cart/cart.types";
+import type { GroupedCartItem } from "@/features/cart/hooks/useGroupedCartItems";
 
 interface CartItemRowProps {
-  item: OrderItemDto;
-  onRemove?: (cartItemId: string) => void;
-  onDecrement?: (cartItemId: string) => void;
-  onIncrement?: (cartItemId: string) => void;
+  item: GroupedCartItem;
+  onIncrement: () => void;
+  onDecrement?: () => void;
+  onRemove?: () => void;
 }
 
 const TOP_GRILLE_ITEMS = 4;
@@ -46,11 +46,11 @@ const DecorativeScrews = () => (
 
 export const CartItemRow = ({
   item,
-  onRemove,
-  onDecrement,
   onIncrement,
+  onDecrement,
+  onRemove,
 }: CartItemRowProps) => {
-  const totalPrice = (item.basePrice * item.quantity).toFixed(2);
+  const totalPrice = (item.basePrice * item.totalQuantity).toLocaleString("es-CO");
 
   return (
     <div className="relative overflow-hidden rounded-[1.5rem] border-[8px] border-zinc-500 bg-zinc-400 shadow-xl shadow-zinc-600/50">
@@ -63,15 +63,15 @@ export const CartItemRow = ({
       {/* Header strip */}
       <div className="relative border-y-4 border-zinc-700 bg-zinc-600 px-3 py-1.5">
         <div className="flex items-center justify-between">
-          <span className="truncate text-[10px] font-bold uppercase tracking-wider text-green-400 pr-2">
+          <span className="truncate pr-2 text-[10px] font-bold uppercase tracking-wider text-green-400">
             {item.name}
           </span>
-          {item.cartItemId && onRemove && (
+          {onRemove && (
             <Button
               variant="ghost"
               size="icon-xs"
               className="shrink-0 text-red-400 hover:bg-red-900/40 hover:text-red-300"
-              onClick={() => onRemove(item.cartItemId!)}
+              onClick={onRemove}
               aria-label="Remove item"
             >
               <Trash2 />
@@ -80,7 +80,7 @@ export const CartItemRow = ({
         </div>
       </div>
 
-      {/* Body: image + details */}
+      {/* Body: image + price + stepper */}
       <div className="flex flex-row gap-3 px-3 py-3">
         {/* Product image */}
         <div className="shrink-0">
@@ -102,52 +102,33 @@ export const CartItemRow = ({
         </div>
 
         {/* Right section */}
-        <div className="flex flex-1 flex-col justify-between gap-2 min-w-0">
-          {/* Modifier tags */}
-          {item.modifiers.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {item.modifiers.map((mod) => (
-                <span
-                  key={`${mod.groupId}-${mod.optionId}`}
-                  className="rounded border border-zinc-500 bg-zinc-700 px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide text-zinc-300"
-                >
-                  {mod.name}
-                </span>
-              ))}
-            </div>
-          )}
+        <div className="flex flex-1 items-end justify-between gap-2 min-w-0">
+          {/* Price */}
+          <span className="text-sm font-bold text-green-800">${totalPrice}</span>
 
-          {/* Price + quantity stepper */}
-          <div className="flex items-center justify-between gap-2">
-            {/* Price */}
-            <span className="text-sm font-bold text-green-800">
-              ${totalPrice}
+          {/* Quantity stepper */}
+          <div className="flex items-center gap-1 rounded-lg border-2 border-zinc-600 bg-zinc-700 px-1 py-0.5">
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              className="text-green-400 hover:bg-zinc-600 hover:text-green-300"
+              onClick={onDecrement}
+              aria-label="Decrease quantity"
+            >
+              <Minus />
+            </Button>
+            <span className="min-w-[1.25rem] text-center text-xs font-bold text-green-400">
+              {item.totalQuantity}
             </span>
-
-            {/* Quantity stepper */}
-            <div className="flex items-center gap-1 rounded-lg border-2 border-zinc-600 bg-zinc-700 px-1 py-0.5">
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                className="text-green-400 hover:bg-zinc-600 hover:text-green-300"
-                onClick={() => item.cartItemId && onDecrement?.(item.cartItemId)}
-                aria-label="Decrease quantity"
-              >
-                <Minus />
-              </Button>
-              <span className="min-w-[1.25rem] text-center text-xs font-bold text-green-400">
-                {item.quantity}
-              </span>
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                className="text-green-400 hover:bg-zinc-600 hover:text-green-300"
-                onClick={() => item.cartItemId && onIncrement?.(item.cartItemId)}
-                aria-label="Increase quantity"
-              >
-                <Plus />
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              className="text-green-400 hover:bg-zinc-600 hover:text-green-300"
+              onClick={onIncrement}
+              aria-label="Increase quantity"
+            >
+              <Plus />
+            </Button>
           </div>
         </div>
       </div>

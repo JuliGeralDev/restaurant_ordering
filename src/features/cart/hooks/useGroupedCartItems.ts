@@ -4,6 +4,8 @@ export interface GroupedCartItem {
   productId: string;
   name: string;
   imageUrl?: string;
+  basePrice: number;
+  hasModifiers: boolean;
   totalQuantity: number;
 }
 
@@ -19,6 +21,8 @@ export function useGroupedCartItems(items: OrderItemDto[]): GroupedCartItem[] {
         productId: item.productId,
         name: item.name,
         imageUrl: item.imageUrl,
+        basePrice: item.basePrice,
+        hasModifiers: item.modifiers.length > 0,
         totalQuantity: item.quantity,
       });
     }
