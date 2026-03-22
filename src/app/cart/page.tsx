@@ -22,7 +22,17 @@ export default function CartPage() {
 
   const handleIncrement = (item: GroupedCartItem) => {
     if (item.hasModifiers) {
-      setModalProduct(item);
+      // Re-add with the exact same modifiers — no modal needed
+      addToCart(
+        item.productId,
+        1,
+        item.modifiers.map((m) => ({
+          groupId: m.groupId,
+          optionId: m.optionId,
+          name: m.name,
+          price: m.price.amount,
+        })),
+      );
     } else {
       addToCart(item.productId, 1);
     }

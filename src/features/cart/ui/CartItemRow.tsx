@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { Trash2, Minus, Plus } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
+import { QuantityStepper } from "@/shared/ui/QuantityStepper";
 import type { GroupedCartItem } from "@/features/cart/hooks/useGroupedCartItems";
 
 interface CartItemRowProps {
@@ -126,29 +127,13 @@ export const CartItemRow = ({
             <span className="text-sm font-bold text-green-800">${totalPrice}</span>
 
             {/* Quantity stepper */}
-          <div className="flex items-center gap-1 rounded-lg border-2 border-zinc-600 bg-zinc-700 px-1 py-0.5">
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              className="text-green-400 hover:bg-zinc-600 hover:text-green-300"
-              onClick={onDecrement}
-              aria-label="Decrease quantity"
-            >
-              <Minus />
-            </Button>
-            <span className="min-w-[1.25rem] text-center text-xs font-bold text-green-400">
-              {item.totalQuantity}
-            </span>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              className="text-green-400 hover:bg-zinc-600 hover:text-green-300"
-              onClick={onIncrement}
-              aria-label="Increase quantity"
-            >
-              <Plus />
-            </Button>
-          </div>
+            <QuantityStepper
+              quantity={item.totalQuantity}
+              onChange={(newQty) => {
+                if (newQty > item.totalQuantity) onIncrement();
+                else onDecrement?.();
+              }}
+            />
           </div>
         </div>
       </div>
