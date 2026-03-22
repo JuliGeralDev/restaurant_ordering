@@ -1,18 +1,55 @@
-export interface MenuItemDto {
-  id: number | string;
+export interface ModifierOptionDto {
   name: string;
-  description?: string;
   price: number;
+}
+
+export interface ModifierGroupDto {
+  required: boolean;
+  max?: number;
+  options: Record<string, ModifierOptionDto>;
+}
+
+export interface ModifiersDto {
+  protein?: ModifierGroupDto;
+  toppings?: ModifierGroupDto;
+  sauces?: ModifierGroupDto;
+}
+
+export interface MenuItemDto {
+  productId: string;
+  name: string;
+  description: string;
   imageUrl?: string;
-  category?: string;
+  basePrice: number;
+  createdAt: string;
+  updatedAt: string;
+  modifiers?: ModifiersDto;
 }
 
 export type GetMenuResponse = MenuItemDto[];
 
+
+export interface ModifierOption {
+  id: string;
+  name: string;
+  price: number;
+}
+
+export interface ModifierGroup {
+  required: boolean;
+  max?: number;
+  options: ModifierOption[];
+}
+
 export interface MenuItem {
-  id: number | string;
+  id: string;
   name: string;
   description: string;
-  price: number;
   imageUrl: string | null;
+  price: number;
+  modifiers?: {
+    protein?: ModifierGroup;
+    toppings?: ModifierGroup;
+    sauces?: ModifierGroup;
+  };
 }
