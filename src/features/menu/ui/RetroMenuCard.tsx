@@ -131,7 +131,7 @@ export const RetroMenuCard = ({
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex flex-col gap-3 p-3">
-          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border-[6px] border-zinc-700 bg-black shadow-2xl shadow-black/50">
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border-6 border-zinc-700 bg-black shadow-2xl shadow-black/50">
             <img
               src={image}
               alt={name}
@@ -142,9 +142,9 @@ export const RetroMenuCard = ({
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
             {isHovered && description && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center">
-                <p className="text-[10px] leading-5 text-green-400">{description}</p>
+                <p className="text-sm leading-5 text-green-400">{description}</p>
                 {productHasModifiers && (
-                  <p className="text-[8px] leading-4 text-yellow-400">
+                  <p className="text-xs leading-4 text-yellow-400">
                     You must choose at least one add-on
                   </p>
                 )}

@@ -5,6 +5,7 @@ import { ChevronRight, X } from "lucide-react";
 
 import type { ModifierGroup, Modifiers } from "../menu.types";
 import { CardConsola } from "@/shared/ui/CardConsola";
+import { Button } from "@/shared/ui/button";
 
 const MODIFIER_LABELS: Record<string, string> = {
   protein: "PROTEIN",
@@ -115,7 +116,7 @@ export const RetroModifiersModal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
       <CardConsola
         title={productName}
-        className="w-full max-w-lg"
+        className="w-full max-w-lg max-h-[calc(100vh-2rem)] flex flex-col"
         headerAction={
           <button
             onClick={onClose}
@@ -125,15 +126,15 @@ export const RetroModifiersModal = ({
           </button>
         }
       >
-        <div className="m-3 overflow-hidden rounded-2xl border-[6px] border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
+        <div className="m-3 flex flex-1 flex-col min-h-0 overflow-hidden rounded-2xl border-6 border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
           {/* Price header */}
           <div className="border-b-4 border-zinc-700 px-4 py-3 text-center">
-            <p className="text-[8px] text-zinc-500">TOTAL</p>
-            <p className="mt-1 text-2xl font-bold text-green-400 shadow-[0_0_12px_rgba(74,222,128,0.4)]">
+            <p className="text-sm text-zinc-500">TOTAL</p>
+            <p className="mt-1 text-xl font-bold text-green-400 shadow-[0_0_12px_rgba(74,222,128,0.4)]">
               {formatPrice(runningTotal)}
             </p>
             {quantity > 1 && (
-              <p className="mt-0.5 text-[7px] text-zinc-500">
+              <p className="mt-1 text-[10px] text-yellow-500">
                 item {currentStep + 1} of {quantity} &middot; {formatPrice(basePrice + additionalPriceCurrent)} each
               </p>
             )}
@@ -158,22 +159,22 @@ export const RetroModifiersModal = ({
           )}
 
           {/* Modifier groups */}
-          <div className="max-h-56 space-y-4 overflow-y-auto p-3">
+          <div className="flex-1 min-h-0 space-y-4 overflow-y-auto p-3">
             {groups.map(([groupKey, group]) => {
               const sel = currentSelected[groupKey];
               return (
                 <div key={groupKey}>
                   <div className="mb-2 flex items-center gap-2">
-                    <span className="text-[8px] text-green-400">
+                    <span className="text-xs text-green-400">
                       {MODIFIER_LABELS[groupKey] ?? groupKey.toUpperCase()}
                     </span>
                     {group.required && (
-                      <span className="rounded bg-red-700 px-1.5 py-0.5 text-[6px] text-white">
+                      <span className="rounded bg-red-700 px-1.5 py-0.5 text-[8px] text-white">
                         REQUIRED
                       </span>
                     )}
                     {group.max && (
-                      <span className="rounded bg-zinc-700 px-1.5 py-0.5 text-[6px] text-zinc-400">
+                      <span className="rounded bg-zinc-700 px-1.5 py-0.5 text-[8px] text-zinc-400">
                         MAX {group.max}
                       </span>
                     )}
@@ -205,10 +206,10 @@ export const RetroModifiersModal = ({
                                 <span className="text-[8px] font-bold leading-none text-zinc-900">x</span>
                               )}
                             </div>
-                            <span className="text-[8px] leading-4">{option.name}</span>
+                            <span className="text-xs leading-4">{option.name}</span>
                           </div>
                           {option.price > 0 && (
-                            <span className="ml-2 flex-shrink-0 text-[8px] text-yellow-400">
+                            <span className="ml-2 flex-shrink-0 text-xs text-yellow-400">
                               +{formatPrice(option.price)}
                             </span>
                           )}
@@ -223,19 +224,17 @@ export const RetroModifiersModal = ({
         </div>
 
         {/* Action buttons */}
-        <div className="mx-3 mb-3 rounded-2xl border-4 border-zinc-400 bg-zinc-300 p-3 shadow-inner">
+        <div className="mx-3 mb-3 flex-shrink-0 rounded-2xl border-4 border-zinc-400 bg-zinc-300 p-3 shadow-inner">
           <div className="flex gap-2">
-            <button
-              type="button"
+            <Button
               onClick={onClose}
               className="flex-1 rounded-xl border-4 border-zinc-600 bg-zinc-500 py-2.5 text-[8px] text-white transition-colors hover:bg-zinc-600"
             >
               CANCEL
-            </button>
+            </Button>
 
             {isLastStep ? (
-              <button
-                type="button"
+              <Button
                 onClick={handleConfirm}
                 disabled={!isCurrentStepValid}
                 className={`flex-1 rounded-xl border-4 py-2.5 text-[8px] transition-all ${
@@ -245,10 +244,9 @@ export const RetroModifiersModal = ({
                 }`}
               >
                 ADD TO CART
-              </button>
+              </Button>
             ) : (
-              <button
-                type="button"
+              <Button
                 onClick={handleNext}
                 disabled={!isCurrentStepValid}
                 className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl border-4 py-2.5 text-[8px] transition-all ${
@@ -258,7 +256,7 @@ export const RetroModifiersModal = ({
                 }`}
               >
                 NEXT <ChevronRight className="h-3.5 w-3.5" />
-              </button>
+              </Button>
             )}
           </div>
         </div>
