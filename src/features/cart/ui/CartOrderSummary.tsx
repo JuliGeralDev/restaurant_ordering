@@ -4,9 +4,11 @@ import { ShoppingBag } from "lucide-react";
 import { CardConsola } from "@/shared/ui/CardConsola";
 import { Button } from "@/shared/ui/button";
 import type { OrderPricingDto } from "@/features/cart/cart.types";
+import type { GroupedCartItem } from "@/features/cart/hooks/useGroupedCartItems";
 
 interface CartOrderSummaryProps {
   pricing: OrderPricingDto;
+  items?: GroupedCartItem[];
   onConfirm?: () => void;
   isLoading?: boolean;
 }
@@ -40,11 +42,46 @@ const PricingRow = ({
 
 export const CartOrderSummary = ({
   pricing,
+  items,
   onConfirm,
   isLoading = false,
 }: CartOrderSummaryProps) => (
   <CardConsola title="PAYMENT">
     <div className="flex flex-col gap-3 bg-zinc-800 p-4">
+      {/* Items list */}
+      {items && items.length > 0 && (
+        <div className="flex flex-col gap-1.5 rounded-lg border-2 border-zinc-700 bg-zinc-900 px-3 py-2.5">
+          {items.map((item) => (
+            <div key={item.key} className="flex flex-col gap-0.5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] font-semibold text-zinc-200">
+                  {item.totalQuantity}× {item.name}
+                </span>
+                <span className="shrink-0 text-[11px] font-bold tabular-nums text-green-400">
+                  ${(item.basePrice * item.totalQuantity).toLocaleString("es-CO")}
+                </span>
+              </div>
+              {item.modifiers.length > 0 && (
+                <ul className="ml-3 flex flex-col gap-0.5">
+                  {item.modifiers.map((mod) => (
+                    <li key={mod.optionId} className="flex items-center justify-between gap-2">
+                      <span className="text-[9px] uppercase tracking-wide text-zinc-500">
+                        + {mod.name}
+                      </span>
+                      {mod.price.amount > 0 && (
+                        <span className="text-[9px] tabular-nums text-yellow-500">
+                          +${mod.price.amount.toLocaleString("es-CO")}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Pricing breakdown */}
       <div className="flex flex-col gap-2 rounded-lg border-2 border-zinc-700 bg-zinc-900 px-3 py-2.5">
         <PricingRow label="Subtotal" value={pricing.subtotal} />

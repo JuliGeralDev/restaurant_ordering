@@ -65,7 +65,7 @@ export default function CartPage() {
 
           {/* Right: order summary — 40% */}
           <div className="w-full lg:w-[40%] lg:sticky lg:top-20">
-            <CartOrderSummary pricing={data.pricing} />
+            <CartOrderSummary pricing={data.pricing} items={grouped} />
           </div>
         </div>
       )}

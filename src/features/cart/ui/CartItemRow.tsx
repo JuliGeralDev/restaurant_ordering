@@ -102,11 +102,30 @@ export const CartItemRow = ({
         </div>
 
         {/* Right section */}
-        <div className="flex flex-1 items-end justify-between gap-2 min-w-0">
-          {/* Price */}
-          <span className="text-sm font-bold text-green-800">${totalPrice}</span>
+        <div className="flex flex-1 flex-col justify-between gap-2 min-w-0">
+          {/* Modifiers */}
+          {item.modifiers.length > 0 && (
+            <ul className="flex flex-col gap-0.5">
+              {item.modifiers.map((mod) => (
+                <li key={mod.optionId} className="flex items-center justify-between gap-1">
+                  <span className="text-[9px] uppercase tracking-wide text-zinc-600">
+                    + {mod.name}
+                  </span>
+                  {mod.price.amount > 0 && (
+                    <span className="shrink-0 text-[9px] tabular-nums text-yellow-700">
+                      +${mod.price.amount.toLocaleString("es-CO")}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
 
-          {/* Quantity stepper */}
+          <div className="flex items-center justify-between gap-2">
+            {/* Price */}
+            <span className="text-sm font-bold text-green-800">${totalPrice}</span>
+
+            {/* Quantity stepper */}
           <div className="flex items-center gap-1 rounded-lg border-2 border-zinc-600 bg-zinc-700 px-1 py-0.5">
             <Button
               variant="ghost"
@@ -129,6 +148,7 @@ export const CartItemRow = ({
             >
               <Plus />
             </Button>
+          </div>
           </div>
         </div>
       </div>
