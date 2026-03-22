@@ -14,6 +14,12 @@ export interface AddToCartRequest {
   modifiers?: Modifier[];
 }
 
+export interface RemoveCartItemRequest {
+  orderId: string;
+  userId: string;
+  cartItemId: string;
+}
+
 // POST /cart/items — response types
 export interface CartItemDto {
   productId: string;

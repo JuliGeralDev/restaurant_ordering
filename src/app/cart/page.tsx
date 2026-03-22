@@ -5,6 +5,7 @@ import { ShoppingCart } from "lucide-react";
 import { useGetOrder } from "@/features/cart/hooks/useGetOrder";
 import { useGroupedCartItems, type GroupedCartItem } from "@/features/cart/hooks/useGroupedCartItems";
 import { useAddToCart } from "@/features/cart/hooks/useAddToCart";
+import { useRemoveCartItem } from "@/features/cart/hooks/useRemoveCartItem";
 import { useGetMenu } from "@/features/menu/hooks/useGetMenu";
 import { CartItemRow } from "@/features/cart/ui/CartItemRow";
 import { CartOrderSummary } from "@/features/cart/ui/CartOrderSummary";
@@ -14,11 +15,17 @@ export default function CartPage() {
   const { data } = useGetOrder();
   const { data: menuItems } = useGetMenu();
   const { addToCart } = useAddToCart();
+  const { removeCartItem } = useRemoveCartItem();
   const grouped = useGroupedCartItems(data?.items ?? [], true);
 
   const [modalProduct, setModalProduct] = useState<GroupedCartItem | null>(null);
 
   const isEmpty = !data || data.items.length === 0;
+
+  const handleDecrement = (item: GroupedCartItem) => {
+    const cartItemId = item.cartItemIds.at(-1);
+    if (cartItemId) removeCartItem(cartItemId);
+  };
 
   const handleIncrement = (item: GroupedCartItem) => {
     if (item.hasModifiers) {
@@ -63,13 +70,23 @@ export default function CartPage() {
       ) : (
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
           {/* Left: item list — 60% */}
-          <div className="flex w-full flex-col gap-4 lg:w-[60%]">
-            {grouped.map((item) => (
-              <CartItemRow
-                key={item.key}
-                item={item}
-                onIncrement={() => handleIncrement(item)}
-              />
+          <div className="flex w-full flex-col gap-6 lg:w-[60%]">
+            {Object.values(
+              grouped.reduce<Record<string, GroupedCartItem[]>>((acc, item) => {
+                (acc[item.productId] ??= []).push(item);
+                return acc;
+              }, {})
+            ).map((variants) => (
+              <div key={variants[0].productId} className="flex flex-col gap-2">
+                {variants.map((item) => (
+                  <CartItemRow
+                    key={item.key}
+                    item={item}
+                    onIncrement={() => handleIncrement(item)}
+                    onDecrement={() => handleDecrement(item)}
+                  />
+                ))}
+              </div>
             ))}
           </div>
 

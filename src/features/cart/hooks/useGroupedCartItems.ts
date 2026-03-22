@@ -9,6 +9,7 @@ export interface GroupedCartItem {
   modifiers: OrderModifierDto[];
   hasModifiers: boolean;
   totalQuantity: number;
+  cartItemIds: string[];
 }
 
 function buildKey(productId: string, modifiers: OrderModifierDto[]): string {
@@ -29,6 +30,7 @@ export function useGroupedCartItems(items: OrderItemDto[], groupByModifiers = fa
     const existing = map.get(key);
     if (existing) {
       existing.totalQuantity += item.quantity;
+      if (item.cartItemId) existing.cartItemIds.push(item.cartItemId);
     } else {
       map.set(key, {
         key,
@@ -39,6 +41,7 @@ export function useGroupedCartItems(items: OrderItemDto[], groupByModifiers = fa
         modifiers: item.modifiers,
         hasModifiers: item.modifiers.length > 0,
         totalQuantity: item.quantity,
+        cartItemIds: item.cartItemId ? [item.cartItemId] : [],
       });
     }
   }
