@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetMenu } from "../hooks/useGetMenu";
-import { RetroMenuCard } from "@/components/ui/RetroMenuCard"
+import { RetroMenuCard } from "./RetroMenuCard";
 
 
 export const Menu = () => {
@@ -25,7 +25,7 @@ export const Menu = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-4xl font-bold mb-8 text-center">Our Menu</h1>
+            <h1 className="text-4xl font-bold mb-8 text-center font-press-start">Our Menu</h1>
             
             {/* Grid responsive: 1 columna en móvil, 2 en tablet, 3 en desktop */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10  ">

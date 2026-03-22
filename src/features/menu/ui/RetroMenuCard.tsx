@@ -1,8 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent } from "@/shared/ui/card";
 
 interface RetroMenuCardProps {
   name: string;
@@ -28,8 +29,7 @@ const D_PAD_PARTS = [
 ] as const;
 
 const formatPrice = (price: number) => {
-  const priceInPesos = price;
-  return `$${priceInPesos.toLocaleString('es-CO')}`;
+  return `$${(price / 100).toFixed(2)}`;
 };
 
 const SpeakerGrille = ({
@@ -115,20 +115,20 @@ export const RetroMenuCard = ({
         {name}
       </div>
 
-      <CardContent className="p-3 flex flex-col gap-3">
-        <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden border-[6px] border-zinc-700 bg-black shadow-2xl shadow-black/50">
-          <img src={image} alt={name} className="w-full h-full object-cover" />
+      <CardContent className="flex flex-col gap-3 p-3">
+        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border-[6px] border-zinc-700 bg-black shadow-2xl shadow-black/50">
+          <img src={image} alt={name} className="h-full w-full object-cover" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
         </div>
 
-        <div className="bg-zinc-300 rounded-2xl p-4 shadow-inner border-4 border-zinc-400">
+        <div className="rounded-2xl border-4 border-zinc-400 bg-zinc-300 p-4 shadow-inner">
           <PriceDisplay price={price} />
 
           <div className="flex items-center justify-between px-1">
             <DPad />
 
             {hasModifiers && (
-              <span className="font-press-start text-[6px] font-bold tracking-widest bg-zinc-600 rounded px-2 py-0.5 text-green-400 shadow-md">
+              <span className="rounded bg-zinc-600 px-2 py-0.5 font-press-start text-[6px] font-bold tracking-widest text-green-400 shadow-md">
                 + OPTIONS
               </span>
             )}

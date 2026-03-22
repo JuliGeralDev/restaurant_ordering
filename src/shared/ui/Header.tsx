@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { ShoppingCart, UtensilsCrossed, ClipboardList } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/shared/ui/button";
+import { Badge } from "@/shared/ui/badge";
 
 export const Header = () => {
   // TODO: Replace with actual cart count from state/context
