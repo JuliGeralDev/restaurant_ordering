@@ -6,8 +6,11 @@ export const toOrderDTO = (order: Order) => {
     userId: order.userId,
     status: order.status,
     items: order.items.map((item) => ({
+      cartItemId: item.cartItemId,
       productId: item.productId,
       name: item.name,
+      description: item.description,
+      imageUrl: item.imageUrl,
       basePrice: item.basePrice.value,
       quantity: item.quantity,
       modifiers: item.modifiers,

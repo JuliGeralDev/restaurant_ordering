@@ -29,6 +29,8 @@ export class CartItemService {
       cartItemId: randomUUID(),
       productId: product.productId,
       name: product.name,
+      description: product.description,
+      imageUrl: product.imageUrl,
       basePrice,
       quantity,
       modifiers: resolvedModifiers,

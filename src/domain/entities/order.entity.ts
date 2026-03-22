@@ -10,8 +10,11 @@ export interface OrderItemModifier {
 }
 
 export interface OrderItem {
+  cartItemId: string; // Unique identifier for this cart item instance
   productId: string;
   name: string;
+  description?: string;
+  imageUrl?: string;
   basePrice: Money;
   quantity: number;
   modifiers: OrderItemModifier[];

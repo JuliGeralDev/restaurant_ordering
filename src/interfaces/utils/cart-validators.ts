@@ -6,6 +6,7 @@ interface CartBody {
   orderId?: string;
   userId?: string;
   productId?: string;
+  cartItemId?: string;
   quantity?: unknown;
   modifiers?: any[];
 }
@@ -18,10 +19,18 @@ export interface ValidatedCartMutationInput {
   modifiers: ModifierSelectionInput[];
 }
 
+export interface ValidatedCartUpdateInput {
+  orderId: string;
+  userId: string;
+  cartItemId: string;
+  quantity: number;
+  modifiers: ModifierSelectionInput[];
+}
+
 export interface ValidatedCartRemovalInput {
   orderId: string;
   userId: string;
-  productId: string;
+  cartItemId: string;
 }
 
 export function validateAddItemRequest(body: CartBody): ValidatedCartMutationInput {
@@ -30,22 +39,22 @@ export function validateAddItemRequest(body: CartBody): ValidatedCartMutationInp
 
   return {
     orderId: body.orderId || undefined,
-    userId: body.userId,
-    productId: body.productId,
+    userId: body.userId!,
+    productId: body.productId!,
     quantity: validator.isPositiveInteger('quantity', body.quantity),
     modifiers: normalizeModifiers(body.modifiers),
   };
 }
 
-export function validateUpdateItemRequest(body: CartBody): ValidatedCartMutationInput {
+export function validateUpdateItemRequest(body: CartBody): ValidatedCartUpdateInput {
   validator.required('orderId', body.orderId);
   validator.required('userId', body.userId);
-  validator.required('productId', body.productId);
+  validator.required('cartItemId', body.cartItemId);
 
   return {
-    orderId: body.orderId,
-    userId: body.userId,
-    productId: body.productId,
+    orderId: body.orderId!,
+    userId: body.userId!,
+    cartItemId: body.cartItemId!,
     quantity: validator.isPositiveInteger('quantity', body.quantity),
     modifiers: normalizeModifiers(body.modifiers),
   };
@@ -54,12 +63,12 @@ export function validateUpdateItemRequest(body: CartBody): ValidatedCartMutation
 export function validateRemoveItemRequest(body: CartBody): ValidatedCartRemovalInput {
   validator.required('orderId', body.orderId);
   validator.required('userId', body.userId);
-  validator.required('productId', body.productId);
+  validator.required('cartItemId', body.cartItemId);
 
   return {
-    orderId: body.orderId,
-    userId: body.userId,
-    productId: body.productId,
+    orderId: body.orderId!,
+    userId: body.userId!,
+    cartItemId: body.cartItemId!,
   };
 }
 

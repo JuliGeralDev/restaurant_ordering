@@ -36,8 +36,11 @@ export class DynamoOrderRepository implements OrderRepository {
       userId: data.userId,
       status: data.status,
       items: data.items.map((item: any) => ({
+        cartItemId: item.cartItemId,
         productId: item.productId,
         name: item.name,
+        description: item.description,
+        imageUrl: item.imageUrl,
         basePrice: new Money(item.basePrice.amount),
         quantity: item.quantity,
         modifiers: item.modifiers.map((mod: any) => ({
