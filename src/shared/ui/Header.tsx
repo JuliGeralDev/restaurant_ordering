@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { ShoppingCart, UtensilsCrossed, ClipboardList } from "lucide-react";
 import { Button } from "@/shared/ui/button";
-import { Badge } from "@/shared/ui/badge";
+import { useCartStore } from "@/shared/stores/cartStore";
 
 export const Header = () => {
-  // TODO: Replace with actual cart count from state/context
-  const cartItemsCount = 0;
+  const orderData = useCartStore((s) => s.orderData);
+  const cartItemsCount = orderData?.items.reduce((sum, i) => sum + i.quantity, 0) ?? 0;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -34,19 +34,16 @@ export const Header = () => {
             </Button>
           </Link>
 
-          <Link href="/cart">
-            <Button variant="ghost" size="sm" className="relative">
+          <Link href="/cart" className="relative">
+            <Button variant="ghost" size="sm">
               <ShoppingCart className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Cart</span>
-              {cartItemsCount > 0 && (
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                >
-                  {cartItemsCount}
-                </Badge>
-              )}
             </Button>
+            {cartItemsCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-green-600 text-[7px] font-bold text-white shadow p-1">
+                {cartItemsCount > 99 ? "99+" : cartItemsCount}
+              </span>
+            )}
           </Link>
         </nav>
       </div>

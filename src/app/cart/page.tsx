@@ -70,24 +70,17 @@ export default function CartPage() {
       ) : (
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
           {/* Left: item list — 60% */}
-          <div className="flex w-full flex-col gap-6 lg:w-[60%]">
-            {Object.values(
-              grouped.reduce<Record<string, GroupedCartItem[]>>((acc, item) => {
-                (acc[item.productId] ??= []).push(item);
-                return acc;
-              }, {})
-            ).map((variants) => (
-              <div key={variants[0].productId} className="flex flex-col gap-2">
-                {variants.map((item) => (
-                  <CartItemRow
-                    key={item.key}
-                    item={item}
-                    onIncrement={() => handleIncrement(item)}
-                    onDecrement={() => handleDecrement(item)}
-                  />
-                ))}
-              </div>
-            ))}
+          <div className="flex w-full flex-col gap-4 lg:w-[60%]">
+            {[...grouped]
+              .sort((a, b) => a.productId.localeCompare(b.productId))
+              .map((item) => (
+                <CartItemRow
+                  key={item.key}
+                  item={item}
+                  onIncrement={() => handleIncrement(item)}
+                  onDecrement={() => handleDecrement(item)}
+                />
+              ))}
           </div>
 
           {/* Right: order summary — 40% */}

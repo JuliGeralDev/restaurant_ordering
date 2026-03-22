@@ -51,7 +51,7 @@ export const CartOrderSummary = ({
       {/* Items list */}
       {items && items.length > 0 && (
         <div className="flex flex-col gap-1.5 rounded-lg border-2 border-zinc-700 bg-zinc-900 px-3 py-2.5">
-          {items.map((item) => (
+          {[...items].sort((a, b) => a.productId.localeCompare(b.productId)).map((item) => (
             <div key={item.key} className="flex flex-col gap-0.5">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[11px] font-semibold text-zinc-200">
