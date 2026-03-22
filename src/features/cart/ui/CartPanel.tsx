@@ -20,7 +20,7 @@ export const CartPanel = () => {
   if (pathname === "/cart") return null;
 
   return (
-    <aside className="fixed right-0 top-0 z-30 hidden h-screen w-52 flex-col border-l-[6px] border-zinc-500 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 shadow-[-4px_0_24px_rgba(0,0,0,0.4)] xl:flex">
+    <aside className="hidden xl:flex h-screen w-52 flex-shrink-0 sticky top-0 flex-col border-l-[6px] border-zinc-500 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 shadow-[-4px_0_24px_rgba(0,0,0,0.4)]">
       {/* Left grille decoration */}
       <div className="flex flex-col justify-center gap-0.5 px-0.5 py-2 absolute left-0 top-1/2 -translate-y-1/2">
         {Array.from({ length: 10 }).map((_, i) => (
