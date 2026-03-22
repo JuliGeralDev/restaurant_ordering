@@ -4,36 +4,9 @@ import { ShoppingCart } from "lucide-react";
 
 import { Button } from "@/shared/ui/button";
 import { useGetOrder } from "../hooks/useGetOrder";
-import type { OrderItemDto } from "../cart.types";
-
+import { CartItemPanel } from "./CartItemPanel";
 const formatPrice = (price: number) => `$${price.toLocaleString("es-CO")}`;
 
-const CartItem = ({ item }: { item: OrderItemDto }) => (
-  <div className="flex flex-col items-center gap-1.5 rounded-xl border-2 border-zinc-700 bg-zinc-800 p-2">
-    {/* Image */}
-    <div className="relative h-14 w-full overflow-hidden rounded-lg border-2 border-zinc-700 bg-zinc-900">
-      {item.imageUrl ? (
-        <img
-          src={item.imageUrl}
-          alt={item.name}
-          className="h-full w-full object-cover brightness-90"
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center">
-          <span className="text-xl font-bold text-zinc-600">
-            {item.name.charAt(0).toUpperCase()}
-          </span>
-        </div>
-      )}
-    </div>
-    {/* Name */}
-    <p className="line-clamp-1 w-full text-center text-[7px] leading-3 text-green-400">
-      {item.name}
-    </p>
-    {/* Quantity */}
-    <p className="text-[7px] text-zinc-500">×{item.quantity}</p>
-  </div>
-);
 
 export const CartPanel = () => {
   const { data } = useGetOrder();
@@ -65,7 +38,7 @@ export const CartPanel = () => {
           </div>
         ) : (
           data!.items.map((item, i) => (
-            <CartItem key={i} item={item} />
+            <CartItemPanel key={i} item={item} />
           ))
         )}
       </div>
@@ -79,8 +52,8 @@ export const CartPanel = () => {
             {formatPrice(data.pricing.total)}
           </p>
         </div>
-        <Button className="w-full border-2 border-purple-900 bg-purple-600 text-[8px] text-white hover:bg-purple-700 active:scale-95">
-          <ShoppingCart className="h-3 w-3" />
+        <Button className="p-5 flex w-full border-2 border-purple-900 bg-purple-600  text-white hover:bg-purple-700 active:scale-95">
+          <ShoppingCart className="h-8 w-8" />
           IR AL CARRITO
         </Button>
       </div>
