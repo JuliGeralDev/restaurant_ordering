@@ -49,8 +49,11 @@ export interface OrderModifierDto {
 }
 
 export interface OrderItemDto {
+  cartItemId?: string;
   productId: string;
   name: string;
+  description?: string;
+  imageUrl?: string;
   basePrice: number;
   quantity: number;
   modifiers: OrderModifierDto[];

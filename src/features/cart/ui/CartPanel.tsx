@@ -10,14 +10,27 @@ const formatPrice = (price: number) => `$${price.toLocaleString("es-CO")}`;
 
 const CartItem = ({ item }: { item: OrderItemDto }) => (
   <div className="flex flex-col items-center gap-1.5 rounded-xl border-2 border-zinc-700 bg-zinc-800 p-2">
-    <div className="flex h-12 w-full items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-900">
-      <span className="text-xl font-bold text-zinc-600">
-        {item.name.charAt(0).toUpperCase()}
-      </span>
+    {/* Image */}
+    <div className="relative h-14 w-full overflow-hidden rounded-lg border-2 border-zinc-700 bg-zinc-900">
+      {item.imageUrl ? (
+        <img
+          src={item.imageUrl}
+          alt={item.name}
+          className="h-full w-full object-cover brightness-90"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center">
+          <span className="text-xl font-bold text-zinc-600">
+            {item.name.charAt(0).toUpperCase()}
+          </span>
+        </div>
+      )}
     </div>
-    <p className="line-clamp-2 w-full text-center text-[7px] leading-3 text-green-400">
+    {/* Name */}
+    <p className="line-clamp-1 w-full text-center text-[7px] leading-3 text-green-400">
       {item.name}
     </p>
+    {/* Quantity */}
     <p className="text-[7px] text-zinc-500">×{item.quantity}</p>
   </div>
 );
@@ -25,10 +38,10 @@ const CartItem = ({ item }: { item: OrderItemDto }) => (
 export const CartPanel = () => {
   const { data } = useGetOrder();
 
-  if (!data || data.items.length === 0) return null;
+  const isEmpty = !data || data.items.length === 0;
 
   return (
-    <aside className="fixed right-0 top-0 z-30 flex h-screen w-52 flex-col border-l-[6px] border-zinc-500 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 shadow-[-4px_0_24px_rgba(0,0,0,0.4)]">
+    <aside className="fixed right-0 top-0 z-30 hidden h-screen w-52 flex-col border-l-[6px] border-zinc-500 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 shadow-[-4px_0_24px_rgba(0,0,0,0.4)] xl:flex">
       {/* Left grille decoration */}
       <div className="flex flex-col justify-center gap-0.5 px-0.5 py-2 absolute left-0 top-1/2 -translate-y-1/2">
         {Array.from({ length: 10 }).map((_, i) => (
@@ -41,14 +54,24 @@ export const CartPanel = () => {
         MY ORDER
       </div>
 
-      {/* Items list — scrollable */}
+      {/* Items list — scrollable / empty state */}
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-3 min-h-0">
-        {data.items.map((item, i) => (
-          <CartItem key={i} item={item} />
-        ))}
+        {isEmpty ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+            <ShoppingCart className="h-10 w-10 text-zinc-500" />
+            <p className="text-[7px] leading-4 text-zinc-500">
+              SELECCIONA UN PRODUCTO PARA VERLO AQUÍ
+            </p>
+          </div>
+        ) : (
+          data!.items.map((item, i) => (
+            <CartItem key={i} item={item} />
+          ))
+        )}
       </div>
 
-      {/* Total + CTA — pinned at bottom */}
+      {/* Total + CTA — pinned at bottom, only when there's data */}
+      {!isEmpty && (
       <div className="flex-shrink-0 border-t-4 border-zinc-700 p-3 flex flex-col gap-2">
         <div className="rounded-xl border-4 border-zinc-700 bg-zinc-800 px-3 py-2 text-center shadow-inner">
           <p className="text-[7px] text-zinc-400">TOTAL</p>
@@ -61,6 +84,7 @@ export const CartPanel = () => {
           IR AL CARRITO
         </Button>
       </div>
+      )}
     </aside>
   );
 };

@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Press_Start_2P } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/shared/ui/Header";
 import { Footer } from "@/shared/ui/Footer";
+import { CartPanel } from "@/features/cart/ui/CartPanel";
+import { ContentWrapper } from "@/shared/ui/ContentWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,11 +35,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${pressStart.variable} antialiased flex flex-col min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} ${pressStart.variable} antialiased flex min-h-screen`}
       >
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <ContentWrapper>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </ContentWrapper>
+        <CartPanel />
       </body>
     </html>
   );
