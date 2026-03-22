@@ -9,7 +9,7 @@ export const Menu = () => {
     const { data, isLoading, error } = useGetMenu();
     const { addToCart, isLoading: isAddingToCart } = useAddToCart();
 
-    const handleAddToCart = async (productId: string, quantity: number, selectedModifiers?: Record<string, string[]>) => {
+    const handleAddToCart = async (productId: string, quantity: number, selectedModifiers?: Array<{type: string; value: string}>) => {
         try {
             await addToCart(productId, quantity, selectedModifiers);
         } catch (error) {

@@ -1,10 +1,15 @@
 // Request types
+export interface Modifier {
+  type: string;
+  value: string;
+}
+
 export interface AddToCartRequest {
   orderId?: string;
   userId: string;
   productId: string;
   quantity: number;
-  modifiers?: Record<string, string[]>;
+  modifiers?: Modifier[];
 }
 
 // Response types

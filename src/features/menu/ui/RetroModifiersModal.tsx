@@ -26,7 +26,7 @@ interface RetroModifiersModalProps {
   basePrice: number;
   quantity: number;
   modifiers: Modifiers;
-  onConfirm: (selected: Record<string, string[]>[]) => void;
+  onConfirm: (selected: Array<{type: string; value: string}>[]) => void;
 }
 
 const emptySelections = (): Record<string, Set<string>> => ({});
@@ -102,11 +102,13 @@ export const RetroModifiersModal = ({
   const handleConfirm = () => {
     if (!isCurrentStepValid) return;
     const payload = allSelections.map((sel) => {
-      const record: Record<string, string[]> = {};
-      for (const [key, set] of Object.entries(sel)) {
-        record[key] = Array.from(set);
+      const flat: Array<{type: string; value: string}> = [];
+      for (const [type, set] of Object.entries(sel)) {
+        for (const value of set) {
+          flat.push({ type, value });
+        }
       }
-      return record;
+      return flat;
     });
     onConfirm(payload);
     onClose();

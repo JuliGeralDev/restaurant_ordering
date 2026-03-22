@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { apiRequest } from "@/shared/lib/api/httpClient";
 import { useCartStore } from "@/shared/stores/cartStore";
-import type { AddToCartRequest, AddToCartResponse } from "../cart.types";
+import type { AddToCartRequest, AddToCartResponse, Modifier } from "../cart.types";
 
 const CART_ITEMS_ENDPOINT = "/cart/items";
 
@@ -12,7 +12,7 @@ export function useAddToCart() {
   const [error, setError] = useState<string | null>(null);
   const { orderId, userId, setOrderId } = useCartStore();
 
-  const addToCart = async (productId: string, quantity: number = 1, selectedModifiers?: Record<string, string[]>) => {
+  const addToCart = async (productId: string, quantity: number = 1, selectedModifiers?: Modifier[]) => {
     setIsLoading(true);
     setError(null);
 
