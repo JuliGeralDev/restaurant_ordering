@@ -26,10 +26,8 @@ interface RetroModifiersModalProps {
   basePrice: number;
   quantity: number;
   modifiers: Modifiers;
-  onConfirm: (selected: Array<{groupId: string; optionId: string; name: string; price: number}>[]) => void;
+  onAddItem: (modifiers: Array<{groupId: string; optionId: string; name: string; price: number}>) => void;
 }
-
-const emptySelections = (): Record<string, Set<string>> => ({});
 
 export const RetroModifiersModal = ({
   isOpen,
@@ -38,22 +36,23 @@ export const RetroModifiersModal = ({
   basePrice,
   quantity,
   modifiers,
-  onConfirm,
+  onAddItem,
 }: RetroModifiersModalProps) => {
-  const [allSelections, setAllSelections] = useState<Record<string, Set<string>>[]>([]);
+  const [currentSelected, setCurrentSelected] = useState<Record<string, Set<string>>>({});
   const [currentStep, setCurrentStep] = useState(0);
+  const [confirmedTotal, setConfirmedTotal] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
-      setAllSelections(Array.from({ length: quantity }, emptySelections));
+      setCurrentSelected({});
       setCurrentStep(0);
+      setConfirmedTotal(0);
     }
-  }, [isOpen, quantity]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const groups = getModifierGroups(modifiers);
-  const currentSelected = allSelections[currentStep] ?? {};
 
   const getExtraPrice = (selection: Record<string, Set<string>>) =>
     groups.reduce((total, [key, group]) => {
@@ -64,12 +63,8 @@ export const RetroModifiersModal = ({
         .reduce((sum, opt) => sum + opt.price, 0);
     }, 0);
 
-  const runningTotal = allSelections.reduce((sum, sel, i) => {
-    if (i > currentStep) return sum;
-    return sum + basePrice + getExtraPrice(sel);
-  }, 0);
-
   const additionalPriceCurrent = getExtraPrice(currentSelected);
+  const runningTotal = confirmedTotal + basePrice + additionalPriceCurrent;
 
   const isCurrentStepValid = groups.every(([key, group]) => {
     if (!group.required) return true;
@@ -79,40 +74,41 @@ export const RetroModifiersModal = ({
   const isLastStep = currentStep === quantity - 1;
 
   const toggle = (groupKey: string, optionId: string, max?: number) => {
-    setAllSelections((prev) => {
-      const next = prev.map((sel, i) => (i === currentStep ? { ...sel } : sel));
-      const current = new Set(prev[currentStep]?.[groupKey] ?? []);
-
+    setCurrentSelected((prev) => {
+      const current = new Set(prev[groupKey] ?? []);
       if (current.has(optionId)) {
         current.delete(optionId);
       } else {
         if (max === 1) current.clear();
         if (!max || current.size < max) current.add(optionId);
       }
-
-      next[currentStep] = { ...next[currentStep], [groupKey]: current };
-      return next;
+      return { ...prev, [groupKey]: current };
     });
   };
 
+  const buildFlat = () => {
+    const flat: Array<{groupId: string; optionId: string; name: string; price: number}> = [];
+    for (const [groupId, set] of Object.entries(currentSelected)) {
+      const group = modifiers[groupId as keyof typeof modifiers];
+      for (const optionId of set) {
+        const option = group?.options.find((o) => o.id === optionId);
+        flat.push({ groupId, optionId, name: option?.name ?? optionId, price: option?.price ?? 0 });
+      }
+    }
+    return flat;
+  };
+
   const handleNext = () => {
-    if (isCurrentStepValid) setCurrentStep((s) => s + 1);
+    if (!isCurrentStepValid) return;
+    onAddItem(buildFlat());
+    setConfirmedTotal((t) => t + basePrice + additionalPriceCurrent);
+    setCurrentSelected({});
+    setCurrentStep((s) => s + 1);
   };
 
   const handleConfirm = () => {
     if (!isCurrentStepValid) return;
-    const payload = allSelections.map((sel) => {
-      const flat: Array<{groupId: string; optionId: string; name: string; price: number}> = [];
-      for (const [groupId, set] of Object.entries(sel)) {
-        const group = modifiers[groupId as keyof typeof modifiers];
-        for (const optionId of set) {
-          const option = group?.options.find((o) => o.id === optionId);
-          flat.push({ groupId, optionId, name: option?.name ?? optionId, price: option?.price ?? 0 });
-        }
-      }
-      return flat;
-    });
-    onConfirm(payload);
+    onAddItem(buildFlat());
     onClose();
   };
 
@@ -259,7 +255,7 @@ export const RetroModifiersModal = ({
                     : "cursor-not-allowed border-zinc-600 bg-zinc-500 text-zinc-400 opacity-60"
                 }`}
               >
-                NEXT <ChevronRight className="h-3.5 w-3.5" />
+                ADD & NEXT <ChevronRight className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>

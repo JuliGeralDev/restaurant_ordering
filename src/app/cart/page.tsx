@@ -14,7 +14,7 @@ export default function CartPage() {
   const { data } = useGetOrder();
   const { data: menuItems } = useGetMenu();
   const { addToCart } = useAddToCart();
-  const grouped = useGroupedCartItems(data?.items ?? []);
+  const grouped = useGroupedCartItems(data?.items ?? [], true);
 
   const [modalProduct, setModalProduct] = useState<GroupedCartItem | null>(null);
 
@@ -28,12 +28,9 @@ export default function CartPage() {
     }
   };
 
-  const handleModalConfirm = (
-    selections: Array<{ groupId: string; optionId: string; name: string; price: number }[]>
-  ) => {
+  const handleAddItem = (mods: Array<{ groupId: string; optionId: string; name: string; price: number }>) => {
     if (!modalProduct) return;
-    addToCart(modalProduct.productId, 1, selections[0] ?? []);
-    setModalProduct(null);
+    addToCart(modalProduct.productId, 1, mods);
   };
 
   const modalMenuItem = modalProduct
@@ -59,7 +56,7 @@ export default function CartPage() {
           <div className="flex w-full flex-col gap-4 lg:w-[60%]">
             {grouped.map((item) => (
               <CartItemRow
-                key={item.productId}
+                key={item.key}
                 item={item}
                 onIncrement={() => handleIncrement(item)}
               />
@@ -81,7 +78,7 @@ export default function CartPage() {
           basePrice={modalMenuItem.price}
           quantity={1}
           modifiers={modalMenuItem.modifiers ?? {}}
-          onConfirm={handleModalConfirm}
+          onAddItem={handleAddItem}
         />
       )}
     </div>

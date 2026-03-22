@@ -86,8 +86,8 @@ export const RetroMenuCard = ({
     onAddToCart?.(quantity);
   };
 
-  const handleConfirmModifiers = (selectedModifiers: Array<{groupId: string; optionId: string; name: string; price: number}>[]) => {
-    selectedModifiers.forEach((mods) => onAddToCart?.(1, mods));
+  const handleAddItem = (mods: Array<{groupId: string; optionId: string; name: string; price: number}>) => {
+    onAddToCart?.(1, mods);
   };
 
   return (
@@ -142,7 +142,7 @@ export const RetroMenuCard = ({
           basePrice={price}
           quantity={quantity}
           modifiers={modifiers}
-          onConfirm={handleConfirmModifiers}
+          onAddItem={handleAddItem}
         />
       )}
     </>
