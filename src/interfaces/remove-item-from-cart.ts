@@ -4,7 +4,7 @@ import { validateRemoveItemRequest } from './utils/cart-validators';
 import { LambdaEvent } from './types/lambda-event.type';
 
 export const handler = (event: LambdaEvent) =>
-  apiHandler(event, async ( body) => {
+  apiHandler(event, async (_event, body) => {
     const input = validateRemoveItemRequest(body);
     const result = await removeItemFromCartUseCase.execute(input);
 
