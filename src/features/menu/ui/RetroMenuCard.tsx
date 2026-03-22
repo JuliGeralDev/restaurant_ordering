@@ -5,6 +5,7 @@ import { ShoppingCart } from "lucide-react";
 
 import type { Modifiers } from "../menu.types";
 import { CardConsola } from "@/shared/ui/CardConsola";
+import { QuantityStepper } from "@/shared/ui/QuantityStepper";
 import { RetroModifiersModal } from "./RetroModifiersModal";
 
 const formatPrice = (price: number) => `$${price.toLocaleString("es-CO")}`;
@@ -52,48 +53,15 @@ const ActionArea = ({
   quantity: number;
   setQuantity: (q: number) => void;
   onAddToCart?: () => void;
-}) => {
-  const decrement = () => { if (quantity > 1) setQuantity(quantity - 1); };
-  const increment = () => { if (quantity < 99) setQuantity(quantity + 1); };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = parseInt(e.target.value, 10) || 1;
-    setQuantity(Math.max(1, Math.min(99, v)));
-  };
-
-  return (
-    <div className="flex items-center gap-1">
-      <div className="flex items-center gap-1 rounded-xl border-2 border-zinc-800 bg-zinc-700/50 p-1">
-        <button
-          onClick={decrement}
-          className="flex h-7 w-7 items-center justify-center rounded-lg border-2 border-zinc-800 bg-zinc-700 text-lg font-bold text-green-400 transition-colors hover:bg-zinc-600"
-        >-</button>
-
-        <input
-          type="number"
-          min="1"
-          max="99"
-          value={quantity}
-          onChange={handleChange}
-          className="h-7 w-9 rounded-md border-2 border-zinc-900 bg-zinc-800 text-center text-xs text-green-400 [appearance:textfield] focus:outline-none focus:ring-2 focus:ring-green-400/50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-        />
-
-        <button
-          onClick={increment}
-          className="flex h-7 w-7 items-center justify-center rounded-lg border-2 border-zinc-800 bg-zinc-700 text-lg font-bold text-green-400 transition-colors hover:bg-zinc-600"
-        >+</button>
-
-        <div className="mx-0.5 h-7 w-px bg-zinc-800" />
-
-        <button
-          onClick={onAddToCart}
-          className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-purple-900 bg-purple-600 text-white shadow-md transition-all hover:scale-105 hover:bg-purple-700 active:scale-95"
-        >
-          <ShoppingCart className="h-5 w-5" />
-        </button>
-      </div>
-    </div>
-  );
-};
+}) => (
+  <div className="flex items-center gap-1">
+    <QuantityStepper
+      quantity={quantity}
+      onChange={setQuantity}
+      onAddToCart={onAddToCart}
+    />
+  </div>
+);
 
 export const RetroMenuCard = ({
   productId: _productId,

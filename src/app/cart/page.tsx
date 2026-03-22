@@ -41,8 +41,8 @@ export default function CartPage() {
     : null;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-6 text-sm font-bold uppercase tracking-widest text-green-400">
+    <div className="container xl:w-[70%] px-4 py-8 m-auto">
+      <h1 className="m-auto mb-6 text-xl text-center font-bold uppercase tracking-widest ">
         MY CART
       </h1>
 
