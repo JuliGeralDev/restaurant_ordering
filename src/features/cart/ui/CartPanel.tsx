@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
 
 import { Button } from "@/shared/ui/button";
@@ -10,9 +12,12 @@ const formatPrice = (price: number) => `$${price.toLocaleString("es-CO")}`;
 
 
 export const CartPanel = () => {
+  const pathname = usePathname();
   const { data } = useGetOrder();
   const grouped = useGroupedCartItems(data?.items ?? []);
   const isEmpty = !data || data.items.length === 0;
+
+  if (pathname === "/cart") return null;
 
   return (
     <aside className="fixed right-0 top-0 z-30 hidden h-screen w-52 flex-col border-l-[6px] border-zinc-500 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 shadow-[-4px_0_24px_rgba(0,0,0,0.4)] xl:flex">
@@ -34,7 +39,7 @@ export const CartPanel = () => {
           <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
             <ShoppingCart className="h-10 w-10 text-zinc-500" />
             <p className="text-[7px] leading-4 text-zinc-500">
-              SELECCIONA UN PRODUCTO PARA VERLO AQUÍ
+              SELECT A PRODUCT TO SEE IT HERE
             </p>
           </div>
         ) : (
@@ -53,9 +58,11 @@ export const CartPanel = () => {
             {formatPrice(data.pricing.total)}
           </p>
         </div>
-        <Button className="p-5 flex w-full border-2 border-purple-900 bg-purple-600  text-white hover:bg-purple-700 active:scale-95">
-          <ShoppingCart className="h-8 w-8" />
-          IR AL CARRITO
+        <Button className="p-5 flex w-full border-2 border-purple-900 bg-purple-600 text-white hover:bg-purple-700 active:scale-95" asChild>
+          <Link href="/cart">
+            <ShoppingCart className="h-8 w-8" />
+            GO TO CART
+          </Link>
         </Button>
       </div>
       )}
