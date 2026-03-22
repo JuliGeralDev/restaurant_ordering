@@ -28,7 +28,7 @@ const createHttpClient = (): AxiosInstance => {
       const message =
         error.response?.data?.message ??
         error.message ??
-        "Ocurrio un error inesperado al consumir el API.";
+        "An unexpected error occurred while consuming the API.";
 
       return Promise.reject(
         new ApiError(message, error.response?.status, error.response?.data)

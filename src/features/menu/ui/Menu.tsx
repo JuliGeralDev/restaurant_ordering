@@ -6,11 +6,11 @@ export const Menu = () => {
   const { data, isLoading, error } = useGetMenu();
 
   if (isLoading) {
-    return <div>Cargando menú...</div>;
+    return <div>Loading menu...</div>;
   }
 
   if (error) {
-    return <div>Error al cargar el menú: {error}</div>;
+    return <div>Error loading menu: {error}</div>;
   }
 
   return (

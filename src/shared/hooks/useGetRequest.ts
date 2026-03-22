@@ -24,7 +24,7 @@ export function useGetRequest<TData>(
 
       setData(response);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Ocurrio un error.");
+      setError(error instanceof Error ? error.message : "An error occurred.");
     } finally {
       setIsLoading(false);
     }
