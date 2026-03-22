@@ -4,6 +4,7 @@ export interface AddToCartRequest {
   userId: string;
   productId: string;
   quantity: number;
+  modifiers?: Record<string, string[]>;
 }
 
 // Response types

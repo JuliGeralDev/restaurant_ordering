@@ -1,27 +1,26 @@
-"use client";
+﻿"use client";
 
+import { useState } from "react";
 import { ShoppingCart } from "lucide-react";
 
-import { Button } from "@/shared/ui/button";
-import { Card, CardContent } from "@/shared/ui/card";
+import type { Modifiers } from "../menu.types";
+import { CardConsola } from "@/shared/ui/CardConsola";
+import { RetroModifiersModal } from "./RetroModifiersModal";
+
+const formatPrice = (price: number) => `$${price.toLocaleString("es-CO")}`;
+
+const hasModifiers = (modifiers?: Modifiers) =>
+  Boolean(modifiers && (modifiers.protein || modifiers.toppings || modifiers.sauces));
 
 interface RetroMenuCardProps {
   productId: string;
   name: string;
+  description?: string;
   price: number;
   image: string;
-  hasModifiers?: boolean;
-  onAddToCart?: () => void;
+  modifiers?: Modifiers;
+  onAddToCart?: (quantity: number, selectedModifiers?: Record<string, string[]>) => void;
 }
-
-const TOP_GRILLE_ITEMS = 6;
-const BOTTOM_GRILLE_ITEMS = 10;
-const SCREW_POSITIONS = [
-  "top-3 left-3",
-  "top-3 right-3",
-  "bottom-3 left-3",
-  "bottom-3 right-3",
-] as const;
 
 const D_PAD_PARTS = [
   "absolute left-1/2 top-0 h-4 w-4 -translate-x-1/2 rounded-md border-2 border-zinc-800 bg-zinc-700 shadow-lg",
@@ -30,128 +29,154 @@ const D_PAD_PARTS = [
   "absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 rounded-md border-2 border-zinc-800 bg-zinc-700 shadow-lg",
 ] as const;
 
-const formatPrice = (price: number) => {
-  const priceInPesos = price / 100;
-  return `$${priceInPesos.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-};
+const DPad = () => (
+  <div className="relative h-12 w-12">
+    {D_PAD_PARTS.map((cls) => (
+      <div key={cls} className={cls} />
+    ))}
+    <div className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-md bg-zinc-800 shadow-inner" />
+  </div>
+);
 
-const SpeakerGrille = ({
-  amount,
-  itemClassName,
-  wrapperClassName,
+const PriceDisplay = ({ price }: { price: number }) => (
+  <div className="mb-2 rounded-xl border-4 border-zinc-700 bg-zinc-800 px-3 py-2 text-center text-lg font-bold text-green-400 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)]">
+    {formatPrice(price)}
+  </div>
+);
+
+const ActionArea = ({
+  quantity,
+  setQuantity,
+  onAddToCart,
 }: {
-  amount: number;
-  itemClassName: string;
-  wrapperClassName: string;
+  quantity: number;
+  setQuantity: (q: number) => void;
+  onAddToCart?: () => void;
 }) => {
-  return (
-    <div className={wrapperClassName}>
-      {Array.from({ length: amount }).map((_, index) => (
-        <div key={index} className={itemClassName} />
-      ))}
-    </div>
-  );
-};
+  const decrement = () => { if (quantity > 1) setQuantity(quantity - 1); };
+  const increment = () => { if (quantity < 99) setQuantity(quantity + 1); };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = parseInt(e.target.value, 10) || 1;
+    setQuantity(Math.max(1, Math.min(99, v)));
+  };
 
-const DecorativeScrews = () => {
   return (
-    <>
-      {SCREW_POSITIONS.map((position) => (
-        <div
-          key={position}
-          className={`absolute ${position} h-1.5 w-1.5 rounded-full bg-zinc-600 shadow-inner`}
+    <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 rounded-xl border-2 border-zinc-800 bg-zinc-700/50 p-1">
+        <button
+          onClick={decrement}
+          className="flex h-7 w-7 items-center justify-center rounded-lg border-2 border-zinc-800 bg-zinc-700 text-lg font-bold text-green-400 transition-colors hover:bg-zinc-600"
+        >-</button>
+
+        <input
+          type="number"
+          min="1"
+          max="99"
+          value={quantity}
+          onChange={handleChange}
+          className="h-7 w-9 rounded-md border-2 border-zinc-900 bg-zinc-800 text-center text-xs text-green-400 [appearance:textfield] focus:outline-none focus:ring-2 focus:ring-green-400/50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
-      ))}
-    </>
-  );
-};
 
-const DPad = () => {
-  return (
-    <div className="relative h-12 w-12">
-      {D_PAD_PARTS.map((partClassName) => (
-        <div key={partClassName} className={partClassName} />
-      ))}
-      <div className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-md bg-zinc-800 shadow-inner" />
-    </div>
-  );
-};
+        <button
+          onClick={increment}
+          className="flex h-7 w-7 items-center justify-center rounded-lg border-2 border-zinc-800 bg-zinc-700 text-lg font-bold text-green-400 transition-colors hover:bg-zinc-600"
+        >+</button>
 
-const PriceDisplay = ({ price }: { price: number }) => {
-  return (
-    <div className="mb-2 rounded-xl border-4 border-zinc-700 bg-zinc-800 px-3 py-2 text-center font-press-start text-lg font-bold text-green-400 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)]">
-      {formatPrice(price)}
-    </div>
-  );
-};
+        <div className="mx-0.5 h-7 w-px bg-zinc-800" />
 
-const ActionArea = ({ onAddToCart }: { onAddToCart?: () => void }) => {
-  return (
-    <div className="flex items-center gap-2">
-      <Button 
-        onClick={onAddToCart}
-        className="relative h-11 w-11 rounded-full border-4 border-purple-900 bg-purple-600 text-white shadow-lg transition-all hover:scale-110 hover:bg-purple-700 active:scale-95"
-      >
-        <ShoppingCart className="absolute h-5 w-5" />
-        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-400 text-xs font-bold text-zinc-900">
-          +
-        </span>
-      </Button>
-
-      {/* <div className="h-6 w-6 self-end rounded-full border-2 border-zinc-800 bg-zinc-700 shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)]" /> */}
+        <button
+          onClick={onAddToCart}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-purple-900 bg-purple-600 text-white shadow-md transition-all hover:scale-105 hover:bg-purple-700 active:scale-95"
+        >
+          <ShoppingCart className="h-5 w-5" />
+        </button>
+      </div>
     </div>
   );
 };
 
 export const RetroMenuCard = ({
-  productId,
+  productId: _productId,
   name,
+  description,
   price,
   image,
-  hasModifiers,
+  modifiers,
   onAddToCart,
 }: RetroMenuCardProps) => {
+  const [quantity, setQuantity] = useState(1);
+  const [isHovered, setIsHovered] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const productHasModifiers = hasModifiers(modifiers);
+
+  const handleAddToCart = () => {
+    if (productHasModifiers) {
+      setModalOpen(true);
+      return;
+    }
+    onAddToCart?.(quantity);
+  };
+
+  const handleConfirmModifiers = (selectedModifiers: Record<string, string[]>[]) => {
+    selectedModifiers.forEach((mods) => onAddToCart?.(1, mods));
+  };
+
   return (
-    <Card className="relative max-w-sm overflow-hidden rounded-[2rem] border-[10px] border-zinc-500 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 shadow-2xl shadow-zinc-600/50">
-      <SpeakerGrille
-        amount={TOP_GRILLE_ITEMS}
-        itemClassName="h-0.5 w-2 rounded-full bg-zinc-600/50"
-        wrapperClassName="flex justify-center gap-1 py-0.5"
-      />
-
-      <div className="bg-zinc-600 text-green-400 font-bold text-center py-2 text-[10px] tracking-wider uppercase border-y-4 border-zinc-700 shadow-inner font-press-start">
-        {name}
-      </div>
-
-      <CardContent className="flex flex-col gap-3 p-3">
-        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border-[6px] border-zinc-700 bg-black shadow-2xl shadow-black/50">
-          <img src={image} alt={name} className="h-full w-full object-cover" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
-        </div>
-
-        <div className="rounded-2xl border-4 border-zinc-400 bg-zinc-300 p-4 shadow-inner">
-          <PriceDisplay price={price} />
-
-          <div className="flex items-center justify-between px-1">
-            <DPad />
-
-            {hasModifiers && (
-              <span className="rounded bg-zinc-600 px-2 py-0.5 font-press-start text-[6px] font-bold tracking-widest text-green-400 shadow-md">
-                + OPTIONS
-              </span>
+    <>
+      <CardConsola
+        title={name}
+        className="max-w-sm"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="flex flex-col gap-3 p-3">
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border-[6px] border-zinc-700 bg-black shadow-2xl shadow-black/50">
+            <img
+              src={image}
+              alt={name}
+              className={`h-full w-full object-cover transition-all duration-300 ${
+                isHovered ? "brightness-[0.2]" : "brightness-100"
+              }`}
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
+            {isHovered && description && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center">
+                <p className="text-[10px] leading-5 text-green-400">{description}</p>
+                {productHasModifiers && (
+                  <p className="text-[8px] leading-4 text-yellow-400">
+                    You must choose at least one add-on
+                  </p>
+                )}
+              </div>
             )}
+          </div>
 
-            <ActionArea onAddToCart={onAddToCart} />
+          <div className="rounded-2xl border-4 border-zinc-400 bg-zinc-300 p-4 shadow-inner">
+            <PriceDisplay price={price} />
+            <div className="flex items-center justify-between px-1">
+              <DPad />
+              <ActionArea
+                quantity={quantity}
+                setQuantity={setQuantity}
+                onAddToCart={handleAddToCart}
+              />
+            </div>
           </div>
         </div>
-      </CardContent>
+      </CardConsola>
 
-      <SpeakerGrille
-        amount={BOTTOM_GRILLE_ITEMS}
-        itemClassName="h-1 w-0.5 rounded-full bg-zinc-600/50"
-        wrapperClassName="flex justify-center gap-0.5 py-1"
-      />
-      <DecorativeScrews />
-    </Card>
+      {productHasModifiers && modifiers && (
+        <RetroModifiersModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          productName={name}
+          basePrice={price}
+          quantity={quantity}
+          modifiers={modifiers}
+          onConfirm={handleConfirmModifiers}
+        />
+      )}
+    </>
   );
 };

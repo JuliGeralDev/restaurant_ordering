@@ -57,6 +57,7 @@
 @layer base {
   * {
     @apply border-border;
+    font-family: 'Press Start 2P', cursive;
   }
   body {
     @apply bg-background text-foreground;

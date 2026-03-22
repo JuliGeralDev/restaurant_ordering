@@ -12,7 +12,7 @@ export function useAddToCart() {
   const [error, setError] = useState<string | null>(null);
   const { orderId, userId, setOrderId } = useCartStore();
 
-  const addToCart = async (productId: string, quantity: number = 1) => {
+  const addToCart = async (productId: string, quantity: number = 1, selectedModifiers?: Record<string, string[]>) => {
     setIsLoading(true);
     setError(null);
 
@@ -23,9 +23,12 @@ export function useAddToCart() {
         quantity,
       };
 
-      // If orderId exists, include it in the request
       if (orderId) {
         payload.orderId = orderId;
+      }
+
+      if (selectedModifiers) {
+        payload.modifiers = selectedModifiers;
       }
 
       const response = await apiRequest<AddToCartResponse, AddToCartRequest>({

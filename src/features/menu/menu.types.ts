@@ -41,15 +41,17 @@ export interface ModifierGroup {
   options: ModifierOption[];
 }
 
+export type Modifiers = {
+  protein?: ModifierGroup;
+  toppings?: ModifierGroup;
+  sauces?: ModifierGroup;
+};
+
 export interface MenuItem {
   id: string;
   name: string;
   description: string;
   imageUrl: string | null;
   price: number;
-  modifiers?: {
-    protein?: ModifierGroup;
-    toppings?: ModifierGroup;
-    sauces?: ModifierGroup;
-  };
+  modifiers?: Modifiers;
 }
