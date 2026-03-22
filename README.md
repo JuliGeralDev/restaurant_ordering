@@ -166,19 +166,18 @@ curl "http://localhost:3000/orders/order-1/timeline?page=1&pageSize=10"
 
 ## Sample Data
 
-After `npm run init:db`, you get 11 menu items:
+After `npm run init:db`, you get **10 menu items**:
 
-- **ID 1**: Classic Burger ($15,000)
-- **ID 2**: Cheese Burger ($17,000)
-- **ID 3**: Chicken Burger ($16,000)
-- **ID 4**: Veggie Burger ($14,000)
-- **ID 5**: Double Burger ($20,000)
-- **ID 6**: Hot Dog ($12,000)
-- **ID 7**: Fries ($8,000)
-- **ID 8**: Onion Rings ($9,000)
-- **ID 9**: Soda ($5,000)
-- **ID 10**: Custom Burger ($18,000) - **with modifiers** (protein, toppings, sauces)
-- **ID 11**: Custom Pizza ($22,000) - **with modifiers** (protein, toppings, sauces)
+- **ID 1**: Classic Burger ($18,000)
+- **ID 2**: Double Cheese Burger ($21,000)
+- **ID 3**: Pepperoni Pizza ($24,000)
+- **ID 4**: Four Cheese Pizza ($25,000)
+- **ID 5**: Italian Lasagna ($23,000)
+- **ID 6**: Coca-Cola ($6,000)
+- **ID 7**: Pepsi ($6,000)
+- **ID 8**: Custom Burger ($19,000) - **with modifiers** (protein, toppings, sauces)
+- **ID 9**: Custom Hot Dog ($15,000) - **with modifiers** (protein, toppings, sauces)
+- **ID 10**: Custom Tacos ($20,000) - **with modifiers** (protein, toppings, sauces)
 
 ## Architecture
 
@@ -195,6 +194,40 @@ src/
 - TypeScript 5.9.3
 - DynamoDB (AWS SDK v3.967.0)
 - esbuild 0.27.4
+- Jest 29.x (testing framework)
+
+## Testing
+
+The project includes comprehensive unit tests covering core business logic.
+
+### Run Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+```
+
+### Test Coverage
+
+**53 tests** covering:
+- Money value object (12 tests)
+- Pricing service (14 tests)
+- Timeline event factory (8 tests)
+- Order service (11 tests)
+- Cart item service (8 tests)
+
+Example output:
+```
+Test Suites: 5 passed, 5 total
+Tests:       53 passed, 53 total
+Time:        4.686 s
+```
 
 ## Troubleshooting
 
