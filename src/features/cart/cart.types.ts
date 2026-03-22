@@ -1,7 +1,9 @@
 // Request types
 export interface Modifier {
-  type: string;
-  value: string;
+  groupId: string;
+  optionId: string;
+  name: string;
+  price: number;
 }
 
 export interface AddToCartRequest {

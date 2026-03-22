@@ -19,7 +19,7 @@ interface RetroMenuCardProps {
   price: number;
   image: string;
   modifiers?: Modifiers;
-  onAddToCart?: (quantity: number, selectedModifiers?: Array<{type: string; value: string}>) => void;
+  onAddToCart?: (quantity: number, selectedModifiers?: Array<{groupId: string; optionId: string; name: string; price: number}>) => void;
 }
 
 const D_PAD_PARTS = [
@@ -118,7 +118,7 @@ export const RetroMenuCard = ({
     onAddToCart?.(quantity);
   };
 
-  const handleConfirmModifiers = (selectedModifiers: Array<{type: string; value: string}>[]) => {
+  const handleConfirmModifiers = (selectedModifiers: Array<{groupId: string; optionId: string; name: string; price: number}>[]) => {
     selectedModifiers.forEach((mods) => onAddToCart?.(1, mods));
   };
 

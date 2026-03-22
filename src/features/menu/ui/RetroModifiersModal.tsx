@@ -26,7 +26,7 @@ interface RetroModifiersModalProps {
   basePrice: number;
   quantity: number;
   modifiers: Modifiers;
-  onConfirm: (selected: Array<{type: string; value: string}>[]) => void;
+  onConfirm: (selected: Array<{groupId: string; optionId: string; name: string; price: number}>[]) => void;
 }
 
 const emptySelections = (): Record<string, Set<string>> => ({});
@@ -102,10 +102,12 @@ export const RetroModifiersModal = ({
   const handleConfirm = () => {
     if (!isCurrentStepValid) return;
     const payload = allSelections.map((sel) => {
-      const flat: Array<{type: string; value: string}> = [];
-      for (const [type, set] of Object.entries(sel)) {
-        for (const value of set) {
-          flat.push({ type, value });
+      const flat: Array<{groupId: string; optionId: string; name: string; price: number}> = [];
+      for (const [groupId, set] of Object.entries(sel)) {
+        const group = modifiers[groupId as keyof typeof modifiers];
+        for (const optionId of set) {
+          const option = group?.options.find((o) => o.id === optionId);
+          flat.push({ groupId, optionId, name: option?.name ?? optionId, price: option?.price ?? 0 });
         }
       }
       return flat;
