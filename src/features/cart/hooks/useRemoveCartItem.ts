@@ -12,24 +12,19 @@ export function useRemoveCartItem() {
   const [error, setError] = useState<string | null>(null);
   const { orderId, userId, setOrderData } = useCartStore();
 
-  const removeCartItem = async (cartItemId: string) => {
+  const doRemove = async (cartItemId?: string, productId?: string) => {
     if (!orderId) return;
     setIsLoading(true);
     setError(null);
-
     try {
-      const payload: RemoveCartItemRequest = { orderId, userId, cartItemId };
-
-      await apiRequest<void, RemoveCartItemRequest>({
-        method: "DELETE",
-        url: CART_ITEMS_ENDPOINT,
-        data: payload,
-      });
-
-      const orderData = await apiRequest<OrderResponse>({
-        method: "GET",
-        url: `/orders/${orderId}`,
-      });
+      const payload: RemoveCartItemRequest = {
+        orderId,
+        userId,
+        ...(cartItemId ? { cartItemId } : {}),
+        ...(productId ? { productId } : {}),
+      };
+      await apiRequest<void, RemoveCartItemRequest>({ method: "DELETE", url: CART_ITEMS_ENDPOINT, data: payload });
+      const orderData = await apiRequest<OrderResponse>({ method: "GET", url: `/orders/${orderId}` });
       setOrderData(orderData);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to remove item from cart";
@@ -40,5 +35,8 @@ export function useRemoveCartItem() {
     }
   };
 
-  return { removeCartItem, isLoading, error };
+  const removeCartItem = (cartItemId: string) => doRemove(cartItemId);
+  const removeAllItems = (productId: string) => doRemove(undefined, productId);
+
+  return { removeCartItem, removeAllItems, isLoading, error };
 }

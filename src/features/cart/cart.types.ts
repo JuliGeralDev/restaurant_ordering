@@ -17,7 +17,8 @@ export interface AddToCartRequest {
 export interface RemoveCartItemRequest {
   orderId: string;
   userId: string;
-  cartItemId: string;
+  productId?: string;
+  cartItemId?: string;
 }
 
 // POST /cart/items — response types

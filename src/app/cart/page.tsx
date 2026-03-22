@@ -15,7 +15,7 @@ export default function CartPage() {
   const { data } = useGetOrder();
   const { data: menuItems } = useGetMenu();
   const { addToCart } = useAddToCart();
-  const { removeCartItem } = useRemoveCartItem();
+  const { removeCartItem, removeAllItems } = useRemoveCartItem();
   const grouped = useGroupedCartItems(data?.items ?? [], true);
 
   const [modalProduct, setModalProduct] = useState<GroupedCartItem | null>(null);
@@ -25,6 +25,10 @@ export default function CartPage() {
   const handleDecrement = (item: GroupedCartItem) => {
     const cartItemId = item.cartItemIds.at(-1);
     if (cartItemId) removeCartItem(cartItemId);
+  };
+
+  const handleRemoveAll = (item: GroupedCartItem) => {
+    removeAllItems(item.productId);
   };
 
   const handleIncrement = (item: GroupedCartItem) => {
@@ -79,6 +83,7 @@ export default function CartPage() {
                   item={item}
                   onIncrement={() => handleIncrement(item)}
                   onDecrement={() => handleDecrement(item)}
+                  onRemove={() => handleRemoveAll(item)}
                 />
               ))}
           </div>
