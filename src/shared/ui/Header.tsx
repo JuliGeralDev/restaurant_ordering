@@ -4,10 +4,11 @@ import Link from "next/link";
 import { ShoppingCart, UtensilsCrossed, ClipboardList } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { useCartStore } from "@/shared/stores/cartStore";
+import type { OrderResponse } from "@/features/cart/cart.types";
 
 export const Header = () => {
-  const orderData = useCartStore((s) => s.orderData);
-  const cartItemsCount = orderData?.items.reduce((sum, i) => sum + i.quantity, 0) ?? 0;
+  const orderData = useCartStore((s: { orderData: OrderResponse | null }) => s.orderData);
+  const cartItemsCount = orderData?.items.reduce((sum: number, i: { quantity: number }) => sum + i.quantity, 0) ?? 0;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
