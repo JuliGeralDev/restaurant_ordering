@@ -1,0 +1,23 @@
+{
+  "name": "restaurant-ordering-root",
+  "private": true,
+  "version": "1.0.0",
+  "author": "Juliana Geraldine García @JuliGeralDev juligeral.c@gmail.com",
+  "description": "Root container for restaurant ordering frontend and backend",
+  "scripts": {
+    "install:backend": "npm install --prefix ./restaurant_ordering_backend",
+    "install:frontend": "npm install --prefix ./restaurant_ordering_front",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "dev:backend": "npm run dev --prefix ./restaurant_ordering_backend",
+    "dev:frontend": "npm run dev --prefix ./restaurant_ordering_front",
+    "dev": "node ./scripts/dev.js",
+    "docker:up": "npm run docker:up --prefix ./restaurant_ordering_backend",
+    "docker:down": "npm run docker:down --prefix ./restaurant_ordering_backend",
+    "docker:logs": "npm run docker:logs --prefix ./restaurant_ordering_backend",
+    "init:db": "npm run init:db --prefix ./restaurant_ordering_backend",
+    "setup:backend": "npm run setup --prefix ./restaurant_ordering_backend",
+    "test:backend": "npm test --prefix ./restaurant_ordering_backend",
+    "test:frontend": "npm test --prefix ./restaurant_ordering_front",
+    "test": "npm run test:backend && npm run test:frontend"
+  }
+}
