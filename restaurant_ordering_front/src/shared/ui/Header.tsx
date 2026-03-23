@@ -2,34 +2,44 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, UtensilsCrossed, ClipboardList, User2 } from "lucide-react";
+import { Menu, ShoppingCart, UtensilsCrossed, ClipboardList, User2 } from "lucide-react";
 
 import type { OrderResponse } from "@/features/cart/cart.types";
 import { useCartStore } from "@/shared/stores/cartStore";
 import type { UserProfile } from "@/shared/types/user";
 import { Button } from "@/shared/ui/button";
+import { MobileNavModal } from "@/shared/ui/MobileNavModal";
 import { UserProfileModal } from "@/shared/ui/UserProfileModal";
 
 export const Header = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement | null>(null);
+  const mobileNavRef = useRef<HTMLDivElement | null>(null);
   const orderData = useCartStore((s: { orderData: OrderResponse | null }) => s.orderData);
   const userProfile = useCartStore((s: { userProfile: UserProfile | null }) => s.userProfile);
   const cartItemsCount =
     orderData?.items.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0) ?? 0;
 
   useEffect(() => {
-    if (!isProfileOpen) return;
+    if (!isProfileOpen && !isMobileNavOpen) return;
 
     const handlePointerDown = (event: MouseEvent) => {
-      if (!profileRef.current?.contains(event.target as Node)) {
+      const target = event.target as Node;
+
+      if (!profileRef.current?.contains(target)) {
         setIsProfileOpen(false);
       }
+
+      if (!mobileNavRef.current?.contains(target)) {
+        setIsMobileNavOpen(false);
+      }      
     };
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsProfileOpen(false);
+        setIsMobileNavOpen(false);
       }
     };
 
@@ -40,7 +50,12 @@ export const Header = () => {
       document.removeEventListener("mousedown", handlePointerDown);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isProfileOpen]);
+  }, [isMobileNavOpen, isProfileOpen]);
+
+  const handleOpenProfile = () => {
+    setIsMobileNavOpen(false);
+    setIsProfileOpen(true);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -50,7 +65,7 @@ export const Header = () => {
           <span className="font-bold text-xl">Restaurant</span>
         </Link>
 
-        <nav className="flex items-center space-x-2 md:space-x-4">
+        <nav className="ml-auto hidden items-center justify-end space-x-2 md:flex md:space-x-4">
           <Link href="/">
             <Button variant="ghost" size="sm">
               <UtensilsCrossed className="h-4 w-4 mr-2" />
@@ -77,7 +92,7 @@ export const Header = () => {
             )}
           </Link>
 
-          <div className="relative" ref={profileRef}>
+          <div>
             <Button
               variant="ghost"
               size="sm"
@@ -89,14 +104,52 @@ export const Header = () => {
               <User2 className="h-4 w-4 mr-2" />
               <span className="truncate">{userProfile?.name ?? "Sign In"}</span>
             </Button>
-
-            <UserProfileModal
-              isOpen={isProfileOpen}
-              userProfile={userProfile}
-              onClose={() => setIsProfileOpen(false)}
-            />
           </div>
         </nav>
+
+        <div className="flex items-center gap-2" ref={profileRef}>
+          <Link href="/cart" className="relative md:hidden">
+            <Button variant="ghost" size="icon-sm" aria-label="Open cart">
+              <ShoppingCart className="h-4 w-4" />
+            </Button>
+            {cartItemsCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-green-600 px-1 text-[7px] font-bold text-white shadow">
+                {cartItemsCount > 99 ? "99+" : cartItemsCount}
+              </span>
+            )}
+          </Link>
+
+          <div className="relative" ref={mobileNavRef}>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => {
+                setIsProfileOpen(false);
+                setIsMobileNavOpen((current) => !current);
+              }}
+              aria-expanded={isMobileNavOpen}
+              aria-haspopup="dialog"
+              aria-label="Open navigation menu"
+              className="md:hidden"
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+
+            <MobileNavModal
+              isOpen={isMobileNavOpen}
+              cartItemsCount={cartItemsCount}
+              userLabel={userProfile?.name ?? "Sign In"}
+              onClose={() => setIsMobileNavOpen(false)}
+              onOpenProfile={handleOpenProfile}
+            />
+          </div>
+
+          <UserProfileModal
+            isOpen={isProfileOpen}
+            userProfile={userProfile}
+            onClose={() => setIsProfileOpen(false)}
+          />
+        </div>
       </div>
     </header>
   );

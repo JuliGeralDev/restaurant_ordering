@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Phone, User, UserCircle2, X } from "lucide-react";
+import { Mail, Phone, User, UserCircle2 } from "lucide-react";
 
 import { useUserSession } from "@/features/users/hooks/useUserSession";
 import type { UserProfile } from "@/shared/types/user";
 import { Button } from "@/shared/ui/button";
+import { HeaderPanel } from "@/shared/ui/HeaderPanel";
 
 interface UserProfileModalProps {
   isOpen: boolean;
@@ -68,8 +69,6 @@ export const UserProfileModal = ({
     phone: "",
   });
 
-  if (!isOpen) return null;
-
   const updateField = (field: keyof typeof form, value: string) => {
     setForm((current) => ({
       ...current,
@@ -101,28 +100,11 @@ export const UserProfileModal = ({
   };
 
   return (
-    <div className="absolute right-0 top-full z-[70] mt-2 w-[21rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[1.35rem] border-[6px] border-zinc-500 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 shadow-2xl shadow-black/60">
-      <div className="border-b-4 border-zinc-700 bg-zinc-600 px-3 py-2.5">
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center">
-          <span />
-          <span className="justify-self-center text-[9px] font-bold uppercase tracking-[0.22em] text-green-400">
-            {userProfile ? "User Profile" : "Sign In"}
-          </span>
-          <div className="justify-self-end">
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              className="text-zinc-200 hover:bg-white/10 hover:text-white"
-              onClick={onClose}
-              aria-label="Close user panel"
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-zinc-800 px-3 py-3.5">
+    <HeaderPanel
+      title={userProfile ? "User Profile" : "Sign In"}
+      isOpen={isOpen}
+      onClose={onClose}
+    >
         {userProfile ? (
           <>
             <div className="mb-3 rounded-2xl border-4 border-zinc-700 bg-zinc-900 px-3 py-3 text-center">
@@ -210,7 +192,6 @@ export const UserProfileModal = ({
             </div>
           </>
         )}
-      </div>
-    </div>
+    </HeaderPanel>
   );
 };
