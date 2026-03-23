@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import type { OrderResponse } from "@/features/cart/cart.types";
+import { env } from "@/shared/config/env";
 import { createIdempotencyKey } from "@/shared/lib/idempotency";
 
 interface CartStore {
@@ -21,7 +22,7 @@ export const useCartStore : any = create<CartStore>()(
   persist(
     (set) => ({
       orderId: null,
-      userId: process.env.NEXT_PUBLIC_USER_ID || "default-user",
+      userId: env.userId,
       orderData: null,
       checkoutIdempotencyKey: null,
       setOrderId: (orderId: string) =>

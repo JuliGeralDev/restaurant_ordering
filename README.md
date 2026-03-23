@@ -55,6 +55,7 @@ npm install
 # 3. Verify or create .env.local
 # It should contain:
 # NEXT_PUBLIC_API_URL=http://localhost:3000
+# NEXT_PUBLIC_USER_ID=user-test-postman
 
 # 4. Start the frontend
 npm run dev
@@ -68,6 +69,7 @@ If your backend is in a different URL, update `.env.local`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_USER_ID=user-test-postman
 ```
 
 ## Environment Variables
@@ -76,9 +78,15 @@ Create a `.env.local` file in the project root with:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_USER_ID=user-test-postman
 ```
 
-This variable is required. The app will fail on startup if it is missing.
+Required variables:
+
+- `NEXT_PUBLIC_API_URL`: backend base URL used by the frontend
+- `NEXT_PUBLIC_USER_ID`: simulated test user used by the app for cart and order requests
+
+Because this project uses a simulated user flow for local development, `NEXT_PUBLIC_USER_ID` must always be present in `.env.local`. There is no real login in this frontend, so this value acts as the active test user during development.
 
 ## API Connection
 
@@ -91,6 +99,7 @@ Current local example:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_USER_ID=user-test-postman
 ```
 
 The application uses this base URL for requests such as:
@@ -106,23 +115,25 @@ Backend repository:
 
 ## Test User
 
-For local development, the frontend currently uses a fixed test user instead of authentication.
+For local development, the frontend uses a simulated test user instead of a real authentication flow.
 
-Configured value:
+That user must be declared in `.env.local` using:
 
-```text
-user-test-postman
+```env
+NEXT_PUBLIC_USER_ID=user-test-postman
 ```
 
-This value is defined in:
+This value is consumed from:
 
+- [`env.ts`](C:\Users\Bruja\Documents\Proyectos\restaurante_timeline\restaurant_ordering_front\src\shared\config\env.ts)
 - [`cartStore.ts`](C:\Users\Bruja\Documents\Proyectos\restaurante_timeline\restaurant_ordering_front\src\shared\stores\cartStore.ts)
 
 Important notes:
 
-- all cart and order requests are associated with this fixed user
+- this is not a real authenticated session; it is a simulated user identifier
+- all cart and order requests are associated with this test user
 - the order history shown in `/orders` corresponds to that same user
-- if the backend data is filtered by user, you should seed or test with this identifier
+- if the backend data is filtered by user, you should seed or test with this same identifier
 
 ## Run with Backend
 
@@ -185,6 +196,18 @@ Create or update `.env.local`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_USER_ID=user-test-postman
+```
+
+Then restart the dev server.
+
+### "Missing NEXT_PUBLIC_USER_ID environment variable"
+
+Create or update `.env.local` with a simulated test user:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_USER_ID=user-test-postman
 ```
 
 Then restart the dev server.
