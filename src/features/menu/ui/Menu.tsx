@@ -7,7 +7,7 @@ import { useAddToCart } from "@/features/cart/hooks/useAddToCart";
 
 export const Menu = () => {
     const { data, isLoading, error } = useGetMenu();
-    const { addToCart, isLoading: isAddingToCart } = useAddToCart();
+    const { addToCart} = useAddToCart();
 
     const handleAddToCart = async (productId: string, quantity: number, selectedModifiers?: Array<{groupId: string; optionId: string; name: string; price: number}>) => {
         try {

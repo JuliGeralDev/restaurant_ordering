@@ -1,23 +1,18 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
 import { ChevronRight, X } from "lucide-react";
 
-import type { ModifierGroup, Modifiers } from "../menu.types";
+import type { Modifiers } from "../menu.types";
 import { CardConsola } from "@/shared/ui/CardConsola";
 import { Button } from "@/shared/ui/button";
+import { formatCurrency } from "@/shared/lib/formatters";
+import { useModifiersModal, type FlatModifier } from "../hooks/useModifiersModal";
 
 const MODIFIER_LABELS: Record<string, string> = {
   protein: "PROTEIN",
   toppings: "TOPPINGS",
   sauces: "SAUCES",
 };
-
-const formatPrice = (price: number) => `$${price.toLocaleString("es-CO")}`;
-
-const getModifierGroups = (modifiers: Modifiers) =>
-  (Object.entries(modifiers) as [string, ModifierGroup | undefined][])
-    .filter((entry): entry is [string, ModifierGroup] => Boolean(entry[1]));
 
 interface RetroModifiersModalProps {
   isOpen: boolean;
@@ -26,7 +21,7 @@ interface RetroModifiersModalProps {
   basePrice: number;
   quantity: number;
   modifiers: Modifiers;
-  onAddItem: (modifiers: Array<{groupId: string; optionId: string; name: string; price: number}>) => void;
+  onAddItem: (modifiers: FlatModifier[]) => void;
 }
 
 export const RetroModifiersModal = ({
@@ -38,79 +33,20 @@ export const RetroModifiersModal = ({
   modifiers,
   onAddItem,
 }: RetroModifiersModalProps) => {
-  const [currentSelected, setCurrentSelected] = useState<Record<string, Set<string>>>({});
-  const [currentStep, setCurrentStep] = useState(0);
-  const [confirmedTotal, setConfirmedTotal] = useState(0);
-
-  useEffect(() => {
-    if (isOpen) {
-      setCurrentSelected({});
-      setCurrentStep(0);
-      setConfirmedTotal(0);
-    }
-  }, [isOpen]);
+  const {
+    groups,
+    currentSelected,
+    currentStep,
+    runningTotal,
+    additionalPriceCurrent,
+    isCurrentStepValid,
+    isLastStep,
+    toggle,
+    handleNext,
+    handleConfirm,
+  } = useModifiersModal({ isOpen, modifiers, basePrice, quantity, onAddItem, onClose });
 
   if (!isOpen) return null;
-
-  const groups = getModifierGroups(modifiers);
-
-  const getExtraPrice = (selection: Record<string, Set<string>>) =>
-    groups.reduce((total, [key, group]) => {
-      const sel = selection[key];
-      if (!sel) return total;
-      return total + group.options
-        .filter((opt) => sel.has(opt.id))
-        .reduce((sum, opt) => sum + opt.price, 0);
-    }, 0);
-
-  const additionalPriceCurrent = getExtraPrice(currentSelected);
-  const runningTotal = confirmedTotal + basePrice + additionalPriceCurrent;
-
-  const isCurrentStepValid = groups.every(([key, group]) => {
-    if (!group.required) return true;
-    return (currentSelected[key]?.size ?? 0) > 0;
-  });
-
-  const isLastStep = currentStep === quantity - 1;
-
-  const toggle = (groupKey: string, optionId: string, max?: number) => {
-    setCurrentSelected((prev) => {
-      const current = new Set(prev[groupKey] ?? []);
-      if (current.has(optionId)) {
-        current.delete(optionId);
-      } else {
-        if (max === 1) current.clear();
-        if (!max || current.size < max) current.add(optionId);
-      }
-      return { ...prev, [groupKey]: current };
-    });
-  };
-
-  const buildFlat = () => {
-    const flat: Array<{groupId: string; optionId: string; name: string; price: number}> = [];
-    for (const [groupId, set] of Object.entries(currentSelected)) {
-      const group = modifiers[groupId as keyof typeof modifiers];
-      for (const optionId of set) {
-        const option = group?.options.find((o) => o.id === optionId);
-        flat.push({ groupId, optionId, name: option?.name ?? optionId, price: option?.price ?? 0 });
-      }
-    }
-    return flat;
-  };
-
-  const handleNext = () => {
-    if (!isCurrentStepValid) return;
-    onAddItem(buildFlat());
-    setConfirmedTotal((t) => t + basePrice + additionalPriceCurrent);
-    setCurrentSelected({});
-    setCurrentStep((s) => s + 1);
-  };
-
-  const handleConfirm = () => {
-    if (!isCurrentStepValid) return;
-    onAddItem(buildFlat());
-    onClose();
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
@@ -131,11 +67,11 @@ export const RetroModifiersModal = ({
           <div className="border-b-4 border-zinc-700 px-4 py-3 text-center">
             <p className="text-sm text-zinc-500">TOTAL</p>
             <p className="mt-1 text-xl font-bold text-green-400 shadow-[0_0_12px_rgba(74,222,128,0.4)]">
-              {formatPrice(runningTotal)}
+              {formatCurrency(runningTotal)}
             </p>
             {quantity > 1 && (
               <p className="mt-1 text-[10px] text-yellow-500">
-                item {currentStep + 1} of {quantity} &middot; {formatPrice(basePrice + additionalPriceCurrent)} each
+                item {currentStep + 1} of {quantity} &middot; {formatCurrency(basePrice + additionalPriceCurrent)} each
               </p>
             )}
           </div>
@@ -210,7 +146,7 @@ export const RetroModifiersModal = ({
                           </div>
                           {option.price > 0 && (
                             <span className="ml-2 flex-shrink-0 text-xs text-yellow-400">
-                              +{formatPrice(option.price)}
+                              +{formatCurrency(option.price)}
                             </span>
                           )}
                         </button>

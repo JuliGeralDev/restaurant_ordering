@@ -18,7 +18,7 @@ interface CartStore {
 // For now, we use a hardcoded userId. In the future, this should come from auth
 const DEFAULT_USER_ID = "user-test-postman";
 
-export const useCartStore = create<CartStore>()(
+export const useCartStore : any = create<CartStore>()(
   persist(
     (set) => ({
       orderId: null,

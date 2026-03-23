@@ -5,6 +5,6 @@ import { useCartStore } from "@/shared/stores/cartStore";
 import type { OrderResponse } from "@/features/cart/cart.types";
 
 export function useGetOrdersByUser() {
-  const userId = useCartStore((s) => s.userId);
+  const userId = useCartStore((s : any) => s.userId);
   return useGetRequest<OrderResponse[]>(`/orders?userId=${userId}`, []);
 }
