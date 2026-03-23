@@ -68,7 +68,29 @@ describe('TimelineEventFactory', () => {
       const event = TimelineEventFactory.create(params);
 
       expect(event.timestamp).toBeDefined();
-      expect(new Date(event.timestamp).toISOString()).toBe(event.timestamp);
+      expect(event.timestamp).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$/
+      );
+    });
+
+    it('should generate unique sortable timestamps for consecutive events in the same millisecond', () => {
+      jest.spyOn(Date, 'now').mockReturnValue(1774290542415);
+
+      const params = {
+        orderId: 'order-123',
+        userId: 'user-456',
+        type: 'ORDER_STATUS_CHANGED' as const,
+        correlationId: 'corr-789',
+        payload: {},
+      };
+
+      const event1 = TimelineEventFactory.create(params);
+      const event2 = TimelineEventFactory.create(params);
+
+      expect(event1.timestamp).not.toBe(event2.timestamp);
+      expect(event1.timestamp < event2.timestamp).toBe(true);
+
+      jest.restoreAllMocks();
     });
 
     it('should create events for all event types', () => {

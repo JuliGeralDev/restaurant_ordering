@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -9,9 +9,12 @@ import { useGetOrderEvents } from "@/features/orders/hooks/useGetOrderEvents";
 import { OrderSummaryCard } from "@/features/orders/ui/OrderSummaryCard";
 import { OrderTimeline } from "@/features/orders/ui/OrderTimeline";
 
+const MAX_POLL_ATTEMPTS = 30;
+
 export default function OrderDetailPage() {
   const params = useParams();
   const orderId = params.orderId as string;
+  const pollAttemptsRef = useRef(0);
 
   const { data: order, getData: refreshOrder } = useGetOrderById(orderId);
   const {
@@ -27,10 +30,17 @@ export default function OrderDetailPage() {
 
   useEffect(() => {
     if (!order || order.status !== "PROCESSING") {
+      pollAttemptsRef.current = 0;
       return;
     }
 
     const intervalId = window.setInterval(() => {
+      if (pollAttemptsRef.current >= MAX_POLL_ATTEMPTS) {
+        window.clearInterval(intervalId);
+        return;
+      }
+
+      pollAttemptsRef.current += 1;
       void refreshOrder();
       void refreshEvents();
     }, 2000);
