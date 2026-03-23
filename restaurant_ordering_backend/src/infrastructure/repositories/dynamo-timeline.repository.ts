@@ -9,6 +9,7 @@ export class DynamoTimelineRepository implements TimelineRepository {
       new PutCommand({
         TableName: 'order_timeline',
         Item: event,
+        // eventId is the table PK, so this guarantees true deduplication.
         ConditionExpression: 'attribute_not_exists(eventId)',
       })
     );
@@ -26,6 +27,7 @@ export class DynamoTimelineRepository implements TimelineRepository {
     const result = await dynamoDB.send(
       new QueryCommand({
         TableName: 'order_timeline',
+        IndexName: 'orderId-timestamp-index',
         KeyConditionExpression: 'orderId = :orderId',
         ExpressionAttributeValues: {
           ':orderId': orderId,

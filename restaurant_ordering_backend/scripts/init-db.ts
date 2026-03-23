@@ -47,12 +47,22 @@ const TABLES = {
   timeline: {
     TableName: 'order_timeline',
     AttributeDefinitions: [
+      { AttributeName: 'eventId', AttributeType: 'S' },
       { AttributeName: 'orderId', AttributeType: 'S' },
       { AttributeName: 'timestamp', AttributeType: 'S' }
     ],
     KeySchema: [
-      { AttributeName: 'orderId', KeyType: 'HASH' },
-      { AttributeName: 'timestamp', KeyType: 'RANGE' }
+      { AttributeName: 'eventId', KeyType: 'HASH' }
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'orderId-timestamp-index',
+        KeySchema: [
+          { AttributeName: 'orderId', KeyType: 'HASH' },
+          { AttributeName: 'timestamp', KeyType: 'RANGE' }
+        ],
+        Projection: { ProjectionType: 'ALL' }
+      }
     ],
     BillingMode: 'PAY_PER_REQUEST'
   },

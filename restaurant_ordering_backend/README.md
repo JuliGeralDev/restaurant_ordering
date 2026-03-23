@@ -314,7 +314,7 @@ npm run dev
 ## Database Tables
 
 - **orders**: Order data (PK: `orderId`)
-- **order_timeline**: Events (PK: `orderId`, SK: `timestamp`)
+- **order_timeline**: Events (PK: `eventId`, GSI: `orderId` + `timestamp`)
 - **menu**: Menu items (PK: `productId`)
 - **idempotency**: Idempotency keys (PK: `key`)
 
