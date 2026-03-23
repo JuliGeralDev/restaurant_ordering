@@ -12,6 +12,9 @@ export interface GroupedCartItem {
   cartItemIds: string[];
 }
 
+const repeatCartItemIds = (cartItemId: string | undefined, quantity: number) =>
+  cartItemId ? Array.from({ length: quantity }, () => cartItemId) : [];
+
 function buildKey(productId: string, modifiers: OrderModifierDto[]): string {
   const modifierKey = modifiers
     .map((m) => m.optionId)
@@ -30,7 +33,7 @@ export function useGroupedCartItems(items: OrderItemDto[], groupByModifiers = fa
     const existing = map.get(key);
     if (existing) {
       existing.totalQuantity += item.quantity;
-      if (item.cartItemId) existing.cartItemIds.push(item.cartItemId);
+      existing.cartItemIds.push(...repeatCartItemIds(item.cartItemId, item.quantity));
     } else {
       map.set(key, {
         key,
@@ -41,7 +44,7 @@ export function useGroupedCartItems(items: OrderItemDto[], groupByModifiers = fa
         modifiers: item.modifiers,
         hasModifiers: item.modifiers.length > 0,
         totalQuantity: item.quantity,
-        cartItemIds: item.cartItemId ? [item.cartItemId] : [],
+        cartItemIds: repeatCartItemIds(item.cartItemId, item.quantity),
       });
     }
   }

@@ -30,13 +30,20 @@ const cloneSelectionMap = (selection: Record<string, Set<string>>) =>
     ]),
   );
 
+const isPromiseLike = (value: unknown): value is Promise<unknown> =>
+  typeof value === "object" &&
+  value !== null &&
+  "then" in value &&
+  typeof (value as Promise<unknown>).then === "function";
+
 interface UseModifiersModalParams {
   isOpen: boolean;
   modifiers: Modifiers;
   basePrice: number;
   quantity: number;
   initialSelections?: FlatModifier[][];
-  onSubmit: (selections: FlatModifier[][]) => void | Promise<void>;
+  onAddItem?: (modifiers: FlatModifier[]) => void | Promise<void>;
+  onSubmit?: (selections: FlatModifier[][]) => void | Promise<void>;
   onClose: () => void;
 }
 
@@ -46,6 +53,7 @@ export const useModifiersModal = ({
   basePrice,
   quantity,
   initialSelections,
+  onAddItem,
   onSubmit,
   onClose,
 }: UseModifiersModalParams) => {
@@ -112,8 +120,11 @@ export const useModifiersModal = ({
     });
   };
 
+  const buildCurrentFlat = () => toFlatModifiers(currentSelected, modifiers);
+
   const handleNext = () => {
     if (!isCurrentStepValid) return;
+    void onAddItem?.(buildCurrentFlat());
     const nextStep = currentStep + 1;
     const nextSelection = stepSelections[nextStep] ?? {};
     persistCurrentStep();
@@ -130,13 +141,37 @@ export const useModifiersModal = ({
     setCurrentSelected(cloneSelectionMap(previousSelection));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!isCurrentStepValid) return;
     const nextSelections = [...stepSelections];
     nextSelections[currentStep] = cloneSelectionMap(currentSelected);
-    await onSubmit(nextSelections.map((selection) => toFlatModifiers(selection, modifiers)));
+    const currentFlat = buildCurrentFlat();
+
+    if (onAddItem && !onSubmit) {
+      const maybeAddResult = onAddItem(currentFlat);
+      if (isPromiseLike(maybeAddResult)) {
+        return maybeAddResult.then(() => {
+          onClose();
+        });
+      }
+      onClose();
+      return;
+    }
+
+    const maybeSubmitResult = onSubmit?.(
+      nextSelections.map((selection) => toFlatModifiers(selection, modifiers)),
+    );
+
+    if (isPromiseLike(maybeSubmitResult)) {
+      return maybeSubmitResult.then(() => {
+        onClose();
+      });
+    }
+
     onClose();
   };
+
+  const handleConfirm = handleSubmit;
 
   const toFlatModifiers = (
     selection: Record<string, Set<string>>,
@@ -169,6 +204,7 @@ export const useModifiersModal = ({
     toggle,
     handlePrevious,
     handleNext,
+    handleConfirm,
     handleSubmit,
   };
 };
