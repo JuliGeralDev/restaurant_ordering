@@ -5,8 +5,8 @@
   "author": "Juliana Geraldine García @JuliGeralDev juligeral.c@gmail.com",
   "description": "Root container for restaurant ordering frontend and backend",
   "scripts": {
-    "install:backend": "npm install --prefix ./restaurant_ordering_backend",
-    "install:frontend": "npm install --prefix ./restaurant_ordering_front",
+    "install:backend": "cd restaurant_ordering_backend && npm install",
+    "install:frontend": "cd restaurant_ordering_front && npm install",
     "install:all": "npm run install:backend && npm run install:frontend",
     "dev:backend": "npm run dev --prefix ./restaurant_ordering_backend",
     "dev:frontend": "npm run dev --prefix ./restaurant_ordering_front",
