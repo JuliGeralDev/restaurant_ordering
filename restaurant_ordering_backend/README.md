@@ -6,15 +6,21 @@ Backend API for restaurant order management built with Clean Architecture, featu
 
 Serverless REST API for restaurant ordering with:
 - **Clean Architecture**: Domain, Application, Infrastructure, Interfaces layers
-- **Event Timeline**: Complete audit trail for all order events
-- **TypeScript**: Full type safety
-- **DynamoDB Local**: Local development with Docker
+- **Event Timeline**: Complete append-only audit trail for all order lifecycle events
+- **TypeScript**: Full type safety end to end
+- **DynamoDB Local**: Local development with Docker, no AWS account needed
+- **Idempotent Checkout**: Safe retry via `Idempotency-Key` header
+- **Server-side Pricing**: Totals are never trusted from the client
+- **PII-safe Logging**: Email and phone fields are masked before being logged
 
-## Frontend Repository
+## Frontend
 
-The frontend for this project lives in a separate repository:
+The frontend lives in the same workspace:
 
-- https://github.com/JuliGeralDev/restaurant_ordering_front
+- [`../restaurant_ordering_front`](../restaurant_ordering_front)
+- [`../restaurant_ordering_front/README.md`](../restaurant_ordering_front/README.md)
+
+For instructions on running both applications together, see the [root README](../README.md).
 
 ## Development User Model
 
@@ -31,6 +37,7 @@ This means:
 - there is no real login flow
 - orders are created and queried for a simulated fixed user
 - Postman examples can use that same identifier safely during local testing
+- the fixed user is intentional and not an incomplete implementation
 
 ## Prerequisites
 
@@ -97,10 +104,10 @@ npm run setup
 npm run dev
 
 # 4. Test it
-curl http://localhost:3000/hello
+curl http://localhost:3000/menu
 ```
 
-**Done!** If you see JSON with order data, everything works.
+**Done!** If you see a JSON array of menu products, everything works.
 
 **Note:** The `npm run setup` command includes a 10-second wait to ensure DynamoDB is fully ready before creating tables.
 
@@ -163,10 +170,10 @@ npm run dev
 #### Step 5: Test
 
 ```bash
-curl http://localhost:3000/hello
+curl http://localhost:3000/menu
 ```
 
-If you see JSON with order data, **you're done!**
+If you see a JSON array of menu products, **you're done!**
 
 ## Quick Reference
 
@@ -197,26 +204,124 @@ npm run init:db
 
 ## API Endpoints
 
-### GET /hello
-Test endpoint - creates sample order
+All endpoints run at `http://localhost:3000` in local development.
+
+### GET /menu
+
+Retrieve all available menu products with their modifier groups.
 
 ```bash
-curl http://localhost:3000/hello
+curl http://localhost:3000/menu
+```
+
+### POST /cart/items
+
+Add a product to the cart. If the same product with the same modifiers already exists in the order, the quantity is incremented instead of creating a duplicate.
+
+```bash
+# Simple product (no modifiers)
+curl -X POST http://localhost:3000/cart/items \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "user-test-postman",
+    "productId": "1",
+    "quantity": 1
+  }'
+
+# Customizable product (with modifiers)
+curl -X POST http://localhost:3000/cart/items \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "user-test-postman",
+    "productId": "8",
+    "quantity": 1,
+    "modifiers": [
+      { "groupId": "protein", "optionId": "beef" },
+      { "groupId": "toppings", "optionId": "cheese" },
+      { "groupId": "sauces", "optionId": "bbq" }
+    ]
+  }'
+```
+
+On first call (no `orderId` provided), a new order is created and its `orderId` is returned. Pass `orderId` in subsequent calls to add items to the same order.
+
+### PUT /cart/items
+
+Update a specific cart item by its `cartItemId`. Replaces quantity and modifiers entirely.
+
+```bash
+curl -X PUT http://localhost:3000/cart/items \
+  -H "Content-Type: application/json" \
+  -d '{
+    "orderId": "<orderId>",
+    "userId": "user-test-postman",
+    "cartItemId": "<cartItemId>",
+    "quantity": 2,
+    "modifiers": [
+      { "groupId": "protein", "optionId": "chicken" }
+    ]
+  }'
+```
+
+### DELETE /cart/items
+
+Remove a cart item. Supports two modes:
+
+- by `cartItemId`: removes or decrements that specific instance
+- by `productId`: removes all instances of that product
+
+```bash
+curl -X DELETE http://localhost:3000/cart/items \
+  -H "Content-Type: application/json" \
+  -d '{
+    "orderId": "<orderId>",
+    "userId": "user-test-postman",
+    "cartItemId": "<cartItemId>"
+  }'
+```
+
+### POST /orders
+
+Submit checkout. Returns `202 Accepted` immediately while the order is finalized asynchronously. The order transitions from `PROCESSING` to `PLACED` after a short delay (~800ms).
+
+Requires an `Idempotency-Key` header to prevent duplicate submissions on retries.
+
+```bash
+curl -X POST http://localhost:3000/orders \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: <uuid>" \
+  -d '{
+    "orderId": "<orderId>",
+    "userId": "user-test-postman"
+  }'
+```
+
+### GET /orders
+
+List all orders for a given user.
+
+```bash
+curl "http://localhost:3000/orders?userId=user-test-postman"
 ```
 
 ### GET /orders/{orderId}
-Get order details
+
+Get order details including items and pricing breakdown.
 
 ```bash
-curl http://localhost:3000/orders/order-1
+curl http://localhost:3000/orders/<orderId>
 ```
 
 ### GET /orders/{orderId}/timeline
-Get order event timeline
+
+Get the paginated event timeline for an order. Events are always sorted by timestamp. Maximum page size is 50.
 
 ```bash
-curl http://localhost:3000/orders/order-1/timeline
-curl "http://localhost:3000/orders/order-1/timeline?page=1&pageSize=10"
+# First page
+curl "http://localhost:3000/orders/<orderId>/timeline?pageSize=10"
+
+# Next page using the token returned from the previous response
+curl "http://localhost:3000/orders/<orderId>/timeline?pageSize=10&nextToken=<token>"
 ```
 
 ## Postman Collection
@@ -256,20 +361,96 @@ After `npm run init:db`, you get **10 menu items**:
 
 ## Architecture
 
+The backend follows Clean Architecture with four layers that depend inward: the domain has no external dependencies, the application layer depends only on the domain, the infrastructure layer implements domain contracts, and the interfaces layer handles HTTP.
+
 ```
 src/
-├── domain/          # Entities, value objects, repository interfaces
-├── application/     # Use cases (business logic orchestration)
-├── infrastructure/  # DynamoDB, repository implementations
-└── interfaces/      # HTTP handlers
+├── domain/          # Core business rules. No framework dependencies.
+├── application/     # Use cases that orchestrate domain logic.
+├── infrastructure/  # DynamoDB clients and repository implementations.
+└── interfaces/      # Lambda handlers, validators, and mappers.
 ```
+
+### Domain layer
+
+Contains everything that defines what the application does, independently of how it does it.
+
+- **Entities**: `Order`, `OrderItem`, `TimelineEvent`, `IdempotencyRecord` — domain objects with identity and behavior.
+- **Value objects**: `Money` — encapsulates integer-cent amounts, prevents floating-point math, immutable.
+- **Repository interfaces**: `OrderRepository`, `TimelineRepository`, `MenuRepository`, `IdempotencyRepository` — contracts the infrastructure must fulfill.
+- **Domain services**: `PricingService` (subtotal, tax, service fee, total), `ModifierSelectionService` (validates required/max constraints per modifier group).
+- **Factories**: `TimelineEventFactory` — builds events with monotonic timestamps to guarantee sort order.
+- **Errors**: `ValidationError` (400), `NotFoundError` (404), `IdempotencyConflictError` (409).
+
+### Application layer
+
+Contains use cases that coordinate domain objects and services to execute a business operation.
+
+| Use case | Responsibility |
+|---|---|
+| `AddItemToCartUseCase` | Creates order on first item, merges or appends items, recalculates pricing |
+| `UpdateItemInCartUseCase` | Replaces quantity and modifiers for an existing `cartItemId` |
+| `RemoveItemFromCartUseCase` | Decrements or removes by `cartItemId`, or removes all by `productId` |
+| `PlaceOrderUseCase` | Validates idempotency key, sets status to `PROCESSING`, schedules async completion |
+
+Application services support the use cases:
+
+- **`CartItemService`**: Fetches product from menu, validates modifiers, detects duplicate items.
+- **`OrderService`**: Loads order from repository, creates new orders, finds items by id.
+- **`OrderPricingService`**: Orchestrates `PricingService` and saves a `PRICING_CALCULATED` event.
+- **`CartOperationOrchestrator`**: Sequences save-order → save-item-event → save-pricing-event.
+- **`OrderPlacementProcessorService`**: Async finalizer that transitions `PROCESSING → PLACED` after ~800ms.
+
+### Infrastructure layer
+
+Implements the contracts defined by the domain using AWS SDK v3 and DynamoDB Local.
+
+| Class | Table | Key design |
+|---|---|---|
+| `DynamoOrderRepository` | `orders` | PK `orderId` · GSI `userId-createdAt-index` |
+| `DynamoTimelineRepository` | `order_timeline` | PK `eventId` · GSI `orderId-timestamp-index` |
+| `DynamoMenuRepository` | `menu` | PK `productId` |
+| `DynamoIdempotencyRepository` | `idempotency` | PK `key` |
+
+Event deduplication is enforced with a DynamoDB `ConditionExpression: attribute_not_exists(eventId)` on every timeline write.
+
+Timeline pagination uses `LastEvaluatedKey` encoded as a Base64 `nextToken`.
+
+The `logger` utility wraps all output through `pii-mask.util.ts` before writing to console, masking email and phone fields.
+
+### Interfaces layer
+
+Exposes the application as a set of Lambda functions via Serverless Framework.
+
+- **`apiHandler` wrapper**: Parses body, headers, path and query params; validates payload size (max 16 KB); maps errors to HTTP status codes; records `VALIDATION_FAILED` timeline events when relevant.
+- **`OrderMapper`**: Converts domain `Order` → response DTO (Money value objects serialized as plain numbers).
+- **Validators**: `cart-validators.ts` enforces required fields and normalizes modifier input before use cases are called.
+
+### Order status flow
+
+```
+CREATED  →  (cart operations)  →  PROCESSING  →  PLACED
+   ↑                                  ↑               ↑
+First item added           POST /orders        ~800ms async
+```
+
+### Pricing formula
+
+```
+subtotal   = Σ (basePrice × quantity) + Σ (modifierPrice × quantity)
+tax        = subtotal × 0.10   (rounded to nearest cent)
+serviceFee = subtotal × 0.05   (rounded to nearest cent)
+total      = subtotal + tax + serviceFee
+```
+
+All values are stored and returned as **integer cents**. The `Money` value object rejects non-integer inputs at construction time.
 
 **Tech Stack:**
 - Serverless Framework 3.40.0
 - TypeScript 5.9.3
 - DynamoDB (AWS SDK v3.967.0)
 - esbuild 0.27.4
-- Jest 29.x (testing framework)
+- Jest 29.x / ts-jest (testing)
 
 ## Testing
 
@@ -356,10 +537,19 @@ npm run dev
 
 ## Event Types
 
-- `ORDER_STATUS_CHANGED`: Status transition
-- `CART_ITEM_ADDED`: New item
-- `CART_ITEM_UPDATED`: Item modified
-- `PRICING_CALCULATED`: Price recalculated
+All events share the same schema: `eventId`, `timestamp` (ISO 8601), `orderId`, `userId`, `type`, `source` (`web | api | worker`), `correlationId`, and `payload`.
+
+| Type | Trigger | Key payload fields |
+|---|---|---|
+| `CART_ITEM_ADDED` | New item added to cart | `productId`, `name`, `quantity`, `basePrice`, `modifiers` |
+| `CART_ITEM_UPDATED` | Quantity or modifiers changed, or duplicate merged | `cartItemId`, `productId`, `quantity` |
+| `CART_ITEM_REMOVED` | Item removed from cart | `cartItemId`, `productId`, `removedCount` |
+| `PRICING_CALCULATED` | After any cart mutation | `subtotal`, `tax`, `serviceFee`, `total` |
+| `ORDER_PLACED` | Checkout accepted | `acceptedAt`, `status: PROCESSING` |
+| `ORDER_STATUS_CHANGED` | Any status transition | `from`, `to` |
+| `VALIDATION_FAILED` | Request failed validation | `errorMessage`, `validationType`, `attemptedAction` |
+
+Timeline events are **append-only** and **deduplicated** by `eventId` at the database level using DynamoDB condition expressions. The timeline is always sorted by timestamp regardless of arrival order.
 
 ## License
 

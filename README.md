@@ -122,6 +122,7 @@ Important notes:
 | Node.js | 18.x LTS | Frontend and backend runtime |
 | npm | 9+ | Package manager |
 | Docker Desktop | Latest | DynamoDB Local |
+| AWS CLI | v2.x | `aws --version` |
 
 ## Environment Setup
 
