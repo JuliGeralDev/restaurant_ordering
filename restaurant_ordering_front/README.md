@@ -62,7 +62,7 @@ npm install
 # Example:
 # NEXT_PUBLIC_API_URL=http://localhost:3000
 # NEXT_PUBLIC_DEFAULT_USER_ENABLED=true
-# NEXT_PUBLIC_USER_ID=user-test-postman
+# NEXT_PUBLIC_USER_ID=user-test
 
 # 4. Start the frontend
 npm run dev
@@ -77,7 +77,7 @@ If your backend is in a different URL, update `.env.local`:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_PUBLIC_DEFAULT_USER_ENABLED=true
-NEXT_PUBLIC_USER_ID=user-test-postman
+NEXT_PUBLIC_USER_ID=user-test
 NEXT_PUBLIC_DEFAULT_USERNAME=default.user
 NEXT_PUBLIC_DEFAULT_NAME=Default User
 NEXT_PUBLIC_DEFAULT_EMAIL=default.user@example.com
@@ -95,7 +95,7 @@ Example content:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_PUBLIC_DEFAULT_USER_ENABLED=true
-NEXT_PUBLIC_USER_ID=user-test-postman
+NEXT_PUBLIC_USER_ID=user-test
 ```
 
 Required variables:
@@ -123,7 +123,7 @@ Current local example:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_PUBLIC_DEFAULT_USER_ENABLED=true
-NEXT_PUBLIC_USER_ID=user-test-postman
+NEXT_PUBLIC_USER_ID=user-test
 ```
 
 The application uses this base URL for requests such as:
@@ -150,7 +150,7 @@ Default-user mode is configured in `.env.local` using:
 
 ```env
 NEXT_PUBLIC_DEFAULT_USER_ENABLED=true
-NEXT_PUBLIC_USER_ID=user-test-postman
+NEXT_PUBLIC_USER_ID=user-test
 ```
 
 This value is consumed from:
@@ -324,7 +324,7 @@ Create or update `.env.local`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
-NEXT_PUBLIC_USER_ID=user-test-postman
+NEXT_PUBLIC_USER_ID=user-test
 ```
 
 Then restart the dev server.
@@ -335,7 +335,7 @@ Create or update `.env.local` with a simulated test user:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
-NEXT_PUBLIC_USER_ID=user-test-postman
+NEXT_PUBLIC_USER_ID=user-test
 ```
 
 Then restart the dev server.

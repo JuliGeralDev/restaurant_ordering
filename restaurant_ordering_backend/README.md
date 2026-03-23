@@ -29,7 +29,7 @@ This system does not include authentication, registration, or user administratio
 For local development and manual testing, the frontend and API flow use a fixed user identifier:
 
 ```env
-NEXT_PUBLIC_USER_ID=user-test-postman
+NEXT_PUBLIC_USER_ID=user-test
 ```
 
 This means:
@@ -223,7 +223,7 @@ Add a product to the cart. If the same product with the same modifiers already e
 curl -X POST http://localhost:3000/cart/items \
   -H "Content-Type: application/json" \
   -d '{
-    "userId": "user-test-postman",
+    "userId": "user-test",
     "productId": "1",
     "quantity": 1
   }'
@@ -232,7 +232,7 @@ curl -X POST http://localhost:3000/cart/items \
 curl -X POST http://localhost:3000/cart/items \
   -H "Content-Type: application/json" \
   -d '{
-    "userId": "user-test-postman",
+    "userId": "user-test",
     "productId": "8",
     "quantity": 1,
     "modifiers": [
@@ -254,7 +254,7 @@ curl -X PUT http://localhost:3000/cart/items \
   -H "Content-Type: application/json" \
   -d '{
     "orderId": "<orderId>",
-    "userId": "user-test-postman",
+    "userId": "user-test",
     "cartItemId": "<cartItemId>",
     "quantity": 2,
     "modifiers": [
@@ -275,7 +275,7 @@ curl -X DELETE http://localhost:3000/cart/items \
   -H "Content-Type: application/json" \
   -d '{
     "orderId": "<orderId>",
-    "userId": "user-test-postman",
+    "userId": "user-test",
     "cartItemId": "<cartItemId>"
   }'
 ```
@@ -292,7 +292,7 @@ curl -X POST http://localhost:3000/orders \
   -H "Idempotency-Key: <uuid>" \
   -d '{
     "orderId": "<orderId>",
-    "userId": "user-test-postman"
+    "userId": "user-test"
   }'
 ```
 
@@ -301,7 +301,7 @@ curl -X POST http://localhost:3000/orders \
 List all orders for a given user.
 
 ```bash
-curl "http://localhost:3000/orders?userId=user-test-postman"
+curl "http://localhost:3000/orders?userId=user-test"
 ```
 
 ### GET /orders/{orderId}
