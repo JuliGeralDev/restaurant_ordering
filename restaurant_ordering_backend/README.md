@@ -16,6 +16,22 @@ The frontend for this project lives in a separate repository:
 
 - https://github.com/JuliGeralDev/restaurant_ordering_front
 
+## Development User Model
+
+This system does not include authentication, registration, or user administration.
+
+For local development and manual testing, the frontend and API flow use a fixed user identifier:
+
+```env
+NEXT_PUBLIC_USER_ID=user-test-postman
+```
+
+This means:
+
+- there is no real login flow
+- orders are created and queried for a simulated fixed user
+- Postman examples can use that same identifier safely during local testing
+
 ## Prerequisites
 
 | Tool | Required Version | Check |
@@ -202,6 +218,26 @@ Get order event timeline
 curl http://localhost:3000/orders/order-1/timeline
 curl "http://localhost:3000/orders/order-1/timeline?page=1&pageSize=10"
 ```
+
+## Postman Collection
+
+A ready-to-run Postman collection for the local API is included in this repository:
+
+- [`postman/restaurant-ordering.postman_collection.json`](C:/Users/Bruja/Documents/Proyectos/restaurant_ordering/restaurant_ordering_backend/postman/restaurant-ordering.postman_collection.json)
+
+The collection covers the end-to-end local flow:
+
+- get menu
+- add simple product
+- add customized product
+- get order by id
+- update item in cart
+- remove item from cart
+- remove all instances of a product
+- list orders by user
+- place order with idempotency
+- inspect timeline events
+- validate common failure scenarios
 
 ## Sample Data
 
