@@ -26,7 +26,7 @@ const OrderCard = ({ order }: { order: OrderResponse }) => {
   }));
 
   return (
-    <Link href={`/orders/${order.orderId}`} className="block group">
+    <Link href={`/orders/${order.orderId}`} className="group block h-full">
       <CardConsola
         title={`#${shortId}`}
         headerAction={
@@ -35,15 +35,15 @@ const OrderCard = ({ order }: { order: OrderResponse }) => {
             <ChevronRight className="h-3.5 w-3.5 text-zinc-400 transition-transform group-hover:translate-x-0.5" />
           </span>
         }
-        className="transition-transform group-hover:-translate-y-0.5 group-hover:shadow-green-700/30"
+        className="min-h-[24rem] sm:min-h-[22rem] lg:min-h-[20rem] transition-transform group-hover:-translate-y-0.5 group-hover:shadow-green-700/30"
       >
-        <div className="flex flex-col gap-3 bg-zinc-800 p-4">
+        <div className="flex h-full flex-col gap-3 bg-zinc-800 p-4">
           <OrderLineItems
             items={lineItems}
-            className="flex flex-col gap-1 rounded-lg border-2 border-zinc-700 bg-zinc-900 px-3 py-2"
+            className="flex-1 overflow-y-auto rounded-lg border-2 border-zinc-700 bg-zinc-900 px-3 py-2"
           />
 
-          <div className="flex shrink-0 items-center justify-between">
+          <div className="mt-auto flex shrink-0 items-center justify-between">
             <span className="text-[9px] uppercase tracking-wide text-zinc-500">{date}</span>
             <span className="text-xs font-bold tabular-nums text-green-400">
               Total {formatCurrency(order.pricing.total)}

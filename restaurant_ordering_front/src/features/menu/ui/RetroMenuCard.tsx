@@ -86,11 +86,11 @@ export const RetroMenuCard = ({
     <>
       <CardConsola
         title={name}
-        className="max-w-sm"
+        className="w-full max-w-sm min-h-[25rem] sm:min-h-[23rem] lg:min-h-[20rem]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex flex-col gap-3 p-3">
+        <div className="flex h-full flex-col gap-3 p-3">
           <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border-6 border-zinc-700 bg-black shadow-2xl shadow-black/50">
             <img
               src={image}
@@ -112,7 +112,7 @@ export const RetroMenuCard = ({
             )}
           </div>
 
-          <div className="rounded-2xl border-4 border-zinc-400 bg-zinc-300 p-4 shadow-inner">
+          <div className="mt-auto rounded-2xl border-4 border-zinc-400 bg-zinc-300 p-4 shadow-inner">
             <RetroPriceDisplay price={price} />
             <div className="flex items-center justify-between px-1">
               <RetroDPad />
