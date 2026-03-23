@@ -1,50 +1,33 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import type {
   ConfirmOrderRequest,
-  ConfirmOrderResponse,
 } from "@/features/cart/cart.types";
-import { apiRequest } from "@/shared/lib/api/httpClient";
+import { confirmOrderRequest } from "@/features/cart/cart.api";
+import { useCartActionState } from "@/features/cart/hooks/useCartActionState";
 import { useCartStore } from "@/shared/stores/cartStore";
 
 export function useConfirmOrder() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { isLoading, error, run } = useCartActionState(
+    "Failed to confirm order"
+  );
   const { orderId, userId, clearOrder, getOrCreateCheckoutIdempotencyKey } =
     useCartStore();
 
   const confirmOrder = async () => {
     if (!orderId) return;
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
+    return run(async () => {
       const idempotencyKey = getOrCreateCheckoutIdempotencyKey(orderId);
+      const payload: ConfirmOrderRequest = { orderId, userId };
 
-      await apiRequest<ConfirmOrderResponse, ConfirmOrderRequest>({
-        method: "POST",
-        url: "/orders",
-        data: { orderId, userId },
-        headers: {
-          "Idempotency-Key": idempotencyKey,
-        },
-      });
-
+      await confirmOrderRequest(payload, idempotencyKey);
       clearOrder();
       router.push(`/orders/${orderId}`);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to confirm order";
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   return { confirmOrder, isLoading, error };

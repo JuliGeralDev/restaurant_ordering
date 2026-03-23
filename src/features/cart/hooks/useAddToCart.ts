@@ -1,60 +1,40 @@
-﻿"use client";
+"use client";
 
-import { useState } from "react";
-import { apiRequest } from "@/shared/lib/api/httpClient";
+import type {
+  AddToCartRequest,
+  Modifier,
+} from "@/features/cart/cart.types";
+import { addItemToCartRequest } from "@/features/cart/cart.api";
+import { useCartActionState } from "@/features/cart/hooks/useCartActionState";
+import { useCartOrderSync } from "@/features/cart/hooks/useCartOrderSync";
 import { useCartStore } from "@/shared/stores/cartStore";
-import type { AddToCartRequest, AddToCartResponse, Modifier, OrderResponse } from "../cart.types";
-
-const CART_ITEMS_ENDPOINT = "/cart/items";
 
 export function useAddToCart() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { orderId, userId, setOrderId, setOrderData } = useCartStore();
+  const { orderId, userId } = useCartStore();
+  const { syncOrder } = useCartOrderSync();
+  const { isLoading, error, run } = useCartActionState(
+    "Failed to add item to cart"
+  );
 
-  const addToCart = async (productId: string, quantity: number = 1, selectedModifiers?: Modifier[]) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
+  const addToCart = async (
+    productId: string,
+    quantity: number = 1,
+    selectedModifiers?: Modifier[]
+  ) =>
+    run(async () => {
       const payload: AddToCartRequest = {
         userId,
         productId,
         quantity,
+        ...(orderId ? { orderId } : {}),
+        ...(selectedModifiers ? { modifiers: selectedModifiers } : {}),
       };
 
-      if (orderId) {
-        payload.orderId = orderId;
-      }
-
-      if (selectedModifiers) {
-        payload.modifiers = selectedModifiers;
-      }
-
-      const response = await apiRequest<AddToCartResponse, AddToCartRequest>({
-        method: "POST",
-        url: CART_ITEMS_ENDPOINT,
-        data: payload,
-      });
-
-      setOrderId(response.orderId);
-
-      // Fetch fresh order data and push it to the store so all consumers update
-      const orderData = await apiRequest<OrderResponse>({
-        method: "GET",
-        url: `/orders/${response.orderId}`,
-      });
-      setOrderData(orderData);
+      const response = await addItemToCartRequest(payload);
+      await syncOrder(response.orderId);
 
       return response;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to add item to cart";
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    });
 
   return {
     addToCart,

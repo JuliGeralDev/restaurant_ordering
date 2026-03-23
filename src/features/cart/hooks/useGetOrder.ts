@@ -1,28 +1,25 @@
-﻿"use client";
+"use client";
 
 import { useEffect } from "react";
-import { apiRequest } from "@/shared/lib/api/httpClient";
+
+import { useCartOrderSync } from "@/features/cart/hooks/useCartOrderSync";
 import { useCartStore } from "@/shared/stores/cartStore";
-import type { OrderResponse } from "../cart.types";
 
 export function useGetOrder() {
-  const { orderId, orderData, setOrderData } = useCartStore();
+  const { orderId, orderData } = useCartStore();
+  const { refreshOrder } = useCartOrderSync();
 
-  const fetchOrder = (id: string) => {
-    apiRequest<OrderResponse>({ method: "GET", url: `/orders/${id}` })
-      .then(setOrderData)
-      .catch(() => {});
-  };
-
-  // Always fetch fresh from server on mount when there's an orderId
   useEffect(() => {
-    if (orderId) {
-      fetchOrder(orderId);
-    }
-  }, [orderId]);
+    if (!orderId) return;
+
+    refreshOrder(orderId).catch(() => {});
+  }, [orderId, refreshOrder]);
 
   return {
     data: orderData,
-    refetch: () => { if (orderId) fetchOrder(orderId); },
+    refetch: () => {
+      if (!orderId) return Promise.resolve(undefined);
+      return refreshOrder(orderId);
+    },
   };
 }
