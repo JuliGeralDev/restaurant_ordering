@@ -25,10 +25,22 @@ const TABLES = {
   orders: {
     TableName: 'orders',
     AttributeDefinitions: [
-      { AttributeName: 'orderId', AttributeType: 'S' }
+      { AttributeName: 'orderId', AttributeType: 'S' },
+      { AttributeName: 'userId', AttributeType: 'S' },
+      { AttributeName: 'createdAt', AttributeType: 'S' },
     ],
     KeySchema: [
       { AttributeName: 'orderId', KeyType: 'HASH' }
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'userId-createdAt-index',
+        KeySchema: [
+          { AttributeName: 'userId', KeyType: 'HASH' },
+          { AttributeName: 'createdAt', KeyType: 'RANGE' },
+        ],
+        Projection: { ProjectionType: 'ALL' },
+      }
     ],
     BillingMode: 'PAY_PER_REQUEST'
   },

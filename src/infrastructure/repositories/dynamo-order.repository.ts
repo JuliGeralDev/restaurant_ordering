@@ -2,7 +2,7 @@ import { OrderRepository } from '@/domain/repositories/order.repository';
 import { Order, OrderItem, OrderPricing } from '@/domain/entities/order.entity';
 import { Money } from '@/domain/value-objects/money.vo';
 import { dynamoDB } from '@/infrastructure/database/dynamo.client';
-import { GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { GetCommand, PutCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 
 export class DynamoOrderRepository implements OrderRepository {
   async findById(orderId: string): Promise<Order | null> {
@@ -28,6 +28,20 @@ export class DynamoOrderRepository implements OrderRepository {
         Item: order,
       })
     );
+  }
+
+  async findByUserId(userId: string): Promise<Order[]> {
+    const result = await dynamoDB.send(
+      new QueryCommand({
+        TableName: 'orders',
+        IndexName: 'userId-createdAt-index',
+        KeyConditionExpression: 'userId = :userId',
+        ExpressionAttributeValues: { ':userId': userId },
+        ScanIndexForward: false, // newest first
+      })
+    );
+
+    return (result.Items ?? []).map((item) => this.toDomain(item as any));
   }
 
   private toDomain(data: any): Order {

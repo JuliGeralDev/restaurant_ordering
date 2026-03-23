@@ -11,6 +11,7 @@ describe('OrderService', () => {
   beforeEach(() => {
     mockOrderRepository = {
       findById: jest.fn(),
+      findByUserId: jest.fn(),
       save: jest.fn(),
     };
     orderService = new OrderService(mockOrderRepository);
