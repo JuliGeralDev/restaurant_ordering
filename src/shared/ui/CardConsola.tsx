@@ -56,7 +56,7 @@ export const CardConsola = ({
   onMouseLeave,
 }: CardConsolaProps) => (
   <div
-    className={`relative overflow-hidden rounded-[2rem] border-[10px] border-zinc-500 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 shadow-2xl shadow-zinc-600/50 ${className}`.trim()}
+    className={`m-auto relative overflow-hidden rounded-[2rem] border-[10px] border-zinc-500 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 shadow-2xl shadow-zinc-600/50 ${className}`.trim()}
     onMouseEnter={onMouseEnter}
     onMouseLeave={onMouseLeave}
   >

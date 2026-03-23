@@ -109,10 +109,10 @@ export const RetroMenuCard = ({
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
             {isHovered && description && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center">
-                <p className="text-sm leading-5 text-green-400">{description}</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 overflow-y-auto px-4 py-3 text-center">
+                <p className="text-xs leading-4 text-green-400">{description}</p>
                 {productHasModifiers && (
-                  <p className="text-xs leading-4 text-yellow-400">
+                  <p className="shrink-0 text-[10px] leading-4 text-yellow-400">
                     You must choose at least one add-on
                   </p>
                 )}
