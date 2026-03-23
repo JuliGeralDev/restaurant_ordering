@@ -29,11 +29,7 @@ export const OrderSummaryCard = ({ order }: OrderSummaryCardProps) => {
   return (
     <CardConsola
       title={`ORDER #${shortId}`}
-      headerAction={
-        <span className="absolute right-3 top-1/2 -translate-y-1/2">
-          <OrderStatusBadge status={order.status} />
-        </span>
-      }
+      headerAction={<OrderStatusBadge status={order.status} />}
       className="mb-6"
     >
       <div className="flex flex-col gap-3 bg-zinc-800 p-4">

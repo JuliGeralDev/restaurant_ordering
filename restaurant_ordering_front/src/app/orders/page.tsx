@@ -29,17 +29,17 @@ const OrderCard = ({ order }: { order: OrderResponse }) => {
       <CardConsola
         title={`#${shortId}`}
         headerAction={
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+          <span className="flex items-center gap-1">
             <OrderStatusBadge status={order.status} />
             <ChevronRight className="h-3.5 w-3.5 text-zinc-400 transition-transform group-hover:translate-x-0.5" />
           </span>
         }
-        className="flex h-[280px] flex-col transition-transform group-hover:-translate-y-0.5 group-hover:shadow-green-700/30"
+        className="transition-transform group-hover:-translate-y-0.5 group-hover:shadow-green-700/30"
       >
-        <div className="flex flex-1 min-h-0 flex-col gap-3 bg-zinc-800 p-4">
+        <div className="flex flex-col gap-3 bg-zinc-800 p-4">
           <OrderLineItems
             items={lineItems}
-            className="flex flex-1 min-h-0 flex-col gap-1 overflow-y-auto rounded-lg border-2 border-zinc-700 bg-zinc-900 px-3 py-2"
+            className="flex flex-col gap-1 rounded-lg border-2 border-zinc-700 bg-zinc-900 px-3 py-2"
           />
 
           <div className="flex shrink-0 items-center justify-between">

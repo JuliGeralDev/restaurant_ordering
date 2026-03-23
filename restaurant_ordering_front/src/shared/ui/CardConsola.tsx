@@ -44,9 +44,14 @@ export const CardConsola = ({
       className="flex justify-center gap-1 py-0.5"
     />
 
-    <div className="relative border-y-4 border-zinc-700 bg-zinc-600 py-2 text-center text-[10px] font-bold uppercase tracking-wider text-green-400 shadow-inner">
-      {title}
-      {headerAction}
+    <div className="border-y-4 border-zinc-700 bg-zinc-600 py-2 text-[10px] font-bold uppercase tracking-wider text-green-400 shadow-inner grid grid-cols-[1fr_auto_1fr] items-center px-3">
+      <span />
+      <span>{title}</span>
+      {headerAction ? (
+        <span className="flex justify-end">{headerAction}</span>
+      ) : (
+        <span />
+      )}
     </div>
 
     {children}
