@@ -86,7 +86,7 @@ export const Header = () => {
               <span className="hidden sm:inline">Cart</span>
             </Button>
             {cartItemsCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-green-600 text-[7px] font-bold text-white shadow p-1">
+              <span className="absolute -top-1 -right-1 text-[11px] font-bold text-green-500">
                 {cartItemsCount > 99 ? "99+" : cartItemsCount}
               </span>
             )}
@@ -113,7 +113,7 @@ export const Header = () => {
               <ShoppingCart className="h-4 w-4" />
             </Button>
             {cartItemsCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-green-600 px-1 text-[7px] font-bold text-white shadow">
+              <span className="absolute -top-1 -right-1 text-[11px] font-bold text-green-500">
                 {cartItemsCount > 99 ? "99+" : cartItemsCount}
               </span>
             )}
