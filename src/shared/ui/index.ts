@@ -6,4 +6,7 @@ export { Card, CardHeader, CardFooter, CardTitle, CardAction, CardDescription, C
 export { OrderStatusBadge } from "./OrderStatusBadge";
 export { OrderLineItems } from "./OrderLineItems";
 export { PricingBreakdown } from "./PricingBreakdown";
+export { RetroSpeakerGrille, RetroDecorativeScrews } from "./RetroConsolePrimitives";
+export { RetroDPad } from "./RetroDPad";
+export { RetroPriceDisplay } from "./RetroPriceDisplay";
 

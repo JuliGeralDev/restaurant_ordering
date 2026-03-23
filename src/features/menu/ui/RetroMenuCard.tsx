@@ -1,14 +1,13 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
-import { ShoppingCart } from "lucide-react";
 
 import type { Modifiers } from "../menu.types";
 import { CardConsola } from "@/shared/ui/CardConsola";
 import { QuantityStepper } from "@/shared/ui/QuantityStepper";
+import { RetroDPad } from "@/shared/ui/RetroDPad";
+import { RetroPriceDisplay } from "@/shared/ui/RetroPriceDisplay";
 import { RetroModifiersModal } from "./RetroModifiersModal";
-
-const formatPrice = (price: number) => `$${price.toLocaleString("es-CO")}`;
 
 const hasModifiers = (modifiers?: Modifiers) =>
   Boolean(modifiers && (modifiers.protein || modifiers.toppings || modifiers.sauces));
@@ -20,30 +19,16 @@ interface RetroMenuCardProps {
   price: number;
   image: string;
   modifiers?: Modifiers;
-  onAddToCart?: (quantity: number, selectedModifiers?: Array<{groupId: string; optionId: string; name: string; price: number}>) => void;
+  onAddToCart?: (
+    quantity: number,
+    selectedModifiers?: Array<{
+      groupId: string;
+      optionId: string;
+      name: string;
+      price: number;
+    }>
+  ) => void;
 }
-
-const D_PAD_PARTS = [
-  "absolute left-1/2 top-0 h-4 w-4 -translate-x-1/2 rounded-md border-2 border-zinc-800 bg-zinc-700 shadow-lg",
-  "absolute bottom-0 left-1/2 h-4 w-4 -translate-x-1/2 rounded-md border-2 border-zinc-800 bg-zinc-700 shadow-lg",
-  "absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 rounded-md border-2 border-zinc-800 bg-zinc-700 shadow-lg",
-  "absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 rounded-md border-2 border-zinc-800 bg-zinc-700 shadow-lg",
-] as const;
-
-const DPad = () => (
-  <div className="relative h-12 w-12">
-    {D_PAD_PARTS.map((cls) => (
-      <div key={cls} className={cls} />
-    ))}
-    <div className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-md bg-zinc-800 shadow-inner" />
-  </div>
-);
-
-const PriceDisplay = ({ price }: { price: number }) => (
-  <div className="mb-2 rounded-xl border-4 border-zinc-700 bg-zinc-800 px-3 py-2 text-center text-lg font-bold text-green-400 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)]">
-    {formatPrice(price)}
-  </div>
-);
 
 const ActionArea = ({
   quantity,
@@ -51,7 +36,7 @@ const ActionArea = ({
   onAddToCart,
 }: {
   quantity: number;
-  setQuantity: (q: number) => void;
+  setQuantity: (quantity: number) => void;
   onAddToCart?: () => void;
 }) => (
   <div className="flex items-center gap-1">
@@ -83,11 +68,19 @@ export const RetroMenuCard = ({
       setModalOpen(true);
       return;
     }
+
     onAddToCart?.(quantity);
   };
 
-  const handleAddItem = (mods: Array<{groupId: string; optionId: string; name: string; price: number}>) => {
-    onAddToCart?.(1, mods);
+  const handleAddItem = (
+    selectedModifiers: Array<{
+      groupId: string;
+      optionId: string;
+      name: string;
+      price: number;
+    }>
+  ) => {
+    onAddToCart?.(1, selectedModifiers);
   };
 
   return (
@@ -121,9 +114,9 @@ export const RetroMenuCard = ({
           </div>
 
           <div className="rounded-2xl border-4 border-zinc-400 bg-zinc-300 p-4 shadow-inner">
-            <PriceDisplay price={price} />
+            <RetroPriceDisplay price={price} />
             <div className="flex items-center justify-between px-1">
-              <DPad />
+              <RetroDPad />
               <ActionArea
                 quantity={quantity}
                 setQuantity={setQuantity}

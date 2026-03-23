@@ -2,9 +2,15 @@
 
 import Image from "next/image";
 import { Trash2 } from "lucide-react";
-import { Button } from "@/shared/ui/button";
-import { QuantityStepper } from "@/shared/ui/QuantityStepper";
+
 import type { GroupedCartItem } from "@/features/cart/hooks/useGroupedCartItems";
+import { formatCurrency } from "@/shared/lib/formatters";
+import { Button } from "@/shared/ui/button";
+import {
+  RetroDecorativeScrews,
+  RetroSpeakerGrille,
+} from "@/shared/ui/RetroConsolePrimitives";
+import { QuantityStepper } from "@/shared/ui/QuantityStepper";
 
 interface CartItemRowProps {
   item: GroupedCartItem;
@@ -15,35 +21,12 @@ interface CartItemRowProps {
 
 const TOP_GRILLE_ITEMS = 4;
 const BOTTOM_GRILLE_ITEMS = 6;
-
-const SpeakerGrille = ({
-  amount,
-  itemClassName,
-  wrapperClassName,
-}: {
-  amount: number;
-  itemClassName: string;
-  wrapperClassName: string;
-}) => (
-  <div className={wrapperClassName}>
-    {Array.from({ length: amount }).map((_, i) => (
-      <div key={i} className={itemClassName} />
-    ))}
-  </div>
-);
-
-const DecorativeScrews = () => (
-  <>
-    {(["top-2 left-2", "top-2 right-2", "bottom-2 left-2", "bottom-2 right-2"] as const).map(
-      (pos) => (
-        <div
-          key={pos}
-          className={`absolute ${pos} h-1.5 w-1.5 rounded-full bg-zinc-600 shadow-inner`}
-        />
-      )
-    )}
-  </>
-);
+const SCREW_POSITIONS = [
+  "top-2 left-2",
+  "top-2 right-2",
+  "bottom-2 left-2",
+  "bottom-2 right-2",
+] as const;
 
 export const CartItemRow = ({
   item,
@@ -51,17 +34,16 @@ export const CartItemRow = ({
   onDecrement,
   onRemove,
 }: CartItemRowProps) => {
-  const totalPrice = (item.basePrice * item.totalQuantity).toLocaleString("es-CO");
+  const totalPrice = formatCurrency(item.basePrice * item.totalQuantity);
 
   return (
     <div className="relative overflow-hidden rounded-[1.5rem] border-[8px] border-zinc-500 bg-zinc-400 shadow-xl shadow-zinc-600/50">
-      <SpeakerGrille
+      <RetroSpeakerGrille
         amount={TOP_GRILLE_ITEMS}
         itemClassName="h-0.5 w-2 rounded-full bg-zinc-600/50"
-        wrapperClassName="flex justify-center gap-1 py-0.5"
+        className="flex justify-center gap-1 py-0.5"
       />
 
-      {/* Header strip */}
       <div className="relative border-y-4 border-zinc-700 bg-zinc-600 px-3 py-1.5">
         <div className="flex items-center justify-between">
           <span className="truncate pr-2 text-[10px] font-bold uppercase tracking-wider text-green-400">
@@ -81,9 +63,7 @@ export const CartItemRow = ({
         </div>
       </div>
 
-      {/* Body: image + price + stepper */}
       <div className="flex flex-row gap-3 px-3 py-3">
-        {/* Product image */}
         <div className="shrink-0">
           <div className="relative h-20 w-20 overflow-hidden rounded-lg border-4 border-zinc-600 bg-zinc-700">
             {item.imageUrl ? (
@@ -102,19 +82,20 @@ export const CartItemRow = ({
           </div>
         </div>
 
-        {/* Right section */}
-        <div className="flex flex-1 flex-col justify-between gap-2 min-w-0">
-          {/* Modifiers */}
+        <div className="flex min-w-0 flex-1 flex-col justify-between gap-2">
           {item.modifiers.length > 0 && (
             <ul className="flex flex-col gap-0.5">
-              {item.modifiers.map((mod) => (
-                <li key={mod.optionId} className="flex items-center justify-between gap-1">
+              {item.modifiers.map((modifier) => (
+                <li
+                  key={modifier.optionId}
+                  className="flex items-center justify-between gap-1"
+                >
                   <span className="text-[9px] uppercase tracking-wide text-zinc-600">
-                    + {mod.name}
+                    + {modifier.name}
                   </span>
-                  {mod.price.amount > 0 && (
+                  {modifier.price.amount > 0 && (
                     <span className="shrink-0 text-[9px] tabular-nums text-yellow-700">
-                      +${mod.price.amount.toLocaleString("es-CO")}
+                      +{formatCurrency(modifier.price.amount)}
                     </span>
                   )}
                 </li>
@@ -123,10 +104,8 @@ export const CartItemRow = ({
           )}
 
           <div className="flex items-center justify-between gap-2">
-            {/* Price */}
-            <span className="text-sm font-bold text-green-800">${totalPrice}</span>
+            <span className="text-sm font-bold text-green-800">{totalPrice}</span>
 
-            {/* Quantity stepper */}
             <QuantityStepper
               quantity={item.totalQuantity}
               onChange={(newQty) => {
@@ -138,12 +117,12 @@ export const CartItemRow = ({
         </div>
       </div>
 
-      <SpeakerGrille
+      <RetroSpeakerGrille
         amount={BOTTOM_GRILLE_ITEMS}
         itemClassName="h-1 w-0.5 rounded-full bg-zinc-600/50"
-        wrapperClassName="flex justify-center gap-0.5 py-1"
+        className="flex justify-center gap-0.5 py-1"
       />
-      <DecorativeScrews />
+      <RetroDecorativeScrews positions={SCREW_POSITIONS} />
     </div>
   );
 };
