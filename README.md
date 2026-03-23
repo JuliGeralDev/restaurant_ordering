@@ -1,6 +1,6 @@
 # Restaurant Ordering Frontend
 
-Frontend web for the restaurant ordering flow, built with Next.js 15, React 19 and Zustand. It connects to the backend API to display the menu, manage the cart, confirm orders and review the order timeline.
+Frontend application for restaurant ordering, built with Next.js 15, React 19, and Zustand. It connects to the backend API to display the menu, manage the cart, submit checkout requests, and display order history and timeline data.
 
 Repository: [restaurant_ordering_front](https://github.com/JuliGeralDev/restaurant_ordering_front)
 
@@ -52,8 +52,8 @@ cd restaurant_ordering_front
 # 2. Install dependencies
 npm install
 
-# 3. Verify or create .env.local
-# It should contain:
+# 3. Create .env.local from .env.example
+# Example:
 # NEXT_PUBLIC_API_URL=http://localhost:3000
 # NEXT_PUBLIC_USER_ID=user-test-postman
 
@@ -74,7 +74,11 @@ NEXT_PUBLIC_USER_ID=user-test-postman
 
 ## Environment Variables
 
-Create a `.env.local` file in the project root with:
+Create `.env.local` in the project root using:
+
+- [`.env.example`](C:/Users/Bruja/Documents/Proyectos/restaurante_timeline/restaurant_ordering_front/.env.example)
+
+Example content:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
@@ -92,6 +96,7 @@ Because this project uses a simulated user flow for local development, `NEXT_PUB
 
 The frontend connects to the backend through the `NEXT_PUBLIC_API_URL` variable defined in:
 
+- [`.env.example`](C:\Users\Bruja\Documents\Proyectos\restaurante_timeline\restaurant_ordering_front\.env.example)
 - [`.env.local`](C:\Users\Bruja\Documents\Proyectos\restaurante_timeline\restaurant_ordering_front\.env.local)
 - [`env.ts`](C:\Users\Bruja\Documents\Proyectos\restaurante_timeline\restaurant_ordering_front\src\shared\config\env.ts)
 
