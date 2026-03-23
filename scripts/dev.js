@@ -1,11 +1,9 @@
 const { spawn } = require("child_process");
 
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-
 function runProcess(name, args, color) {
-  const child = spawn(npmCommand, args, {
+  const child = spawn("npm", args, {
     stdio: "pipe",
-    shell: false,
+    shell: true,
   });
 
   child.stdout.on("data", (data) => {

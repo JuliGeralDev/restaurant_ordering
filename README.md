@@ -36,36 +36,46 @@ restaurante_timeline/
 
 ### Backend
 
-Environment file location:
+Copy the example file and keep the default values (they work with DynamoDB Local):
 
-- [`restaurant_ordering_backend/.env`](C:/Users/Bruja/Documents/Proyectos/restaurante_timeline/restaurant_ordering_backend/.env)
+```bash
+# Windows
+copy restaurant_ordering_backend\.env.example restaurant_ordering_backend\.env
 
-Reference template:
+# macOS / Linux
+cp restaurant_ordering_backend/.env.example restaurant_ordering_backend/.env
+```
 
-- [`restaurant_ordering_backend/.env.example`](C:/Users/Bruja/Documents/Proyectos/restaurante_timeline/restaurant_ordering_backend/.env.example)
+File: [`restaurant_ordering_backend/.env`](restaurant_ordering_backend/.env.example)
 
-Required variables:
+Required variables (all pre-filled in the example for local development):
 
-- `AWS_REGION`
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `DYNAMODB_ENDPOINT`
-- `TABLE_ORDERS`
-- `TABLE_TIMELINE`
-- `TABLE_MENU`
-- `TABLE_IDEMPOTENCY`
+| Variable | Default value |
+|---|---|
+| `AWS_REGION` | `us-east-1` |
+| `AWS_ACCESS_KEY_ID` | `dummy` |
+| `AWS_SECRET_ACCESS_KEY` | `dummy` |
+| `DYNAMODB_ENDPOINT` | `http://localhost:8000` |
+| `TABLE_ORDERS` | `orders` |
+| `TABLE_TIMELINE` | `order_timeline` |
+| `TABLE_MENU` | `menu` |
+| `TABLE_IDEMPOTENCY` | `idempotency` |
+
+> **Important:** The values `dummy` for `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are correct and required. DynamoDB Local does not validate credentials. If these variables are missing or empty, the AWS SDK will attempt to reach real AWS and fail with `UnrecognizedClientException`.
 
 ### Frontend
 
-Environment file location:
+Copy the example file:
 
-- [`restaurant_ordering_front/.env.local`](C:/Users/Bruja/Documents/Proyectos/restaurante_timeline/restaurant_ordering_front/.env.local)
+```bash
+# Windows
+copy restaurant_ordering_front\env.example restaurant_ordering_front\.env.local
 
-Reference template:
+# macOS / Linux
+cp restaurant_ordering_front/env.example restaurant_ordering_front/.env.local
+```
 
-- [`restaurant_ordering_front/.env.example`](C:/Users/Bruja/Documents/Proyectos/restaurante_timeline/restaurant_ordering_front/.env.example)
-
-Recommended local values:
+File: [`restaurant_ordering_front/.env.local`](restaurant_ordering_front/env.example)
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
@@ -96,11 +106,8 @@ npm run install:all
 Manual installation:
 
 ```bash
-cd restaurant_ordering_backend
-npm install
-
-cd ../restaurant_ordering_front
-npm install
+cd restaurant_ordering_backend && npm install
+cd ../restaurant_ordering_front && npm install
 ```
 
 ## Local Run Instructions
@@ -108,16 +115,33 @@ npm install
 Recommended startup order:
 
 1. Install dependencies.
-2. Start DynamoDB Local.
-3. Initialize tables and seed data.
-4. Start the backend API.
-5. Start the frontend application.
+2. Create environment files.
+3. Start DynamoDB Local.
+4. Initialize tables and seed data.
+5. Start the backend API.
+6. Start the frontend application.
 
 ### Option 1: Root scripts
 
 ```bash
+# 1. Install
+npm run install:all
+
+# 2. Create env files (run once — skip if already created)
+# Windows:
+copy restaurant_ordering_backend\.env.example restaurant_ordering_backend\.env
+copy restaurant_ordering_front\env.example restaurant_ordering_front\.env.local
+# macOS / Linux:
+# cp restaurant_ordering_backend/.env.example restaurant_ordering_backend/.env
+# cp restaurant_ordering_front/env.example restaurant_ordering_front/.env.local
+
+# 3. Start DynamoDB Local
 npm run docker:up
+
+# 4. Create tables and seed data
 npm run init:db
+
+# 5. Start backend + frontend together
 npm run dev
 ```
 
@@ -190,7 +214,7 @@ npm run init:db
 
 The backend repository already includes a Postman collection:
 
-- [`restaurant_ordering_backend/postman_collection.json`](C:/Users/Bruja/Documents/Proyectos/restaurante_timeline/restaurant_ordering_backend/postman_collection.json)
+- [`restaurant_ordering_backend/postman_collection.json`](restaurant_ordering_backend/postman_collection.json)
 
 The collection includes:
 
