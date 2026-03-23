@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -15,18 +15,21 @@ export default function OrderDetailPage() {
   const params = useParams();
   const orderId = params.orderId as string;
   const pollAttemptsRef = useRef(0);
+  const [pageSize, setPageSize] = useState(10);
 
   const { data: order, getData: refreshOrder } = useGetOrderById(orderId);
   const {
     events,
     isLoading,
     error,
-    hasMore,
-    isLoadingMore,
-    loadMore,
+    pageIndex,
+    canGoToPreviousPage,
+    canGoToNextPage,
+    isPageTransitioning,
+    goToPreviousPage,
+    goToNextPage,
     refresh: refreshEvents,
-  } =
-    useGetOrderEvents(orderId);
+  } = useGetOrderEvents(orderId, { pageSize });
 
   useEffect(() => {
     if (!order || order.status !== "PROCESSING") {
@@ -70,9 +73,14 @@ export default function OrderDetailPage() {
         events={events}
         isLoading={isLoading}
         error={error}
-        hasMore={hasMore}
-        isLoadingMore={isLoadingMore}
-        onLoadMore={loadMore}
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+        isPageTransitioning={isPageTransitioning}
+        canGoToPreviousPage={canGoToPreviousPage}
+        canGoToNextPage={canGoToNextPage}
+        onPreviousPage={goToPreviousPage}
+        onNextPage={goToNextPage}
+        onPageSizeChange={setPageSize}
       />
     </div>
   );

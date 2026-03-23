@@ -1,77 +1,87 @@
 "use client";
 
 import { History } from "lucide-react";
-import { CardConsola } from "@/shared/ui/CardConsola";
-import { Button } from "@/shared/ui/button";
-import { OrderEventRow } from "@/features/orders/ui/OrderEventRow";
+
 import type { OrderEvent } from "@/features/orders/orders.types";
+import { OrderEventRow } from "@/features/orders/ui/OrderEventRow";
+import { TimelinePager } from "@/features/orders/ui/TimelinePager";
+import { CardConsola } from "@/shared/ui/CardConsola";
 
 interface OrderTimelineProps {
   events: OrderEvent[];
   isLoading: boolean;
   error: string | null;
-  hasMore: boolean;
-  isLoadingMore: boolean;
-  onLoadMore: () => void;
+  pageIndex: number;
+  pageSize: number;
+  isPageTransitioning: boolean;
+  canGoToPreviousPage: boolean;
+  canGoToNextPage: boolean;
+  onPreviousPage: () => void;
+  onNextPage: () => void;
+  onPageSizeChange: (pageSize: number) => void;
 }
 
 export const OrderTimeline = ({
   events,
   isLoading,
   error,
-  hasMore,
-  isLoadingMore,
-  onLoadMore,
+  pageIndex,
+  pageSize,
+  isPageTransitioning,
+  canGoToPreviousPage,
+  canGoToNextPage,
+  onPreviousPage,
+  onNextPage,
+  onPageSizeChange,
 }: OrderTimelineProps) => {
   const sorted = [...events].sort(
     (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
   );
 
+  const isBusy = isLoading || isPageTransitioning;
+
   return (
     <CardConsola title="ORDER TIMELINE">
       <div className="bg-zinc-800 px-4 py-4">
-        {isLoading && (
+        {isBusy && (
           <p className="py-8 text-center text-xs uppercase tracking-widest text-zinc-500 animate-pulse">
             Loading events...
           </p>
         )}
 
-        {!isLoading && error && (
+        {!isBusy && error && (
           <p className="py-8 text-center text-xs uppercase tracking-widest text-red-500">
             {error}
           </p>
         )}
 
-        {!isLoading && !error && sorted.length === 0 && (
+        {!isBusy && !error && sorted.length === 0 && (
           <div className="flex flex-col items-center gap-2 py-8">
             <History className="h-10 w-10 text-zinc-600" />
             <p className="text-xs uppercase tracking-widest text-zinc-500">No events yet</p>
           </div>
         )}
 
-        {sorted.length > 0 && (
+        {!isBusy && sorted.length > 0 && (
           <>
-            {sorted.map((event, i) => (
+            {sorted.map((event, index) => (
               <OrderEventRow
                 key={event.eventId}
                 event={event}
-                isLast={i === sorted.length - 1 && !hasMore}
+                isLast={index === sorted.length - 1}
               />
             ))}
 
-            {hasMore && (
-              <div className="flex justify-center border-t border-zinc-700 pt-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-green-400"
-                  onClick={onLoadMore}
-                  disabled={isLoadingMore}
-                >
-                  {isLoadingMore ? "Loading…" : "Load more events ↓"}
-                </Button>
-              </div>
-            )}
+            <TimelinePager
+              pageIndex={pageIndex}
+              pageSize={pageSize}
+              isBusy={isBusy}
+              canGoToPreviousPage={canGoToPreviousPage}
+              canGoToNextPage={canGoToNextPage}
+              onPageSizeChange={onPageSizeChange}
+              onPreviousPage={onPreviousPage}
+              onNextPage={onNextPage}
+            />
           </>
         )}
       </div>
