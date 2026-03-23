@@ -82,3 +82,13 @@ export interface OrderResponse {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ConfirmOrderRequest {
+  orderId: string;
+  userId: string;
+}
+
+export interface ConfirmOrderResponse {
+  orderId: string;
+  status: string;
+}
