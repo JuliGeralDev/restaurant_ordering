@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { apiRequest } from "@/shared/lib/api/httpClient";
 
@@ -12,7 +12,7 @@ export function useGetRequest<TData>(
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const getData = async () => {
+  const getData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError("");
@@ -28,11 +28,11 @@ export function useGetRequest<TData>(
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [url]);
 
   useEffect(() => {
     void getData();
-  }, [url]);
+  }, [getData]);
 
   return {
     data,

@@ -38,5 +38,10 @@ export function useGetOrderEvents(orderId: string) {
     fetchEvents(nextToken, true).finally(() => setIsLoadingMore(false));
   };
 
-  return { events, isLoading, error, hasMore, loadMore, isLoadingMore };
+  const refresh = () => {
+    setError(null);
+    return fetchEvents();
+  };
+
+  return { events, isLoading, error, hasMore, loadMore, isLoadingMore, refresh };
 }

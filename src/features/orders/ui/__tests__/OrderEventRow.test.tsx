@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { OrderEventRow } from "../OrderEventRow";
 import type { OrderEvent } from "@/features/orders/orders.types";
 
@@ -15,20 +15,25 @@ const makeEvent = (overrides: Partial<OrderEvent> = {}): OrderEvent => ({
   ...overrides,
 });
 
+const renderExpanded = (event: OrderEvent, isLast = false) => {
+  render(<OrderEventRow event={event} isLast={isLast} />);
+  fireEvent.click(screen.getByRole("button", { name: /show event details/i }));
+};
+
 describe("OrderEventRow", () => {
   describe("CART_ITEM_ADDED / UPDATED / REMOVED", () => {
     it("renders the product name", () => {
-      render(<OrderEventRow event={makeEvent()} isLast={false} />);
+      renderExpanded(makeEvent());
       expect(screen.getByText("Burger")).toBeInTheDocument();
     });
 
     it("renders the formatted base price", () => {
-      render(<OrderEventRow event={makeEvent()} isLast={false} />);
+      renderExpanded(makeEvent());
       expect(screen.getByText("$15.000")).toBeInTheDocument();
     });
 
     it("renders the quantity", () => {
-      render(<OrderEventRow event={makeEvent()} isLast={false} />);
+      renderExpanded(makeEvent());
       expect(screen.getByText("2")).toBeInTheDocument();
     });
 
@@ -70,12 +75,12 @@ describe("OrderEventRow", () => {
     });
 
     it("renders the total amount", () => {
-      render(<OrderEventRow event={event} isLast={false} />);
+      renderExpanded(event);
       expect(screen.getByText("$38.700")).toBeInTheDocument();
     });
 
     it("renders subtotal and tax", () => {
-      render(<OrderEventRow event={event} isLast={false} />);
+      renderExpanded(event);
       expect(screen.getByText("$30.000")).toBeInTheDocument();
       expect(screen.getByText("$5.700")).toBeInTheDocument();
     });
@@ -88,7 +93,7 @@ describe("OrderEventRow", () => {
     });
 
     it("renders from and to status", () => {
-      render(<OrderEventRow event={event} isLast={false} />);
+      renderExpanded(event);
       expect(screen.getByText("PENDING")).toBeInTheDocument();
       expect(screen.getByText("CONFIRMED")).toBeInTheDocument();
     });
@@ -96,48 +101,33 @@ describe("OrderEventRow", () => {
 
   describe("ORDER_PLACED", () => {
     it("renders the confirmation message", () => {
-      render(
-        <OrderEventRow
-          event={makeEvent({ type: "ORDER_PLACED", payload: {} })}
-          isLast={false}
-        />
-      );
+      renderExpanded(makeEvent({ type: "ORDER_PLACED", payload: {} }));
       expect(screen.getByText("Order placed successfully.")).toBeInTheDocument();
     });
   });
 
   describe("VALIDATION_FAILED", () => {
     it("renders the reason from payload", () => {
-      render(
-        <OrderEventRow
-          event={makeEvent({
-            type: "VALIDATION_FAILED",
-            payload: { reason: "Missing required modifier" },
-          })}
-          isLast={false}
-        />
+      renderExpanded(
+        makeEvent({
+          type: "VALIDATION_FAILED",
+          payload: { reason: "Missing required modifier" },
+        })
       );
       expect(screen.getByText("Missing required modifier")).toBeInTheDocument();
     });
 
     it("falls back to 'Validation failed.' when no reason or message", () => {
-      render(
-        <OrderEventRow
-          event={makeEvent({ type: "VALIDATION_FAILED", payload: {} })}
-          isLast={false}
-        />
-      );
+      renderExpanded(makeEvent({ type: "VALIDATION_FAILED", payload: {} }));
       expect(screen.getByText("Validation failed.")).toBeInTheDocument();
     });
   });
 
   describe("Unknown event type (generic renderer)", () => {
     it("renders all payload keys and values", () => {
-      render(
-        <OrderEventRow
-          event={makeEvent({ type: "CUSTOM_EVENT", payload: { foo: "bar", count: 42 } })}
-          isLast={true}
-        />
+      renderExpanded(
+        makeEvent({ type: "CUSTOM_EVENT", payload: { foo: "bar", count: 42 } }),
+        true
       );
       expect(screen.getByText("foo")).toBeInTheDocument();
       expect(screen.getByText("bar")).toBeInTheDocument();
@@ -165,6 +155,24 @@ describe("OrderEventRow", () => {
     it("does not render the connector line when last", () => {
       const { container } = render(<OrderEventRow event={makeEvent()} isLast={true} />);
       expect(container.querySelector(".w-px")).toBeNull();
+    });
+  });
+
+  describe("Collapse behavior", () => {
+    it("keeps details collapsed by default", () => {
+      render(<OrderEventRow event={makeEvent()} isLast={false} />);
+      expect(screen.queryByText("Burger")).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /show event details/i })).toBeInTheDocument();
+    });
+
+    it("toggles details when the button is clicked", () => {
+      render(<OrderEventRow event={makeEvent()} isLast={false} />);
+
+      const button = screen.getByRole("button", { name: /show event details/i });
+      fireEvent.click(button);
+
+      expect(screen.getByText("Burger")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /hide event details/i })).toBeInTheDocument();
     });
   });
 });

@@ -1,11 +1,9 @@
 import type { OrderEventPayload } from "@/features/orders/orders.types";
 import { formatCurrency } from "@/shared/lib/formatters";
 
-// ─── Abstraction ──────────────────────────────────────────────────────────────
-
 export type EventRenderer = (payload: OrderEventPayload) => React.ReactNode;
 
-// ─── Concrete renderers (one per event family) ────────────────────────────────
+//  Concrete renderers (one per event family) 
 
 const renderCartItemEvent: EventRenderer = (payload) => (
   <div className="mt-2 flex items-center justify-between rounded bg-zinc-900 px-3 py-2">
@@ -70,18 +68,20 @@ const renderPricingCalculated: EventRenderer = (payload) => (
 const renderOrderStatusChanged: EventRenderer = (payload) => (
   <div className="mt-2 flex items-center gap-2 rounded bg-zinc-900 px-3 py-2">
     <span className="rounded bg-zinc-700 px-2 py-0.5 text-[10px] font-bold uppercase text-zinc-400">
-      {String(payload.from ?? "")}
+      {String(payload.from ?? payload.previousStatus ?? "")}
     </span>
     <span className="text-zinc-600">→</span>
     <span className="rounded border border-orange-700 bg-orange-900/50 px-2 py-0.5 text-[10px] font-bold uppercase text-orange-400">
-      {String(payload.to ?? "")}
+      {String(payload.to ?? payload.status ?? "")}
     </span>
   </div>
 );
 
-const renderOrderPlaced: EventRenderer = () => (
+const renderOrderPlaced: EventRenderer = (payload) => (
   <p className="mt-2 rounded bg-zinc-900 px-3 py-2 text-[11px] text-zinc-400">
-    Order placed successfully.
+    {payload.status === "PROCESSING"
+      ? "Order accepted for asynchronous processing."
+      : "Order placed successfully."}
   </p>
 );
 
@@ -104,9 +104,6 @@ export const renderGenericEvent: EventRenderer = (payload) => (
     ))}
   </div>
 );
-
-// ─── Registry (OCP: extend here, nothing else changes) ────────────────────────
-// To support a new event type, add an entry here — no other file needs to change.
 
 export const EVENT_RENDERERS: Partial<Record<string, EventRenderer>> = {
   CART_ITEM_ADDED: renderCartItemEvent,

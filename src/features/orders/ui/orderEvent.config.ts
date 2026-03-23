@@ -8,7 +8,6 @@ import {
   Edit,
 } from "lucide-react";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 export type EventConfig = {
   label: string;
@@ -19,9 +18,7 @@ export type EventConfig = {
   badgeClass: string;
 };
 
-// ─── Config registry ─────────────────────────────────────────────────────────
 // To support a new event type visually, add an entry here.
-
 export const EVENT_CONFIG: Record<string, EventConfig> = {
   CART_ITEM_ADDED: {
     label: "Item Added",

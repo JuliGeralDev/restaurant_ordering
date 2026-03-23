@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -12,9 +13,30 @@ export default function OrderDetailPage() {
   const params = useParams();
   const orderId = params.orderId as string;
 
-  const { data: order } = useGetOrderById(orderId);
-  const { events, isLoading, error, hasMore, isLoadingMore, loadMore } =
+  const { data: order, getData: refreshOrder } = useGetOrderById(orderId);
+  const {
+    events,
+    isLoading,
+    error,
+    hasMore,
+    isLoadingMore,
+    loadMore,
+    refresh: refreshEvents,
+  } =
     useGetOrderEvents(orderId);
+
+  useEffect(() => {
+    if (!order || order.status !== "PROCESSING") {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      void refreshOrder();
+      void refreshEvents();
+    }, 2000);
+
+    return () => window.clearInterval(intervalId);
+  }, [order, refreshEvents, refreshOrder]);
 
   return (
     <div className="container xl:w-[65%] px-4 py-8 m-auto">
@@ -27,6 +49,12 @@ export default function OrderDetailPage() {
       </Link>
 
       {order && <OrderSummaryCard order={order} />}
+
+      {order?.status === "PROCESSING" && (
+        <p className="mb-4 text-center text-[10px] uppercase tracking-widest text-amber-400 animate-pulse">
+          Checkout accepted. Finalizing order...
+        </p>
+      )}
 
       <OrderTimeline
         events={events}

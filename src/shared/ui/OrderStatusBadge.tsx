@@ -2,6 +2,7 @@ import { cn } from "@/shared/lib/utils";
 
 const STATUS_STYLES: Record<string, string> = {
   CREATED: "bg-amber-900/60 text-amber-400 border border-amber-600",
+  PROCESSING: "bg-blue-900/60 text-blue-400 border border-blue-600",
   PLACED: "bg-purple-900/60 text-purple-400 border border-purple-600",
 };
 
