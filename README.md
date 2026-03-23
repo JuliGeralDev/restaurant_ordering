@@ -168,6 +168,10 @@ Required local values:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_PUBLIC_USER_ID=user-test-postman
+NEXT_PUBLIC_DEFAULT_USERNAME=default.user
+NEXT_PUBLIC_DEFAULT_NAME=Default User
+NEXT_PUBLIC_DEFAULT_EMAIL=default.user@example.com
+NEXT_PUBLIC_DEFAULT_PHONE=+57 300 111 2233
 ```
 
 ## Ports

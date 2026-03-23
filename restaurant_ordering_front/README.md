@@ -75,11 +75,15 @@ If your backend is in a different URL, update `.env.local`:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_PUBLIC_USER_ID=user-test-postman
+NEXT_PUBLIC_DEFAULT_USERNAME=default.user
+NEXT_PUBLIC_DEFAULT_NAME=Default User
+NEXT_PUBLIC_DEFAULT_EMAIL=default.user@example.com
+NEXT_PUBLIC_DEFAULT_PHONE=+57 300 111 2233
 ```
 
 ## Environment Variables
 
-Create `.env.local` in the project root using:
+Create `.env.local` in the project root using `.env.example` as the template file that you copy locally:
 
 - [`.env.example`](.env.example)
 
@@ -94,6 +98,10 @@ Required variables:
 
 - `NEXT_PUBLIC_API_URL`: backend base URL used by the frontend
 - `NEXT_PUBLIC_USER_ID`: simulated test user used by the app for cart and order requests
+- `NEXT_PUBLIC_DEFAULT_USERNAME`: display username for the default simulated user
+- `NEXT_PUBLIC_DEFAULT_NAME`: display name for the default simulated user
+- `NEXT_PUBLIC_DEFAULT_EMAIL`: default email used as mock user metadata
+- `NEXT_PUBLIC_DEFAULT_PHONE`: default phone used as mock user metadata
 
 Because this project uses a simulated user flow for local development, `NEXT_PUBLIC_USER_ID` must always be present in `.env.local`. There is no real login in this frontend, so this value acts as the active test user during development.
 
@@ -102,7 +110,7 @@ Because this project uses a simulated user flow for local development, `NEXT_PUB
 The frontend connects to the backend through the `NEXT_PUBLIC_API_URL` variable defined in:
 
 - [`.env.example`](.env.example)
-- `.env.local` (created by you, not committed)
+- `.env.local` (this is the file the app actually reads at runtime)
 - [`src/shared/config/env.ts`](src/shared/config/env.ts)
 
 Current local example:

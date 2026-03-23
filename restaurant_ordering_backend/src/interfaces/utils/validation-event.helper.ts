@@ -1,4 +1,5 @@
 import { TimelineEvent } from '@/domain/entities/timeline-event.entity';
+import { maskPII } from '@/infrastructure/logging/pii-mask.util';
 import { randomUUID } from 'crypto';
 
 interface ValidationFailedDetails {
@@ -31,7 +32,7 @@ export function createValidationFailedEvent(
       validationType: details.validationType,
       failedFields: details.failedFields || [],
       attemptedAction: details.attemptedAction,
-      requestBody: details.requestBody,
+      requestBody: details.requestBody ? maskPII(details.requestBody) : undefined,
     },
   };
 }
