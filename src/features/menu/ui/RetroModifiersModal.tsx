@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 import type { Modifiers } from "../menu.types";
 import { CardConsola } from "@/shared/ui/CardConsola";
@@ -21,7 +21,9 @@ interface RetroModifiersModalProps {
   basePrice: number;
   quantity: number;
   modifiers: Modifiers;
-  onAddItem: (modifiers: FlatModifier[]) => void;
+  initialSelections?: FlatModifier[][];
+  confirmLabel?: string;
+  onSubmit: (selections: FlatModifier[][]) => void | Promise<void>;
 }
 
 export const RetroModifiersModal = ({
@@ -31,7 +33,9 @@ export const RetroModifiersModal = ({
   basePrice,
   quantity,
   modifiers,
-  onAddItem,
+  initialSelections,
+  confirmLabel = "ADD TO CART",
+  onSubmit,
 }: RetroModifiersModalProps) => {
   const {
     groups,
@@ -42,9 +46,18 @@ export const RetroModifiersModal = ({
     isCurrentStepValid,
     isLastStep,
     toggle,
+    handlePrevious,
     handleNext,
-    handleConfirm,
-  } = useModifiersModal({ isOpen, modifiers, basePrice, quantity, onAddItem, onClose });
+    handleSubmit,
+  } = useModifiersModal({
+    isOpen,
+    modifiers,
+    basePrice,
+    quantity,
+    initialSelections,
+    onSubmit,
+    onClose,
+  });
 
   if (!isOpen) return null;
 
@@ -169,9 +182,19 @@ export const RetroModifiersModal = ({
               CANCEL
             </Button>
 
+            {quantity > 1 && currentStep > 0 && (
+              <Button
+                onClick={handlePrevious}
+                className="flex items-center justify-center gap-1.5 rounded-xl border-4 border-zinc-700 bg-zinc-600 px-3 py-2.5 text-[8px] text-white transition-all hover:bg-zinc-700"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+                BACK
+              </Button>
+            )}
+
             {isLastStep ? (
               <Button
-                onClick={handleConfirm}
+                onClick={handleSubmit}
                 disabled={!isCurrentStepValid}
                 className={`flex-1 rounded-xl border-4 py-2.5 text-[8px] transition-all ${
                   isCurrentStepValid
@@ -179,7 +202,7 @@ export const RetroModifiersModal = ({
                     : "cursor-not-allowed border-zinc-600 bg-zinc-500 text-zinc-400 opacity-60"
                 }`}
               >
-                ADD TO CART
+                {confirmLabel}
               </Button>
             ) : (
               <Button

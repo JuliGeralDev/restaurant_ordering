@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 
+import { groupModifierSelections } from "@/features/cart/lib/groupModifierSelections";
 import type { Modifiers } from "../menu.types";
 import { CardConsola } from "@/shared/ui/CardConsola";
 import { QuantityStepper } from "@/shared/ui/QuantityStepper";
 import { RetroDPad } from "@/shared/ui/RetroDPad";
 import { RetroPriceDisplay } from "@/shared/ui/RetroPriceDisplay";
 import { RetroModifiersModal } from "./RetroModifiersModal";
+import type { FlatModifier } from "../hooks/useModifiersModal";
 
 const hasModifiers = (modifiers?: Modifiers) =>
   Boolean(modifiers && (modifiers.protein || modifiers.toppings || modifiers.sauces));
@@ -73,14 +75,13 @@ export const RetroMenuCard = ({
   };
 
   const handleAddItem = (
-    selectedModifiers: Array<{
-      groupId: string;
-      optionId: string;
-      name: string;
-      price: number;
-    }>
+    selections: FlatModifier[][]
   ) => {
-    onAddToCart?.(1, selectedModifiers);
+    const groupedSelections = groupModifierSelections(selections);
+
+    groupedSelections.forEach(({ quantity: selectedQuantity, modifiers: selectedModifiers }) => {
+      onAddToCart?.(selectedQuantity, selectedModifiers);
+    });
   };
 
   return (
@@ -135,7 +136,7 @@ export const RetroMenuCard = ({
           basePrice={price}
           quantity={quantity}
           modifiers={modifiers}
-          onAddItem={handleAddItem}
+          onSubmit={handleAddItem}
         />
       )}
     </>

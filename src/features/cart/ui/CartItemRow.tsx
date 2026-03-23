@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 import type { GroupedCartItem } from "@/features/cart/hooks/useGroupedCartItems";
 import { formatCurrency } from "@/shared/lib/formatters";
@@ -16,6 +16,7 @@ interface CartItemRowProps {
   item: GroupedCartItem;
   onIncrement: () => void;
   onDecrement?: () => void;
+  onEdit?: () => void;
   onRemove?: () => void;
 }
 
@@ -32,9 +33,16 @@ export const CartItemRow = ({
   item,
   onIncrement,
   onDecrement,
+  onEdit,
   onRemove,
 }: CartItemRowProps) => {
-  const totalPrice = formatCurrency(item.basePrice * item.totalQuantity);
+  const modifiersUnitPrice = item.modifiers.reduce(
+    (total, modifier) => total + modifier.price.amount,
+    0,
+  );
+  const totalPrice = formatCurrency(
+    (item.basePrice + modifiersUnitPrice) * item.totalQuantity,
+  );
 
   return (
     <div className="relative overflow-hidden rounded-[1.5rem] border-[8px] border-zinc-500 bg-zinc-400 shadow-xl shadow-zinc-600/50">
@@ -49,17 +57,30 @@ export const CartItemRow = ({
           <span className="truncate pr-2 text-[10px] font-bold uppercase tracking-wider text-green-400">
             {item.name}
           </span>
-          {onRemove && (
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              className="shrink-0 text-red-400 hover:bg-red-900/40 hover:text-red-300"
-              onClick={onRemove}
-              aria-label="Remove item"
-            >
-              <Trash2 />
-            </Button>
-          )}
+          <div className="flex items-center gap-1">
+            {item.hasModifiers && onEdit && (
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="shrink-0 text-white hover:bg-white/10 hover:text-white"
+                onClick={onEdit}
+                aria-label="Edit modifiers"
+              >
+                <Pencil />
+              </Button>
+            )}
+            {onRemove && (
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="shrink-0 text-red-400 hover:bg-red-900/40 hover:text-red-300"
+                onClick={onRemove}
+                aria-label="Remove item"
+              >
+                <Trash2 />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -95,7 +116,7 @@ export const CartItemRow = ({
                   </span>
                   {modifier.price.amount > 0 && (
                     <span className="shrink-0 text-[9px] tabular-nums text-yellow-700">
-                      +{formatCurrency(modifier.price.amount)}
+                      +{formatCurrency(modifier.price.amount * item.totalQuantity)}
                     </span>
                   )}
                 </li>

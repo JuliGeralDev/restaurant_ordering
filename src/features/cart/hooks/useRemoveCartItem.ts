@@ -30,10 +30,28 @@ export function useRemoveCartItem() {
   };
 
   const removeCartItem = (cartItemId: string) => doRemove(cartItemId);
+  const removeCartItems = async (cartItemIds: string[]) => {
+    if (!orderId || cartItemIds.length === 0) return;
+
+    return run(async () => {
+      for (const cartItemId of cartItemIds) {
+        const payload: RemoveCartItemRequest = {
+          orderId,
+          userId,
+          cartItemId,
+        };
+
+        await removeCartItemRequest(payload);
+      }
+
+      await refreshOrder(orderId);
+    });
+  };
   const removeAllItems = (productId: string) => doRemove(undefined, productId);
 
   return {
     removeCartItem,
+    removeCartItems,
     removeAllItems,
     isLoading,
     error,

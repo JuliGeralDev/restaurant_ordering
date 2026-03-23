@@ -13,6 +13,7 @@ interface CartContentProps {
   onIncrement: (item: GroupedCartItem) => void;
   onDecrement: (item: GroupedCartItem) => void;
   onRemoveAll: (item: GroupedCartItem) => void;
+  onEdit: (item: GroupedCartItem) => void;
   onConfirm: () => void;
   isConfirming: boolean;
 }
@@ -23,6 +24,7 @@ export const CartContent = ({
   onIncrement,
   onDecrement,
   onRemoveAll,
+  onEdit,
   onConfirm,
   isConfirming,
 }: CartContentProps) => (
@@ -34,6 +36,7 @@ export const CartContent = ({
           item={item}
           onIncrement={() => onIncrement(item)}
           onDecrement={() => onDecrement(item)}
+          onEdit={() => onEdit(item)}
           onRemove={() => onRemoveAll(item)}
         />
       ))}

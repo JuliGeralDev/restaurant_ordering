@@ -14,12 +14,29 @@ const getModifierGroups = (modifiers: Modifiers): [string, ModifierGroup][] =>
     (entry): entry is [string, ModifierGroup] => Boolean(entry[1]),
   );
 
+const toSelectionMap = (modifiers: FlatModifier[]) =>
+  modifiers.reduce<Record<string, Set<string>>>((accumulator, modifier) => {
+    const current = accumulator[modifier.groupId] ?? new Set<string>();
+    current.add(modifier.optionId);
+    accumulator[modifier.groupId] = current;
+    return accumulator;
+  }, {});
+
+const cloneSelectionMap = (selection: Record<string, Set<string>>) =>
+  Object.fromEntries(
+    Object.entries(selection).map(([groupId, optionIds]) => [
+      groupId,
+      new Set(optionIds),
+    ]),
+  );
+
 interface UseModifiersModalParams {
   isOpen: boolean;
   modifiers: Modifiers;
   basePrice: number;
   quantity: number;
-  onAddItem: (modifiers: FlatModifier[]) => void;
+  initialSelections?: FlatModifier[][];
+  onSubmit: (selections: FlatModifier[][]) => void | Promise<void>;
   onClose: () => void;
 }
 
@@ -28,20 +45,24 @@ export const useModifiersModal = ({
   modifiers,
   basePrice,
   quantity,
-  onAddItem,
+  initialSelections,
+  onSubmit,
   onClose,
 }: UseModifiersModalParams) => {
+  const [stepSelections, setStepSelections] = useState<Record<string, Set<string>>[]>([]);
   const [currentSelected, setCurrentSelected] = useState<Record<string, Set<string>>>({});
   const [currentStep, setCurrentStep] = useState(0);
-  const [confirmedTotal, setConfirmedTotal] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
-      setCurrentSelected({});
+      const nextSelections = Array.from({ length: quantity }, (_, index) =>
+        toSelectionMap(initialSelections?.[index] ?? []),
+      );
+      setStepSelections(nextSelections);
+      setCurrentSelected(cloneSelectionMap(nextSelections[0] ?? {}));
       setCurrentStep(0);
-      setConfirmedTotal(0);
     }
-  }, [isOpen]);
+  }, [initialSelections, isOpen, quantity]);
 
   const groups = getModifierGroups(modifiers);
 
@@ -58,7 +79,10 @@ export const useModifiersModal = ({
     }, 0);
 
   const additionalPriceCurrent = getExtraPrice(currentSelected);
-  const runningTotal = confirmedTotal + basePrice + additionalPriceCurrent;
+  const runningTotal = stepSelections.reduce((total, selection, index) => {
+    const selectionToUse = index === currentStep ? currentSelected : selection;
+    return total + basePrice + getExtraPrice(selectionToUse);
+  }, 0);
 
   const isCurrentStepValid = groups.every(([key, group]) => {
     if (!group.required) return true;
@@ -66,6 +90,14 @@ export const useModifiersModal = ({
   });
 
   const isLastStep = currentStep === quantity - 1;
+
+  const persistCurrentStep = () => {
+    setStepSelections((previous) => {
+      const next = [...previous];
+      next[currentStep] = cloneSelectionMap(currentSelected);
+      return next;
+    });
+  };
 
   const toggle = (groupKey: string, optionId: string, max?: number) => {
     setCurrentSelected((prev) => {
@@ -80,12 +112,41 @@ export const useModifiersModal = ({
     });
   };
 
-  const buildFlat = (): FlatModifier[] => {
+  const handleNext = () => {
+    if (!isCurrentStepValid) return;
+    const nextStep = currentStep + 1;
+    const nextSelection = stepSelections[nextStep] ?? {};
+    persistCurrentStep();
+    setCurrentStep(nextStep);
+    setCurrentSelected(cloneSelectionMap(nextSelection));
+  };
+
+  const handlePrevious = () => {
+    if (currentStep === 0) return;
+    const previousStep = currentStep - 1;
+    const previousSelection = stepSelections[previousStep] ?? {};
+    persistCurrentStep();
+    setCurrentStep(previousStep);
+    setCurrentSelected(cloneSelectionMap(previousSelection));
+  };
+
+  const handleSubmit = async () => {
+    if (!isCurrentStepValid) return;
+    const nextSelections = [...stepSelections];
+    nextSelections[currentStep] = cloneSelectionMap(currentSelected);
+    await onSubmit(nextSelections.map((selection) => toFlatModifiers(selection, modifiers)));
+    onClose();
+  };
+
+  const toFlatModifiers = (
+    selection: Record<string, Set<string>>,
+    sourceModifiers: Modifiers,
+  ): FlatModifier[] => {
     const flat: FlatModifier[] = [];
-    for (const [groupId, set] of Object.entries(currentSelected)) {
-      const group = modifiers[groupId as keyof typeof modifiers];
+    for (const [groupId, set] of Object.entries(selection)) {
+      const group = sourceModifiers[groupId as keyof typeof sourceModifiers];
       for (const optionId of set) {
-        const option = group?.options.find((o) => o.id === optionId);
+        const option = group?.options.find((currentOption) => currentOption.id === optionId);
         flat.push({
           groupId,
           optionId,
@@ -97,20 +158,6 @@ export const useModifiersModal = ({
     return flat;
   };
 
-  const handleNext = () => {
-    if (!isCurrentStepValid) return;
-    onAddItem(buildFlat());
-    setConfirmedTotal((t) => t + basePrice + additionalPriceCurrent);
-    setCurrentSelected({});
-    setCurrentStep((s) => s + 1);
-  };
-
-  const handleConfirm = () => {
-    if (!isCurrentStepValid) return;
-    onAddItem(buildFlat());
-    onClose();
-  };
-
   return {
     groups,
     currentSelected,
@@ -120,7 +167,8 @@ export const useModifiersModal = ({
     isCurrentStepValid,
     isLastStep,
     toggle,
+    handlePrevious,
     handleNext,
-    handleConfirm,
+    handleSubmit,
   };
 };

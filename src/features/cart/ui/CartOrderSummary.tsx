@@ -24,17 +24,24 @@ export const CartOrderSummary = ({
 }: CartOrderSummaryProps) => {
   const lineItems = [...(items ?? [])]
     .sort((a, b) => a.productId.localeCompare(b.productId))
-    .map((item) => ({
-      key: item.key,
-      name: item.name,
-      quantity: item.totalQuantity,
-      total: item.basePrice * item.totalQuantity,
-      modifiers: item.modifiers.map((modifier) => ({
-        key: `${item.key}-${modifier.groupId}-${modifier.optionId}`,
-        name: modifier.name,
-        price: modifier.price.amount,
-      })),
-    }));
+    .map((item) => {
+      const modifiersUnitTotal = item.modifiers.reduce(
+        (total, modifier) => total + modifier.price.amount,
+        0,
+      );
+
+      return {
+        key: item.key,
+        name: item.name,
+        quantity: item.totalQuantity,
+        total: (item.basePrice + modifiersUnitTotal) * item.totalQuantity,
+        modifiers: item.modifiers.map((modifier) => ({
+          key: `${item.key}-${modifier.groupId}-${modifier.optionId}`,
+          name: modifier.name,
+          price: modifier.price.amount * item.totalQuantity,
+        })),
+      };
+    });
 
   return (
     <CardConsola title="PAYMENT">
