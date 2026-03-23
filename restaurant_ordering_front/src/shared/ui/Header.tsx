@@ -14,7 +14,7 @@ export const Header = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement | null>(null);
   const orderData = useCartStore((s: { orderData: OrderResponse | null }) => s.orderData);
-  const userProfile = useCartStore((s: { userProfile: UserProfile }) => s.userProfile);
+  const userProfile = useCartStore((s: { userProfile: UserProfile | null }) => s.userProfile);
   const cartItemsCount =
     orderData?.items.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0) ?? 0;
 
@@ -87,7 +87,7 @@ export const Header = () => {
               aria-haspopup="dialog"
             >
               <User2 className="h-4 w-4 mr-2" />
-              <span className="truncate">{userProfile.name}</span>
+              <span className="truncate">{userProfile?.name ?? "Sign In"}</span>
             </Button>
 
             <UserProfileModal

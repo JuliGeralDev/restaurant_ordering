@@ -10,7 +10,6 @@ import { useCartOrderSync } from "@/features/cart/hooks/useCartOrderSync";
 import { useCartStore } from "@/shared/stores/cartStore";
 
 export function useAddToCart() {
-  const { orderId, userId } = useCartStore();
   const { syncOrder } = useCartOrderSync();
   const { isLoading, error, run } = useCartActionState(
     "Failed to add item to cart"
@@ -22,6 +21,12 @@ export function useAddToCart() {
     selectedModifiers?: Modifier[]
   ) =>
     run(async () => {
+      const { orderId, userId } = useCartStore.getState();
+
+      if (!userId) {
+        throw new Error("Sign in before adding items to the cart.");
+      }
+
       const payload: AddToCartRequest = {
         userId,
         productId,

@@ -8,14 +8,14 @@ import type { UserProfile } from "@/shared/types/user";
 
 interface CartStore {
   orderId: string | null;
-  userId: string;
-  userProfile: UserProfile;
+  userId: string | null;
+  userProfile: UserProfile | null;
   orderData: OrderResponse | null;
   checkoutIdempotencyKey: string | null;
   setOrderId: (orderId: string) => void;
   setOrderData: (data: OrderResponse | null) => void;
   setUserProfile: (userProfile: UserProfile) => void;
-  resetUserProfile: () => void;
+  clearUserSession: () => void;
   getOrCreateCheckoutIdempotencyKey: (orderId: string) => string;
   clearOrder: () => void;
 }
@@ -26,7 +26,7 @@ export const useCartStore : any = create<CartStore>()(
   persist(
     (set) => ({
       orderId: null,
-      userId: env.userId,
+      userId: env.defaultUser?.userId ?? null,
       userProfile: env.defaultUser,
       orderData: null,
       checkoutIdempotencyKey: null,
@@ -39,13 +39,19 @@ export const useCartStore : any = create<CartStore>()(
       setOrderData: (orderData: OrderResponse | null) => set({ orderData }),
       setUserProfile: (userProfile: UserProfile) =>
         set({
+          orderId: null,
           userId: userProfile.userId,
           userProfile,
+          orderData: null,
+          checkoutIdempotencyKey: null,
         }),
-      resetUserProfile: () =>
+      clearUserSession: () =>
         set({
-          userId: env.defaultUser.userId,
-          userProfile: env.defaultUser,
+          orderId: null,
+          userId: null,
+          userProfile: null,
+          orderData: null,
+          checkoutIdempotencyKey: null,
         }),
       getOrCreateCheckoutIdempotencyKey: (orderId: string) => {
         const state = useCartStore.getState();

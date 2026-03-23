@@ -18,6 +18,7 @@ This application includes:
 - Order confirmation flow
 - Order history view
 - Order detail page with timeline/events
+- Simulated user sessions with default-user and signed-out startup modes
 
 ## Prerequisites
 
@@ -60,6 +61,7 @@ npm install
 # 3. Create .env.local from .env.example
 # Example:
 # NEXT_PUBLIC_API_URL=http://localhost:3000
+# NEXT_PUBLIC_DEFAULT_USER_ENABLED=true
 # NEXT_PUBLIC_USER_ID=user-test-postman
 
 # 4. Start the frontend
@@ -74,6 +76,7 @@ If your backend is in a different URL, update `.env.local`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_DEFAULT_USER_ENABLED=true
 NEXT_PUBLIC_USER_ID=user-test-postman
 NEXT_PUBLIC_DEFAULT_USERNAME=default.user
 NEXT_PUBLIC_DEFAULT_NAME=Default User
@@ -91,19 +94,21 @@ Example content:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_DEFAULT_USER_ENABLED=true
 NEXT_PUBLIC_USER_ID=user-test-postman
 ```
 
 Required variables:
 
 - `NEXT_PUBLIC_API_URL`: backend base URL used by the frontend
-- `NEXT_PUBLIC_USER_ID`: simulated test user used by the app for cart and order requests
+- `NEXT_PUBLIC_DEFAULT_USER_ENABLED`: when `true`, the app starts with the default mock user already active; when `false`, it starts signed out and the user must create or recover a mock session from the user panel
+- `NEXT_PUBLIC_USER_ID`: simulated test user id used when the default mock user is enabled
 - `NEXT_PUBLIC_DEFAULT_USERNAME`: display username for the default simulated user
 - `NEXT_PUBLIC_DEFAULT_NAME`: display name for the default simulated user
 - `NEXT_PUBLIC_DEFAULT_EMAIL`: default email used as mock user metadata
 - `NEXT_PUBLIC_DEFAULT_PHONE`: default phone used as mock user metadata
 
-Because this project uses a simulated user flow for local development, `NEXT_PUBLIC_USER_ID` must always be present in `.env.local`. There is no real login in this frontend, so this value acts as the active test user during development.
+Because this project uses a simulated user flow for local development, there is no real authentication or password flow. Users are mock records stored by the backend. If `NEXT_PUBLIC_DEFAULT_USER_ENABLED=true`, `NEXT_PUBLIC_USER_ID` must be present in `.env.local` so the application can bootstrap the default user.
 
 ## API Connection
 
@@ -117,6 +122,7 @@ Current local example:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_DEFAULT_USER_ENABLED=true
 NEXT_PUBLIC_USER_ID=user-test-postman
 ```
 
@@ -133,11 +139,17 @@ Backend repository:
 
 ## Test User
 
-For local development, the frontend uses a simulated test user instead of a real authentication flow.
+For local development, the frontend uses simulated users instead of a real authentication flow.
 
-That user must be declared in `.env.local` using:
+You can run the application in two modes:
+
+- default-user mode: the app boots with the configured default mock user already signed in
+- guest mode: the app boots signed out, and the user must open the user panel and create/recover a mock session with `username + name + email + phone`
+
+Default-user mode is configured in `.env.local` using:
 
 ```env
+NEXT_PUBLIC_DEFAULT_USER_ENABLED=true
 NEXT_PUBLIC_USER_ID=user-test-postman
 ```
 
@@ -148,10 +160,10 @@ This value is consumed from:
 
 Important notes:
 
-- this is not a real authenticated session; it is a simulated user identifier
-- all cart and order requests are associated with this test user
-- the order history shown in `/orders` corresponds to that same user
-- if the backend data is filtered by user, you should seed or test with this same identifier
+- this is not a real authenticated session; it is mock user data persisted by the backend
+- cart and order requests are associated with the current active mock user
+- order history shown in `/orders` depends on the currently signed-in mock user
+- if a user signs out, the local cart/session state is cleared
 
 ## Run with Backend
 
@@ -250,7 +262,7 @@ Each feature is self-contained with its own types, API functions, hooks, and UI.
 | Path | Description |
 |---|---|
 | `shared/config/env.ts` | Validates required env vars at startup; throws if missing |
-| `shared/stores/cartStore.ts` | Zustand store — persists `orderId`, `userId`, and `checkoutIdempotencyKey` to `localStorage` |
+| `shared/stores/cartStore.ts` | Zustand store — persists the active mock user, `orderId`, and `checkoutIdempotencyKey` to `localStorage` |
 | `shared/hooks/useGetRequest.ts` | Generic GET hook with loading/error/retry state |
 | `shared/lib/api/httpClient.ts` | Axios instance — base URL, 10s timeout, error interceptor |
 | `shared/lib/api/apiError.ts` | Custom `ApiError` class wrapping Axios errors |
@@ -263,7 +275,8 @@ Each feature is self-contained with its own types, API functions, hooks, and UI.
 The Zustand store in `cartStore.ts` is the coordination layer between pages:
 
 - `orderId`: the active in-progress order id
-- `userId`: loaded from `NEXT_PUBLIC_USER_ID`
+- `userId`: the active mock user id, or `null` when signed out
+- `userProfile`: the active mock user profile, or `null` when signed out
 - `orderData`: latest fetched order (not persisted, refreshed each session)
 - `checkoutIdempotencyKey`: UUID created on first checkout attempt for a given order; reused on retries; replaced on a new order
 

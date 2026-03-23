@@ -324,6 +324,25 @@ curl "http://localhost:3000/orders/<orderId>/timeline?pageSize=10"
 curl "http://localhost:3000/orders/<orderId>/timeline?pageSize=10&nextToken=<token>"
 ```
 
+### POST /users/session
+
+Create or recover a mock user session.
+
+```bash
+curl -X POST http://localhost:3000/users/session \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "juliana",
+    "name": "Juliana Garcia",
+    "email": "juliana@example.com",
+    "phone": "+57 300 111 2233"
+  }'
+```
+
+### GET /users/{userId}
+
+Retrieve an existing mock user profile.
+
 ## Postman Collection
 
 A ready-to-run Postman collection for the local API is included in this repository:
@@ -534,6 +553,7 @@ npm run dev
 - **order_timeline**: Events (PK: `eventId`, GSI: `orderId` + `timestamp`)
 - **menu**: Menu items (PK: `productId`)
 - **idempotency**: Idempotency keys (PK: `key`)
+- **users**: Mock users (PK: `userId`, GSI: `identityKey`)
 
 ## Event Types
 

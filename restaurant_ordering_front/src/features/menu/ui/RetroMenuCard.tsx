@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { groupModifierSelections } from "@/features/cart/lib/groupModifierSelections";
 import type { Modifiers } from "../menu.types";
+import { addGroupedSelectionsToCart } from "../lib/addGroupedSelectionsToCart";
 import { CardConsola } from "@/shared/ui/CardConsola";
 import { QuantityStepper } from "@/shared/ui/QuantityStepper";
 import { RetroDPad } from "@/shared/ui/RetroDPad";
@@ -74,14 +75,11 @@ export const RetroMenuCard = ({
     onAddToCart?.(quantity);
   };
 
-  const handleAddItem = (
+  const handleAddItem = async (
     selections: FlatModifier[][]
   ) => {
     const groupedSelections = groupModifierSelections(selections);
-
-    groupedSelections.forEach(({ quantity: selectedQuantity, modifiers: selectedModifiers }) => {
-      onAddToCart?.(selectedQuantity, selectedModifiers);
-    });
+    await addGroupedSelectionsToCart(groupedSelections.values(), onAddToCart);
   };
 
   return (

@@ -167,6 +167,7 @@ Required local values:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_DEFAULT_USER_ENABLED=true
 NEXT_PUBLIC_USER_ID=user-test-postman
 NEXT_PUBLIC_DEFAULT_USERNAME=default.user
 NEXT_PUBLIC_DEFAULT_NAME=Default User
@@ -261,6 +262,8 @@ npm run test
 | `GET` | `/orders` | List orders filtered by `userId` |
 | `GET` | `/orders/:orderId` | Retrieve order details |
 | `GET` | `/orders/:orderId/timeline` | Retrieve paginated order timeline events |
+| `POST` | `/users/session` | Create or recover a mock user |
+| `GET` | `/users/:userId` | Retrieve a mock user profile |
 
 ## Seed Data
 
@@ -278,6 +281,15 @@ After `npm run init:db`, the local menu includes 10 products:
 - `10`: Custom Tacos
 
 Products `8`, `9`, and `10` include modifiers.
+
+## Mock Users
+
+The project supports simulated users persisted by the backend.
+
+- If `NEXT_PUBLIC_DEFAULT_USER_ENABLED=true`, the frontend boots with the configured default mock user already active.
+- If `NEXT_PUBLIC_DEFAULT_USER_ENABLED=false`, the app starts signed out.
+- From the user panel, a reviewer can create or recover a mock user by `username + name + email + phone`.
+- Orders remain linked by `userId`, so changing the active user changes the visible order history.
 
 ## Postman Collection
 

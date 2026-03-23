@@ -21,6 +21,10 @@ export function useConfirmOrder() {
     if (!orderId) return;
 
     return run(async () => {
+      if (!userId) {
+        throw new Error("Sign in before confirming the order.");
+      }
+
       const idempotencyKey = getOrCreateCheckoutIdempotencyKey(orderId);
       const payload: ConfirmOrderRequest = { orderId, userId };
 

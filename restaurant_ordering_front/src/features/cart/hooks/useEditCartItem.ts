@@ -18,6 +18,9 @@ export function useEditCartItem() {
   const editCartItem = (item: GroupedCartItem, selections: FlatModifier[][]) =>
     run(async () => {
       if (!orderId || item.cartItemIds.length === 0) return;
+      if (!userId) {
+        throw new Error("Sign in before editing the cart.");
+      }
 
       for (const cartItemId of item.cartItemIds) {
         await removeCartItemRequest({

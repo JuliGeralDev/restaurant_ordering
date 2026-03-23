@@ -6,6 +6,7 @@ import { ChevronRight, ShoppingBag } from "lucide-react";
 import type { OrderResponse } from "@/features/cart/cart.types";
 import { useGetOrdersByUser } from "@/features/orders/hooks/useGetOrdersByUser";
 import { formatCurrency, formatOrderShortId } from "@/shared/lib/formatters";
+import { useCartStore } from "@/shared/stores/cartStore";
 import { CardConsola } from "@/shared/ui/CardConsola";
 import { OrderLineItems } from "@/shared/ui/OrderLineItems";
 import { OrderStatusBadge } from "@/shared/ui/OrderStatusBadge";
@@ -55,6 +56,7 @@ const OrderCard = ({ order }: { order: OrderResponse }) => {
 };
 
 export default function OrdersPage() {
+  const userProfile = useCartStore((state: { userProfile: { name: string } | null }) => state.userProfile);
   const { data: orders, isLoading, error } = useGetOrdersByUser();
 
   return (
@@ -75,7 +77,16 @@ export default function OrdersPage() {
         </p>
       )}
 
-      {!isLoading && !error && orders.length === 0 && (
+      {!userProfile && (
+        <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
+          <ShoppingBag className="h-16 w-16 text-zinc-500" />
+          <p className="text-xs uppercase tracking-widest text-zinc-500">
+            Sign in to see your orders
+          </p>
+        </div>
+      )}
+
+      {userProfile && !isLoading && !error && orders.length === 0 && (
         <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
           <ShoppingBag className="h-16 w-16 text-zinc-500" />
           <p className="text-xs uppercase tracking-widest text-zinc-500">
@@ -84,7 +95,7 @@ export default function OrdersPage() {
         </div>
       )}
 
-      {!isLoading && orders.length > 0 && (
+      {userProfile && !isLoading && orders.length > 0 && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[...orders]
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())

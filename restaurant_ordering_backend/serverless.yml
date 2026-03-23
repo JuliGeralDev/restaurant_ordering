@@ -61,6 +61,18 @@ functions:
       - http:
           path: /menu
           method: get
+  createSessionUser:
+    handler: src/interfaces/create-session-user.handler
+    events:
+      - http:
+          path: /users/session
+          method: post
+  getUser:
+    handler: src/interfaces/get-user.handler
+    events:
+      - http:
+          path: /users/{userId}
+          method: get
   addItemToCart:
     handler: src/interfaces/add-item-to-cart.handler
     events:

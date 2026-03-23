@@ -1,18 +1,30 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { apiRequest } from "@/shared/lib/api/httpClient";
 
 export function useGetRequest<TData>(
   url: string,
-  initialData: TData
+  initialData: TData,
+  options?: {
+    enabled?: boolean;
+  }
 ) {
+  const enabled = options?.enabled ?? true;
+  const initialDataRef = useRef(initialData);
   const [data, setData] = useState<TData>(initialData);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(enabled);
   const [error, setError] = useState("");
 
   const getData = useCallback(async () => {
+    if (!enabled) {
+      setIsLoading(false);
+      setError("");
+      setData(initialDataRef.current);
+      return initialDataRef.current;
+    }
+
     try {
       setIsLoading(true);
       setError("");
@@ -28,11 +40,18 @@ export function useGetRequest<TData>(
     } finally {
       setIsLoading(false);
     }
-  }, [url]);
+  }, [enabled, url]);
 
   useEffect(() => {
+    if (!enabled) {
+      setIsLoading(false);
+      setError("");
+      setData(initialDataRef.current);
+      return;
+    }
+
     void getData();
-  }, [getData]);
+  }, [enabled, getData]);
 
   return {
     data,

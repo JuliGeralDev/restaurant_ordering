@@ -85,6 +85,26 @@ const TABLES = {
       { AttributeName: 'key', KeyType: 'HASH' }
     ],
     BillingMode: 'PAY_PER_REQUEST'
+  },
+  users: {
+    TableName: 'users',
+    AttributeDefinitions: [
+      { AttributeName: 'userId', AttributeType: 'S' },
+      { AttributeName: 'identityKey', AttributeType: 'S' }
+    ],
+    KeySchema: [
+      { AttributeName: 'userId', KeyType: 'HASH' }
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'identityKey-index',
+        KeySchema: [
+          { AttributeName: 'identityKey', KeyType: 'HASH' }
+        ],
+        Projection: { ProjectionType: 'ALL' }
+      }
+    ],
+    BillingMode: 'PAY_PER_REQUEST'
   }
 };
 
@@ -361,6 +381,7 @@ async function main() {
     await createTable(TABLES.timeline);
     await createTable(TABLES.menu);
     await createTable(TABLES.idempotency);
+    await createTable(TABLES.users);
     
     // Seed data
     await seedMenu();

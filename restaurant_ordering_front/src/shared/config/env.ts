@@ -2,6 +2,8 @@ import type { UserProfile } from "@/shared/types/user";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const userId = process.env.NEXT_PUBLIC_USER_ID;
+const defaultUserEnabled =
+  process.env.NEXT_PUBLIC_DEFAULT_USER_ENABLED !== "false";
 const defaultUsername =
   process.env.NEXT_PUBLIC_DEFAULT_USERNAME ?? "default.user";
 const defaultName =
@@ -15,7 +17,7 @@ if (!apiUrl) {
   throw new Error("Missing NEXT_PUBLIC_API_URL environment variable.");
 }
 
-if (!userId) {
+if (defaultUserEnabled && !userId) {
   throw new Error(
     "Missing NEXT_PUBLIC_USER_ID environment variable. Set a simulated test user in .env.local."
   );
@@ -23,13 +25,16 @@ if (!userId) {
 
 export const env = {
   apiUrl,
-  userId,
-  defaultUser: {
-    userId,
-    username: defaultUsername,
-    name: defaultName,
-    email: defaultEmail,
-    phone: defaultPhone,
-    isDefault: true,
-  } satisfies UserProfile,
+  defaultUserEnabled,
+  userId: userId ?? null,
+  defaultUser: defaultUserEnabled
+    ? ({
+        userId: userId!,
+        username: defaultUsername,
+        name: defaultName,
+        email: defaultEmail,
+        phone: defaultPhone,
+        isDefault: true,
+      } satisfies UserProfile)
+    : null,
 };

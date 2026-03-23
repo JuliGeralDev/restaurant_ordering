@@ -17,6 +17,10 @@ export function useRemoveCartItem() {
     if (!orderId) return;
 
     return run(async () => {
+      if (!userId) {
+        throw new Error("Sign in before updating the cart.");
+      }
+
       const payload: RemoveCartItemRequest = {
         orderId,
         userId,
