@@ -11,7 +11,7 @@ const makeEvent = (overrides: Partial<OrderEvent> = {}): OrderEvent => ({
   userId: "user-1",
   timestamp: "2024-01-15T10:30:00.000Z",
   type: "CART_ITEM_ADDED",
-  payload: { name: "Burger", quantity: 2, basePrice: 15000 },
+  payload: { name: "Burger", quantity: 2, basePrice: 1500000 },
   ...overrides,
 });
 
@@ -66,7 +66,12 @@ describe("OrderEventRow", () => {
   describe("PRICING_CALCULATED", () => {
     const event = makeEvent({
       type: "PRICING_CALCULATED",
-      payload: { subtotal: 30000, tax: 5700, serviceFee: 3000, total: 38700 },
+      payload: {
+        subtotal: 3000000,
+        tax: 570000,
+        serviceFee: 300000,
+        total: 3870000,
+      },
     });
 
     it("renders the 'Pricing Calculated' label", () => {

@@ -6,7 +6,7 @@ const makeItem = (overrides: Partial<OrderItemDto> = {}): OrderItemDto => ({
   cartItemId: "item-1",
   productId: "prod-1",
   name: "Burger",
-  basePrice: 15000,
+  basePrice: 1500000,
   quantity: 1,
   modifiers: [],
   ...overrides,

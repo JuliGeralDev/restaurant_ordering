@@ -115,7 +115,7 @@ const SAMPLE_MENU = [
     name: 'Classic Burger',
     description:
       'Juicy grilled beef burger served with fresh lettuce, tomato, onion and our classic house sauce on a toasted brioche bun.',
-    basePrice: 18000,
+    basePrice: 1800000,
     imageUrl: 'https://res.cloudinary.com/dualohbya/image/upload/v1774135398/custom_burguer_xpp1ux.jpg', 
   },
   {
@@ -123,7 +123,7 @@ const SAMPLE_MENU = [
     name: 'Double Cheese Burger',
     description:
       'Two grilled beef patties stacked with melted cheddar cheese, pickles, onions and house burger sauce on a toasted bun.',
-    basePrice: 21000,
+    basePrice: 2100000,
     imageUrl: 'https://res.cloudinary.com/dualohbya/image/upload/v1774135727/chesee_burger_fq95lb.jpg', 
   },
   {
@@ -131,7 +131,7 @@ const SAMPLE_MENU = [
     name: 'Pepperoni Pizza',
     description:
       'Classic Italian pizza with tomato sauce, melted mozzarella cheese and crispy pepperoni slices on a stone-baked crust.',
-    basePrice: 24000,
+    basePrice: 2400000,
     imageUrl: 'https://res.cloudinary.com/dualohbya/image/upload/v1774135786/pizza1_es8hkr.jpg', 
   },
   {
@@ -139,7 +139,7 @@ const SAMPLE_MENU = [
     name: 'Four Cheese Pizza',
     description:
       'Creamy pizza made with mozzarella, cheddar, parmesan and blue cheese on a golden baked crust with tomato sauce.',
-    basePrice: 25000,
+    basePrice: 2500000,
     imageUrl: 'https://res.cloudinary.com/dualohbya/image/upload/v1774135786/pizza1_es8hkr.jpg', 
   },
   {
@@ -147,7 +147,7 @@ const SAMPLE_MENU = [
     name: 'Italian Lasagna',
     description:
       'Traditional baked lasagna layered with pasta sheets, seasoned beef, tomato sauce and creamy béchamel topped with melted cheese.',
-    basePrice: 23000,
+    basePrice: 2300000,
     imageUrl: 'https://res.cloudinary.com/dualohbya/image/upload/v1774135855/lasagna_dmrhmq.jpg', 
   },
   {
@@ -155,7 +155,7 @@ const SAMPLE_MENU = [
     name: 'Coca-Cola',
     description:
       'Refreshing chilled Coca-Cola served cold. Perfect to pair with burgers, pizza or tacos.',
-    basePrice: 6000,
+    basePrice: 600000,
     imageUrl: 'https://res.cloudinary.com/dualohbya/image/upload/v1774135913/coca-cola_qtfglb.jpg', 
   },
   {
@@ -163,7 +163,7 @@ const SAMPLE_MENU = [
     name: 'Pepsi',
     description:
       'Classic Pepsi soda served ice cold, a refreshing drink to accompany any meal.',
-    basePrice: 6000,
+    basePrice: 600000,
     imageUrl: 'https://res.cloudinary.com/dualohbya/image/upload/v1774135912/sverre-2peR6-qWyeo-unsplash_kiwucs.jpg', 
   },
 
@@ -173,7 +173,7 @@ const SAMPLE_MENU = [
     name: 'Custom Burger',
     description:
       'Build your own burger by choosing your preferred protein, toppings and sauces.',
-    basePrice: 19000,
+    basePrice: 1900000,
     imageUrl: 'https://res.cloudinary.com/dualohbya/image/upload/v1774135634/custom_burger_xh97tj.jpg',
     modifiers: {
       protein: {
@@ -191,8 +191,8 @@ const SAMPLE_MENU = [
           lettuce: { name: 'Lettuce', price: 0 },
           tomato: { name: 'Tomato', price: 0 },
           onion: { name: 'Onion', price: 0 },
-          cheese: { name: 'Cheddar Cheese', price: 500 },
-          bacon: { name: 'Crispy Bacon', price: 900 },
+          cheese: { name: 'Cheddar Cheese', price: 50000 },
+          bacon: { name: 'Crispy Bacon', price: 90000 },
         },
       },
       sauces: {
@@ -200,8 +200,8 @@ const SAMPLE_MENU = [
         max: 2,
         options: {
           ketchup: { name: 'Ketchup', price: 0 },
-          mayo: { name: 'Mayonnaise', price: 300 },
-          bbq: { name: 'BBQ Sauce', price: 400 },
+          mayo: { name: 'Mayonnaise', price: 30000 },
+          bbq: { name: 'BBQ Sauce', price: 40000 },
         },
       },
     },
@@ -213,24 +213,24 @@ const SAMPLE_MENU = [
     name: 'Custom Hot Dog',
     description:
       'Grilled hot dog in a toasted bun that you can customize with toppings and sauces.',
-    basePrice: 15000,
+    basePrice: 1500000,
     imageUrl: 'https://res.cloudinary.com/dualohbya/image/upload/v1774135970/hot-dog_yoavkv.jpg',
     modifiers: {
       protein: {
         required: true,
         options: {
           classic: { name: 'Classic Sausage', price: 0 },
-          beef: { name: 'Beef Sausage', price: 1000 },
+          beef: { name: 'Beef Sausage', price: 100000 },
         },
       },
       toppings: {
         required: false,
         max: 3,
         options: {
-          cheese: { name: 'Cheese', price: 500 },
-          bacon: { name: 'Bacon', price: 800 },
-          onion: { name: 'Onion', price: 300 },
-          jalapeno: { name: 'Jalapeño', price: 400 },
+          cheese: { name: 'Cheese', price: 50000 },
+          bacon: { name: 'Bacon', price: 80000 },
+          onion: { name: 'Onion', price: 30000 },
+          jalapeno: { name: 'Jalapeño', price: 40000 },
         },
       },
       sauces: {
@@ -238,8 +238,8 @@ const SAMPLE_MENU = [
         max: 2,
         options: {
           ketchup: { name: 'Ketchup', price: 0 },
-          mayo: { name: 'Mayonnaise', price: 300 },
-          mustard: { name: 'Mustard', price: 200 },
+          mayo: { name: 'Mayonnaise', price: 30000 },
+          mustard: { name: 'Mustard', price: 20000 },
         },
       },
     },
@@ -251,7 +251,7 @@ const SAMPLE_MENU = [
     name: 'Custom Tacos',
     description:
       'Three soft tacos that you can customize with your favorite protein, toppings and sauces.',
-    basePrice: 20000,
+    basePrice: 2000000,
     imageUrl: 'https://res.cloudinary.com/dualohbya/image/upload/v1774135992/tacos_ppevtl.jpg',
     modifiers: {
       protein: {
@@ -266,10 +266,10 @@ const SAMPLE_MENU = [
         required: false,
         max: 4,
         options: {
-          guacamole: { name: 'Guacamole', price: 1200 },
-          cheese: { name: 'Cheese', price: 500 },
+          guacamole: { name: 'Guacamole', price: 120000 },
+          cheese: { name: 'Cheese', price: 50000 },
           lettuce: { name: 'Lettuce', price: 0 },
-          pico: { name: 'Pico de Gallo', price: 600 },
+          pico: { name: 'Pico de Gallo', price: 60000 },
         },
       },
       sauces: {
@@ -278,7 +278,7 @@ const SAMPLE_MENU = [
         options: {
           salsa_roja: { name: 'Red Salsa', price: 0 },
           salsa_verde: { name: 'Green Salsa', price: 0 },
-          chipotle: { name: 'Chipotle Sauce', price: 500 },
+          chipotle: { name: 'Chipotle Sauce', price: 50000 },
         },
       },
     },

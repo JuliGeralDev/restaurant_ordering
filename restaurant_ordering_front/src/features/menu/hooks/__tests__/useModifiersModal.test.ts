@@ -9,14 +9,14 @@ const modifiers: Modifiers = {
     max: 1,
     options: [
       { id: "chicken", name: "Chicken", price: 0 },
-      { id: "beef", name: "Beef", price: 2000 },
+      { id: "beef", name: "Beef", price: 200000 },
     ],
   },
   sauces: {
     required: false,
     max: 2,
     options: [
-      { id: "bbq", name: "BBQ", price: 500 },
+      { id: "bbq", name: "BBQ", price: 50000 },
       { id: "mayo", name: "Mayo", price: 0 },
     ],
   },
@@ -25,7 +25,7 @@ const modifiers: Modifiers = {
 const defaults = {
   isOpen: true,
   modifiers,
-  basePrice: 15000,
+  basePrice: 1500000,
   quantity: 1,
   onAddItem: vi.fn(),
   onClose: vi.fn(),
@@ -42,7 +42,7 @@ describe("useModifiersModal", () => {
 
   it("runningTotal equals basePrice when nothing is selected", () => {
     const { result } = renderHook(() => useModifiersModal(defaults));
-    expect(result.current.runningTotal).toBe(15000);
+    expect(result.current.runningTotal).toBe(1500000);
   });
 
   it("toggle adds an option to the selection", () => {
@@ -79,15 +79,15 @@ describe("useModifiersModal", () => {
 
   it("additionalPriceCurrent sums prices of selected options", () => {
     const { result } = renderHook(() => useModifiersModal(defaults));
-    act(() => result.current.toggle("protein", "beef", 1)); // +2000
-    act(() => result.current.toggle("sauces", "bbq"));      // +500
-    expect(result.current.additionalPriceCurrent).toBe(2500);
+    act(() => result.current.toggle("protein", "beef", 1)); // +200000
+    act(() => result.current.toggle("sauces", "bbq"));      // +50000
+    expect(result.current.additionalPriceCurrent).toBe(250000);
   });
 
   it("runningTotal includes basePrice + selected extras", () => {
     const { result } = renderHook(() => useModifiersModal(defaults));
-    act(() => result.current.toggle("protein", "beef", 1)); // +2000
-    expect(result.current.runningTotal).toBe(17000);
+    act(() => result.current.toggle("protein", "beef", 1)); // +200000
+    expect(result.current.runningTotal).toBe(1700000);
   });
 
   it("isLastStep is true when quantity=1", () => {
@@ -161,10 +161,10 @@ describe("useModifiersModal", () => {
 
     it("handleNext accumulates confirmedTotal across steps", () => {
       const { result } = renderHook(() => useModifiersModal(multiDefaults));
-      act(() => result.current.toggle("protein", "beef", 1)); // step 1: 15000+2000=17000
+      act(() => result.current.toggle("protein", "beef", 1)); // step 1: 1500000+200000=1700000
       act(() => result.current.handleNext());
-      // confirmedTotal=17000; next step: runningTotal = 17000 + 15000 = 32000
-      expect(result.current.runningTotal).toBe(32000);
+      // confirmedTotal=1700000; next step: runningTotal = 1700000 + 1500000 = 3200000
+      expect(result.current.runningTotal).toBe(3200000);
     });
 
     it("handleNext does nothing when step is invalid", () => {
@@ -188,6 +188,6 @@ describe("useModifiersModal", () => {
     rerender({ isOpen: true });
     expect(result.current.currentSelected).toEqual({});
     expect(result.current.currentStep).toBe(0);
-    expect(result.current.runningTotal).toBe(15000);
+    expect(result.current.runningTotal).toBe(1500000);
   });
 });

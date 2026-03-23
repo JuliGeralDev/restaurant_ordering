@@ -15,7 +15,7 @@ describe('Money Value Object', () => {
 
     it('should throw ValidationError for non-integer amount', () => {
       expect(() => new Money(10.5)).toThrow(ValidationError);
-      expect(() => new Money(10.5)).toThrow('Money amount must be an integer (cents)');
+      expect(() => new Money(10.5)).toThrow('Money amount must be an integer in minor units');
     });
 
     it('should throw ValidationError for negative amount', () => {

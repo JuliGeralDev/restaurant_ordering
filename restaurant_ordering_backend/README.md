@@ -395,7 +395,7 @@ src/
 Contains everything that defines what the application does, independently of how it does it.
 
 - **Entities**: `Order`, `OrderItem`, `TimelineEvent`, `IdempotencyRecord` — domain objects with identity and behavior.
-- **Value objects**: `Money` — encapsulates integer-cent amounts, prevents floating-point math, immutable.
+- **Value objects**: `Money` — encapsulates integer minor units (for COP, centavos), prevents floating-point math, immutable.
 - **Repository interfaces**: `OrderRepository`, `TimelineRepository`, `MenuRepository`, `IdempotencyRepository` — contracts the infrastructure must fulfill.
 - **Domain services**: `PricingService` (subtotal, tax, service fee, total), `ModifierSelectionService` (validates required/max constraints per modifier group).
 - **Factories**: `TimelineEventFactory` — builds events with monotonic timestamps to guarantee sort order.
@@ -462,7 +462,7 @@ serviceFee = subtotal × 0.05   (rounded to nearest cent)
 total      = subtotal + tax + serviceFee
 ```
 
-All values are stored and returned as **integer cents**. The `Money` value object rejects non-integer inputs at construction time.
+All values are stored and returned as **integer minor units**. For COP this means centavos, so `1800000` represents `COP 18,000.00`. The `Money` value object rejects non-integer inputs at construction time.
 
 **Tech Stack:**
 - Serverless Framework 3.40.0

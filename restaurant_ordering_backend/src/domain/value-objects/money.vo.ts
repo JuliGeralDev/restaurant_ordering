@@ -1,11 +1,11 @@
 import { ValidationError } from '@/domain/errors/validation.error';
 
 export class Money {
-    private readonly amount: number; // in cents
+    private readonly amount: number; // stored in minor units (for COP, centavos)
 
     constructor(amount: number) {
         if (!Number.isInteger(amount)) {
-            throw new ValidationError('Money amount must be an integer (cents)');
+            throw new ValidationError('Money amount must be an integer in minor units');
         }
 
         if (amount < 0) {

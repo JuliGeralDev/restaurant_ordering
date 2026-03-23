@@ -291,6 +291,14 @@ The project supports simulated users persisted by the backend.
 - From the user panel, a reviewer can create or recover a mock user by `username + name + email + phone`.
 - Orders remain linked by `userId`, so changing the active user changes the visible order history.
 
+## Money Representation
+
+All monetary values in API payloads and persistence are stored as integer minor units.
+
+- For COP, this means centavos.
+- Example: `1800000` represents `COP 18,000.00`.
+- The frontend formats these minor units back into human-readable COP values.
+
 ## Postman Collection
 
 A ready-to-run Postman collection is included here:
