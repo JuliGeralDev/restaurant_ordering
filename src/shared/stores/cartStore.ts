@@ -15,14 +15,13 @@ interface CartStore {
   clearOrder: () => void;
 }
 
-// For now, we use a hardcoded userId. In the future, this should come from auth
-const DEFAULT_USER_ID = "user-test-postman";
+
 
 export const useCartStore : any = create<CartStore>()(
   persist(
     (set) => ({
       orderId: null,
-      userId: DEFAULT_USER_ID,
+      userId: process.env.NEXT_PUBLIC_USER_ID || "default-user",
       orderData: null,
       checkoutIdempotencyKey: null,
       setOrderId: (orderId: string) =>

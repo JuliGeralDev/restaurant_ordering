@@ -1,36 +1,224 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Restaurant Ordering Frontend
+
+Frontend web for the restaurant ordering flow, built with Next.js 15, React 19 and Zustand. It connects to the backend API to display the menu, manage the cart, confirm orders and review the order timeline.
+
+Repository: [restaurant_ordering_front](https://github.com/JuliGeralDev/restaurant_ordering_front)
+
+## Overview
+
+This application includes:
+
+- Menu listing with product modifiers
+- Cart management with quantity updates
+- Order confirmation flow
+- Order history view
+- Order detail page with timeline/events
+
+## Prerequisites
+
+| Tool | Recommended Version | Check |
+|------|---------------------|-------|
+| Node.js | 18.x LTS or newer | `node --version` |
+| npm | 9.x or newer | `npm --version` |
+
+**Install:**
+
+- Node.js: [https://nodejs.org](https://nodejs.org)
+
+### Managing Node.js Version with nvm
+
+If you need to switch Node versions, using `nvm` is recommended:
+
+- **Windows**: install [nvm-windows](https://github.com/coreybutler/nvm-windows/releases)
+- **macOS/Linux**: install [nvm-sh](https://github.com/nvm-sh/nvm)
+
+Example with Node 18:
+
+```bash
+nvm install 18
+nvm use 18
+node --version
+```
 
 ## Getting Started
 
-First, run the development server:
+### Quick Setup (Recommended)
 
 ```bash
+# 1. Clone and enter the project
+git clone <repository-url>
+cd restaurant_ordering_front
+
+# 2. Install dependencies
+npm install
+
+# 3. Verify or create .env.local
+# It should contain:
+# NEXT_PUBLIC_API_URL=http://localhost:3000
+
+# 4. Start the frontend
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3001](http://localhost:3001)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Important:** this frontend expects the backend API to be running at `http://localhost:3000`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+If your backend is in a different URL, update `.env.local`:
 
-## Learn More
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Environment Variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create a `.env.local` file in the project root with:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
 
-## Deploy on Vercel
+This variable is required. The app will fail on startup if it is missing.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## API Connection
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The frontend connects to the backend through the `NEXT_PUBLIC_API_URL` variable defined in:
+
+- [`.env.local`](C:\Users\Bruja\Documents\Proyectos\restaurante_timeline\restaurant_ordering_front\.env.local)
+- [`env.ts`](C:\Users\Bruja\Documents\Proyectos\restaurante_timeline\restaurant_ordering_front\src\shared\config\env.ts)
+
+Current local example:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+The application uses this base URL for requests such as:
+
+- menu retrieval
+- cart item creation/removal
+- order confirmation
+- order history and order timeline
+
+Backend repository:
+
+- [restaurant_ordering_backend](https://github.com/JuliGeralDev/restaurant_ordering_backend)
+
+## Test User
+
+For local development, the frontend currently uses a fixed test user instead of authentication.
+
+Configured value:
+
+```text
+user-test-postman
+```
+
+This value is defined in:
+
+- [`cartStore.ts`](C:\Users\Bruja\Documents\Proyectos\restaurante_timeline\restaurant_ordering_front\src\shared\stores\cartStore.ts)
+
+Important notes:
+
+- all cart and order requests are associated with this fixed user
+- the order history shown in `/orders` corresponds to that same user
+- if the backend data is filtered by user, you should seed or test with this identifier
+
+## Run with Backend
+
+For the full flow to work locally:
+
+1. Start the backend API on `http://localhost:3000`
+2. Start this frontend on `http://localhost:3001`
+3. Open the frontend in the browser
+
+If you are using the backend from this same repository family, follow the setup instructions in:
+
+- [backend README](https://github.com/JuliGeralDev/restaurant_ordering_backend)
+
+## Available Scripts
+
+```bash
+# Start development server on port 3001
+npm run dev
+
+# Create production build
+npm run build
+
+# Start production server
+npm run start
+
+# Run ESLint
+npm run lint
+```
+
+## Main Routes
+
+- `/` : menu and product selection
+- `/cart` : current cart and checkout confirmation
+- `/orders` : order history
+- `/orders/[orderId]` : order detail and timeline
+
+## Project Structure
+
+```text
+src/
+|-- app/             # Next.js routes
+|-- features/        # Business features: menu, cart, orders
+|-- shared/          # Reusable UI, config, stores and utilities
+```
+
+## Tech Stack
+
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS
+- Zustand
+- Axios
+
+## Troubleshooting
+
+### "Missing NEXT_PUBLIC_API_URL environment variable"
+
+Create or update `.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+Then restart the dev server.
+
+### The frontend opens but data does not load
+
+Check that the backend is running on `http://localhost:3000`.
+
+You can verify the configured API URL in:
+
+- [`.env.local`](C:\Users\Bruja\Documents\Proyectos\restaurante_timeline\restaurant_ordering_front\.env.local)
+
+### Port 3001 is already in use
+
+Stop the process using that port, or change the script in [`package.json`](C:\Users\Bruja\Documents\Proyectos\restaurante_timeline\restaurant_ordering_front\package.json).
+
+### Dependencies fail or the project behaves inconsistently
+
+Run:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+On Windows PowerShell:
+
+```powershell
+Remove-Item -Recurse -Force node_modules
+Remove-Item -Force package-lock.json
+npm install
+```
+
+## Author
+
+**Juliana Garcia Corredor**  
+GitHub: [@JuliGeralDev](https://github.com/JuliGeralDev)
