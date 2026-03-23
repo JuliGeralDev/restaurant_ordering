@@ -11,6 +11,7 @@ export interface PlaceOrderInput {
 
 export interface PlaceOrderOutput {
   orderId: string;
+  userId: string;
   status: string;
 }
 
@@ -43,6 +44,7 @@ export class PlaceOrderUseCase {
 
     return {
       orderId: order.orderId,
+      userId: input.userId,
       status: order.status,
     };
   }
