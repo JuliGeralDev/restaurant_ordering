@@ -1,0 +1,81 @@
+service: restaurant-ordering-api
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+
+custom:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node18
+    platform: node
+    concurrency: 10
+    plugins: esbuild.plugins.js
+    external:
+      - '@aws-sdk/*'
+    alias:
+      '@': './src'
+
+functions:
+  # hello:
+  #   handler: src/interfaces/hello.handler
+  #   events:
+  #     - http:
+  #         path: hello
+  #         method: get
+  getOrderTimeline:
+    handler: src/interfaces/get-order-timeline.handler
+    events:
+      - http:
+          path: /orders/{orderId}/timeline
+          method: get
+  getOrder:
+    handler: src/interfaces/get-order.handler
+    events:
+      - http:
+          path: /orders/{orderId}
+          method: get
+  getOrdersByUser:
+    handler: src/interfaces/get-orders-by-user.handler
+    events:
+      - http:
+          path: /orders
+          method: get
+  placeOrder:
+    handler: src/interfaces/place-order.handler
+    events:
+      - http:
+          path: /orders
+          method: post
+  getMenu:
+    handler: src/interfaces/get-menu.handler
+    events:
+      - http:
+          path: /menu
+          method: get
+  addItemToCart:
+    handler: src/interfaces/add-item-to-cart.handler
+    events:
+      - http:
+          path: /cart/items
+          method: post
+  updateItemInCart:
+    handler: src/interfaces/update-item-in-cart.handler
+    events:
+      - http:
+          path: /cart/items
+          method: put
+  removeItemFromCart:
+    handler: src/interfaces/remove-item-from-cart.handler
+    events:
+      - http:
+          path: /cart/items
+          method: delete
