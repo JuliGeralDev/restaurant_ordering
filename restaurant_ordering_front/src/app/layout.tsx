@@ -5,6 +5,7 @@ import { Header } from "@/shared/ui/Header";
 import { Footer } from "@/shared/ui/Footer";
 import { CartPanel } from "@/features/cart/ui/CartPanel";
 import { ContentWrapper } from "@/shared/ui/ContentWrapper";
+import { TetrisBg } from "@/shared/ui/TetrisBg";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,10 +34,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${pressStart.variable} antialiased flex min-h-screen`}
       >
+        <TetrisBg />
         <ContentWrapper>
           <Header />
           <main className="flex-1">{children}</main>

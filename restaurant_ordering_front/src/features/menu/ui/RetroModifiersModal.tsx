@@ -69,7 +69,7 @@ export const RetroModifiersModal = ({
         headerAction={
           <button
             onClick={onClose}
-            className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border-2 border-red-900 bg-red-600 text-white transition-colors hover:bg-red-700"
+            className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-red-900 bg-red-600 text-white transition-colors hover:bg-red-700"
           >
             <X className="h-3.5 w-3.5" />
           </button>

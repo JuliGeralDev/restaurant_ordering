@@ -9,4 +9,5 @@ export { PricingBreakdown } from "./PricingBreakdown";
 export { RetroSpeakerGrille, RetroDecorativeScrews } from "./RetroConsolePrimitives";
 export { RetroDPad } from "./RetroDPad";
 export { RetroPriceDisplay } from "./RetroPriceDisplay";
+export { TetrisBg } from "./TetrisBg";
 
