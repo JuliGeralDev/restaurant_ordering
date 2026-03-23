@@ -1,5 +1,5 @@
 import { Order } from '@/domain/entities/order.entity';
-import { TimelineEventType } from '@/domain/entities/timeline-event.entity';
+import { TimelineEventSource, TimelineEventType } from '@/domain/entities/timeline-event.entity';
 import { OrderRepository } from '@/domain/repositories/order.repository';
 import { TimelineRepository } from '@/domain/repositories/timeline.repository';
 import { OrderPricingService } from '@/application/services/order-pricing.service';
@@ -10,6 +10,7 @@ export interface SaveCartOperationParams {
   orderId: string;
   userId: string;
   correlationId: string;
+  source?: TimelineEventSource;
   eventType: TimelineEventType;
   eventPayload: Record<string, unknown>;
 }
@@ -27,6 +28,7 @@ export class CartOperationOrchestrator {
       orderId: params.orderId,
       userId: params.userId,
       correlationId: params.correlationId,
+      source: params.source,
     });
 
     await this.orderRepository.save(params.order);
@@ -35,6 +37,7 @@ export class CartOperationOrchestrator {
       orderId: params.orderId,
       userId: params.userId,
       type: params.eventType,
+      source: params.source,
       correlationId: params.correlationId,
       payload: params.eventPayload,
     });

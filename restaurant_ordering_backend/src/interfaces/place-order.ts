@@ -7,6 +7,7 @@ import { validator } from './utils/field-validator';
 import { ValidationError } from '@/domain/errors/validation.error';
 import { IdempotencyConflictError } from '@/domain/errors/idempotency-conflict.error';
 import { LambdaEvent } from './types/lambda-event.type';
+import { getRequestSource } from './utils/request-source';
 
 const orderService = new OrderService(orderRepository);
 const orderPlacementProcessor = new OrderPlacementProcessorService(
@@ -55,6 +56,7 @@ export const handler = (event: LambdaEvent) =>
         orderId,
         userId,
         correlationId: key,
+        source: getRequestSource(event.headers),
       });
 
       if (result.shouldScheduleProcessing) {

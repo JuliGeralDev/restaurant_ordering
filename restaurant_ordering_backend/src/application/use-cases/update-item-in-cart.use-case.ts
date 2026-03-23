@@ -1,5 +1,5 @@
 import { Order } from '@/domain/entities/order.entity';
-import { TimelineEvent } from '@/domain/entities/timeline-event.entity';
+import { TimelineEvent, TimelineEventSource } from '@/domain/entities/timeline-event.entity';
 import { randomUUID } from 'crypto';
 import { ModifierSelectionInput } from '@/domain/services/modifier-selection.service';
 import { OrderService } from '@/application/services/order.service';
@@ -15,6 +15,7 @@ export interface UpdateItemInCartInput {
   cartItemId: string; // Unique identifier for the specific cart item instance
   quantity: number;
   modifiers?: ModifierSelectionInput[];
+  source?: TimelineEventSource;
 }
 
 /**
@@ -56,6 +57,7 @@ export class UpdateItemInCartUseCase {
       orderId: input.orderId,
       userId: input.userId,
       correlationId,
+      source: input.source,
       eventType: 'CART_ITEM_UPDATED',
       eventPayload: {
         cartItemId: input.cartItemId,
@@ -75,7 +77,7 @@ export class UpdateItemInCartUseCase {
         orderId: input.orderId,
         userId: input.userId,
         type: 'CART_ITEM_UPDATED',
-        source: 'api',
+        source: input.source ?? 'api',
         correlationId,
         payload: {},
       },

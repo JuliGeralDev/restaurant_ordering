@@ -1,4 +1,4 @@
-import { TimelineEvent } from '@/domain/entities/timeline-event.entity';
+import { TimelineEvent, TimelineEventSource } from '@/domain/entities/timeline-event.entity';
 import { maskPII } from '@/infrastructure/logging/pii-mask.util';
 import { randomUUID } from 'crypto';
 
@@ -10,6 +10,7 @@ interface ValidationFailedDetails {
   failedFields?: string[];
   attemptedAction?: string;
   requestBody?: any;
+  source?: TimelineEventSource;
 }
 
 /**
@@ -25,7 +26,7 @@ export function createValidationFailedEvent(
     orderId: details.orderId || 'unknown',
     userId: details.userId || 'unknown',
     type: 'VALIDATION_FAILED',
-    source: 'api',
+    source: details.source ?? 'api',
     correlationId: correlationId || randomUUID(),
     payload: {
       errorMessage: details.errorMessage,

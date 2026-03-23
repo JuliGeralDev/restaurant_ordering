@@ -15,6 +15,7 @@ const createHttpClient = (): AxiosInstance => {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
+      "X-Client-Source": "web",
     },
   });
 

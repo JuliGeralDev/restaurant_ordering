@@ -2,11 +2,13 @@ import { OrderRepository } from '@/domain/repositories/order.repository';
 import { TimelineRepository } from '@/domain/repositories/timeline.repository';
 import { OrderService } from '@/application/services/order.service';
 import { TimelineEventFactory } from '@/domain/factories/timeline-event.factory';
+import { TimelineEventSource } from '@/domain/entities/timeline-event.entity';
 
 export interface PlaceOrderInput {
   orderId: string;
   userId: string;
   correlationId: string;
+  source?: TimelineEventSource;
 }
 
 export interface PlaceOrderOutput {
@@ -45,6 +47,7 @@ export class PlaceOrderUseCase {
       orderId: order.orderId,
       userId: input.userId,
       type: 'ORDER_PLACED',
+      source: input.source,
       correlationId: input.correlationId,
       payload: {
         acceptedAt: order.updatedAt,
@@ -56,6 +59,7 @@ export class PlaceOrderUseCase {
       orderId: order.orderId,
       userId: input.userId,
       type: 'ORDER_STATUS_CHANGED',
+      source: input.source,
       correlationId: input.correlationId,
       payload: {
         from: previousStatus,

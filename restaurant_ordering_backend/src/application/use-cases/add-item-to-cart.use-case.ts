@@ -1,5 +1,5 @@
 import { Order } from '@/domain/entities/order.entity';
-import { TimelineEvent } from '@/domain/entities/timeline-event.entity';
+import { TimelineEvent, TimelineEventSource } from '@/domain/entities/timeline-event.entity';
 import { OrderRepository } from '@/domain/repositories/order.repository';
 import { randomUUID } from 'crypto';
 import { ModifierSelectionInput } from '@/domain/services/modifier-selection.service';
@@ -19,6 +19,7 @@ export interface AddItemToCartInput {
   productId: string;
   quantity: number;
   modifiers?: ModifierSelectionInput[];
+  source?: TimelineEventSource;
 }
 
 /**
@@ -57,6 +58,7 @@ export class AddItemToCartUseCase {
         orderId,
         userId: input.userId,
         type: 'ORDER_STATUS_CHANGED',
+        source: input.source,
         correlationId,
         payload: {
           status: 'CREATED',
@@ -88,6 +90,7 @@ export class AddItemToCartUseCase {
       orderId,
       userId: input.userId,
       correlationId,
+      source: input.source,
       eventType,
       eventPayload: {
         productId: newItem.productId,
@@ -101,6 +104,7 @@ export class AddItemToCartUseCase {
       orderId,
       userId: input.userId,
       type: eventType,
+      source: input.source,
       correlationId,
       payload: {
         productId: newItem.productId,

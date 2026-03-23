@@ -3,6 +3,7 @@ import { handleError } from './error-response';
 import { ValidationError } from '@/domain/errors/validation.error';
 import { createValidationFailedEvent } from './validation-event.helper';
 import { timelineRepository } from '@/infrastructure/container';
+import { getRequestSource } from './request-source';
 
 interface ApiHandlerOptions {
   requireBody?: boolean;
@@ -64,6 +65,7 @@ export async function apiHandler(
           validationType: 'field',
           attemptedAction: event.path || 'unknown',
           requestBody: parsedBody,
+          source: getRequestSource(event.headers),
         });
 
         await timelineRepository.save(validationEvent);

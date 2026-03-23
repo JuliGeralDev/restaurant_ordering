@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 
 import { Order } from '@/domain/entities/order.entity';
-import { TimelineEvent } from '@/domain/entities/timeline-event.entity';
+import { TimelineEvent, TimelineEventSource } from '@/domain/entities/timeline-event.entity';
 import { PricingService } from '@/domain/services/pricing.service';
 
 export interface RecalculateOrderPricingInput {
@@ -9,6 +9,7 @@ export interface RecalculateOrderPricingInput {
   orderId: string;
   userId: string;
   correlationId: string;
+  source?: TimelineEventSource;
 }
 
 export class OrderPricingService {
@@ -36,7 +37,7 @@ export class OrderPricingService {
       orderId,
       userId,
       type: 'PRICING_CALCULATED',
-      source: 'api',
+      source: input.source ?? 'api',
       correlationId,
       payload: {
         subtotal: subtotal.value,

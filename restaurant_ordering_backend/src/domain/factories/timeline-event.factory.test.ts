@@ -160,7 +160,7 @@ describe('TimelineEventFactory', () => {
       expect(event.payload).toEqual(complexPayload);
     });
 
-    it('should always set source as api', () => {
+    it('should default source to api when none is provided', () => {
       const params = {
         orderId: 'order-123',
         userId: 'user-456',
@@ -188,6 +188,19 @@ describe('TimelineEventFactory', () => {
       });
 
       expect(event.source).toBe('worker');
+    });
+
+    it('should allow overriding source for web-originated events', () => {
+      const event = TimelineEventFactory.create({
+        orderId: 'order-123',
+        userId: 'user-456',
+        type: 'ORDER_PLACED',
+        correlationId: 'corr-789',
+        source: 'web',
+        payload: {},
+      });
+
+      expect(event.source).toBe('web');
     });
   });
 });

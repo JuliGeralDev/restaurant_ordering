@@ -1,4 +1,5 @@
 import { Order } from '@/domain/entities/order.entity';
+import { TimelineEventSource } from '@/domain/entities/timeline-event.entity';
 import { randomUUID } from 'crypto';
 import { OrderService } from '@/application/services/order.service';
 import { CartOperationOrchestrator } from '@/application/services/cart-operation.orchestrator';
@@ -8,6 +9,7 @@ export interface RemoveItemInput {
   userId: string;
   cartItemId?: string; // Remove specific instance (decrement or delete)
   productId?: string;  // Remove ALL instances of this product
+  source?: TimelineEventSource;
 }
 
 export interface RemoveItemOutput {
@@ -60,6 +62,7 @@ export class RemoveItemFromCartUseCase {
       orderId: input.orderId,
       userId: input.userId,
       correlationId,
+      source: input.source,
       eventType,
       eventPayload,
     });
