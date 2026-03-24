@@ -157,10 +157,10 @@ Copy the example file:
 
 ```bash
 # Windows
-copy restaurant_ordering_front\env.example restaurant_ordering_front\.env.local
+copy restaurant_ordering_front\.env.example restaurant_ordering_front\.env.local
 
 # macOS / Linux
-cp restaurant_ordering_front/env.example restaurant_ordering_front/.env.local
+cp restaurant_ordering_front/.env.example restaurant_ordering_front/.env.local
 ```
 
 Required local values:
