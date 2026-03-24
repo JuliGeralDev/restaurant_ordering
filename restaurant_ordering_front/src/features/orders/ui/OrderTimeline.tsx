@@ -42,7 +42,7 @@ export const OrderTimeline = ({
 
   return (
     <CardConsola title="ORDER TIMELINE">
-      <div className="bg-zinc-800 px-4 py-4">
+      <div className="overflow-x-auto bg-zinc-800 px-4 py-4 [webkit-overflow-scrolling:touch]">
         {isBusy && (
           <p className="py-8 text-center text-xs uppercase tracking-widest text-zinc-500 animate-pulse">
             Loading events...
@@ -63,7 +63,7 @@ export const OrderTimeline = ({
         )}
 
         {!isBusy && sorted.length > 0 && (
-          <>
+          <div className="min-w-[20rem] sm:min-w-0">
             {sorted.map((event, index) => (
               <OrderEventRow
                 key={event.eventId}
@@ -82,7 +82,7 @@ export const OrderTimeline = ({
               onPreviousPage={onPreviousPage}
               onNextPage={onNextPage}
             />
-          </>
+          </div>
         )}
       </div>
     </CardConsola>

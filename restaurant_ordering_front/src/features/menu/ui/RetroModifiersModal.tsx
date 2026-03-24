@@ -62,10 +62,10 @@ export const RetroModifiersModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto overscroll-contain bg-black/70 p-2 backdrop-blur-sm [webkit-overflow-scrolling:touch] sm:items-center sm:p-4">
       <CardConsola
         title={productName}
-        className="w-full max-w-lg max-h-[calc(100vh-2rem)] flex flex-col"
+        className="my-auto flex h-[calc(100dvh-1rem)] min-h-0 w-full max-w-lg flex-col sm:h-auto sm:max-h-[calc(100vh-2rem)]"
         headerAction={
           <button
             onClick={onClose}
@@ -75,7 +75,7 @@ export const RetroModifiersModal = ({
           </button>
         }
       >
-        <div className="m-3 flex flex-1 flex-col min-h-0 overflow-hidden rounded-2xl border-6 border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
+        <div className="m-3 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border-6 border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
           {/* Price header */}
           <div className="border-b-4 border-zinc-700 px-4 py-3 text-center">
             <p className="text-sm text-zinc-500">TOTAL</p>
@@ -108,7 +108,7 @@ export const RetroModifiersModal = ({
           )}
 
           {/* Modifier groups */}
-          <div className="flex-1 min-h-0 space-y-4 overflow-y-auto p-3">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3 [webkit-overflow-scrolling:touch]">
             {groups.map(([groupKey, group]) => {
               const sel = currentSelected[groupKey];
               return (
@@ -174,7 +174,7 @@ export const RetroModifiersModal = ({
 
         {/* Action buttons */}
         <div className="mx-3 mb-3 flex-shrink-0 rounded-2xl border-4 border-zinc-400 bg-zinc-300 p-3 shadow-inner">
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Button
               onClick={onClose}
               className="flex-1 rounded-xl border-4 border-zinc-600 bg-zinc-500 py-2.5 text-[8px] text-white transition-colors hover:bg-zinc-600"
