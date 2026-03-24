@@ -7,9 +7,11 @@ Repository: [`restaurant_ordering_front`](../restaurant_ordering_front)
 The backend and root workspace live alongside this application:
 
 - [`../restaurant_ordering_backend`](../restaurant_ordering_backend)
-- [Root README](../README.md) — instructions for running both applications together
+- [Root README](../README.md) â€” instructions for running both applications together
 
-## Overview
+---
+
+## 📘 Overview
 
 This application includes:
 
@@ -20,7 +22,9 @@ This application includes:
 - Order detail page with timeline/events
 - Simulated user sessions with default-user and signed-out startup modes
 
-## Prerequisites
+---
+
+## ✅ Prerequisites
 
 | Tool | Recommended Version | Check |
 |------|---------------------|-------|
@@ -31,12 +35,12 @@ This application includes:
 
 - Node.js: [https://nodejs.org](https://nodejs.org)
 
-### Managing Node.js Version with nvm
+### Managing Node.js Version With nvm
 
 If you need to switch Node versions, using `nvm` is recommended:
 
-- **Windows**: install [nvm-windows](https://github.com/coreybutler/nvm-windows/releases)
-- **macOS/Linux**: install [nvm-sh](https://github.com/nvm-sh/nvm)
+- **Windows**: Install [nvm-windows](https://github.com/coreybutler/nvm-windows/releases)
+- **macOS/Linux**: Install [nvm-sh](https://github.com/nvm-sh/nvm)
 
 Example with Node 18:
 
@@ -46,7 +50,9 @@ nvm use 18
 node --version
 ```
 
-## Getting Started
+---
+
+## 🚀 Getting Started
 
 ### Quick Setup (Recommended)
 
@@ -70,7 +76,7 @@ npm run dev
 
 Open [http://localhost:3001](http://localhost:3001)
 
-**Important:** this frontend expects the backend API to be running at `http://localhost:3000`.
+**Important:** This frontend expects the backend API to be running at `http://localhost:3000`.
 
 If your backend is in a different URL, update `.env.local`:
 
@@ -84,7 +90,9 @@ NEXT_PUBLIC_DEFAULT_EMAIL=default.user@example.com
 NEXT_PUBLIC_DEFAULT_PHONE=+57 300 111 2233
 ```
 
-## Environment Variables
+---
+
+## ⚙️ Environment Variables
 
 Create `.env.local` in the project root using `.env.example` as the template file that you copy locally:
 
@@ -110,7 +118,9 @@ Required variables:
 
 Because this project uses a simulated user flow for local development, there is no real authentication or password flow. Users are mock records stored by the backend. If `NEXT_PUBLIC_DEFAULT_USER_ENABLED=true`, `NEXT_PUBLIC_USER_ID` must be present in `.env.local` so the application can bootstrap the default user.
 
-## API Connection
+---
+
+## 🌐 API Connection
 
 The frontend connects to the backend through the `NEXT_PUBLIC_API_URL` variable defined in:
 
@@ -128,23 +138,25 @@ NEXT_PUBLIC_USER_ID=user-test
 
 The application uses this base URL for requests such as:
 
-- menu retrieval
-- cart item creation/removal
-- order confirmation
-- order history and order timeline
+- Menu retrieval
+- Cart item creation/removal
+- Order confirmation
+- Order history and order timeline
 
 Backend repository:
 
 - [`../restaurant_ordering_backend`](../restaurant_ordering_backend)
 
-## Test User
+---
+
+## 👤 Test User
 
 For local development, the frontend uses simulated users instead of a real authentication flow.
 
 You can run the application in two modes:
 
-- default-user mode: the app boots with the configured default mock user already signed in
-- guest mode: the app boots signed out, and the user must open the user panel and create/recover a mock session with `username + name + email + phone`
+- Default-user mode: the app boots with the configured default mock user already signed in
+- Guest mode: the app boots signed out, and the user must open the user panel and create/recover a mock session with `username + name + email + phone`
 
 Default-user mode is configured in `.env.local` using:
 
@@ -160,12 +172,14 @@ This value is consumed from:
 
 Important notes:
 
-- this is not a real authenticated session; it is mock user data persisted by the backend
-- cart and order requests are associated with the current active mock user
-- order history shown in `/orders` depends on the currently signed-in mock user
-- if a user signs out, the local cart/session state is cleared
+- This is not a real authenticated session; it is mock user data persisted by the backend
+- Cart and order requests are associated with the current active mock user
+- Order history shown in `/orders` depends on the currently signed-in mock user
+- If a user signs out, the local cart/session state is cleared
 
-## Run with Backend
+---
+
+## 🔗 Run With Backend
 
 For the full flow to work locally:
 
@@ -177,7 +191,9 @@ If you are using the backend from this same workspace, follow the setup instruct
 
 - [`../restaurant_ordering_backend/README.md`](../restaurant_ordering_backend/README.md)
 
-## Available Scripts
+---
+
+## 🛠️ Available Scripts
 
 ```bash
 # Start development server on port 3001
@@ -193,14 +209,18 @@ npm run start
 npm run lint
 ```
 
-## Main Routes
+---
+
+## 🧭 Main Routes
 
 - `/` : menu and product selection
 - `/cart` : current cart and checkout confirmation
 - `/orders` : order history
 - `/orders/[orderId]` : order detail and timeline
 
-## Architecture
+---
+
+## 🏗️ Architecture
 
 The frontend uses a feature-oriented structure. Each feature owns its own types, API calls, hooks, and UI components. Shared infrastructure lives in `shared/`.
 
@@ -211,7 +231,7 @@ src/
 `-- shared/          # Reusable config, hooks, stores, lib, and UI components
 ```
 
-### App layer
+### App Layer
 
 Next.js App Router pages that compose feature components into routes.
 
@@ -222,12 +242,13 @@ Next.js App Router pages that compose feature components into routes.
 | `/orders` | `app/orders/page.tsx` | Order history |
 | `/orders/[orderId]` | `app/orders/[orderId]/page.tsx` | Order detail and timeline |
 
-### Features layer
+### Features Layer
 
 Each feature is self-contained with its own types, API functions, hooks, and UI.
 
 **`features/menu`**
-- `menu.types.ts` / `menu.mappers.ts`: API response → UI model
+
+- `menu.types.ts` / `menu.mappers.ts`: API response â†’ UI model
 - `hooks/useGetMenu.ts`: fetches and maps menu items
 - `hooks/useModifiersModal.ts`: manages modifier selection state per product
 - `ui/Menu.tsx`: product grid
@@ -235,6 +256,7 @@ Each feature is self-contained with its own types, API functions, hooks, and UI.
 - `ui/RetroModifiersModal.tsx`: modifier selection modal (required/optional groups, max constraints)
 
 **`features/cart`**
+
 - `cart.types.ts` / `cart.api.ts`: request types and API calls
 - `hooks/useAddToCart.ts`: posts to `POST /cart/items`, syncs order state
 - `hooks/useEditCartItem.ts`: puts to `PUT /cart/items`
@@ -246,6 +268,7 @@ Each feature is self-contained with its own types, API functions, hooks, and UI.
 - `ui/CartPanel.tsx`, `CartContent.tsx`, `CartItemRow.tsx`, `CartOrderSummary.tsx`: cart UI
 
 **`features/orders`**
+
 - `orders.types.ts`: event and order response types
 - `hooks/useGetOrderById.ts`: fetches order, polls every 2s while status is `PROCESSING` (max 30 attempts)
 - `hooks/useGetOrdersByUser.ts`: fetches order history list
@@ -257,20 +280,20 @@ Each feature is self-contained with its own types, API functions, hooks, and UI.
 - `ui/orderEvent.config.ts`: maps event types to icons, colors, and labels
 - `ui/orderEvent.renderers.tsx`: renders event payloads differently per type
 
-### Shared layer
+### Shared Layer
 
 | Path | Description |
 |---|---|
 | `shared/config/env.ts` | Validates required env vars at startup; throws if missing |
-| `shared/stores/cartStore.ts` | Zustand store — persists the active mock user, `orderId`, and `checkoutIdempotencyKey` to `localStorage` |
+| `shared/stores/cartStore.ts` | Zustand store â€” persists the active mock user, `orderId`, and `checkoutIdempotencyKey` to `localStorage` |
 | `shared/hooks/useGetRequest.ts` | Generic GET hook with loading/error/retry state |
-| `shared/lib/api/httpClient.ts` | Axios instance — base URL, 10s timeout, error interceptor |
+| `shared/lib/api/httpClient.ts` | Axios instance â€” base URL, 10s timeout, error interceptor |
 | `shared/lib/api/apiError.ts` | Custom `ApiError` class wrapping Axios errors |
 | `shared/lib/formatters.ts` | `formatCurrency()`, `formatOrderShortId()`, `formatDate()` |
-| `shared/lib/idempotency.ts` | `createIdempotencyKey()` — generates UUID for safe checkout retries |
+| `shared/lib/idempotency.ts` | `createIdempotencyKey()` â€” generates UUID for safe checkout retries |
 | `shared/ui/` | Base UI components: Button, Badge, Card, Header, Footer, PricingBreakdown, QuantityStepper, OrderStatusBadge, and retro-themed primitives |
 
-### Cart store
+### Cart Store
 
 The Zustand store in `cartStore.ts` is the coordination layer between pages:
 
@@ -282,7 +305,9 @@ The Zustand store in `cartStore.ts` is the coordination layer between pages:
 
 `getOrCreateCheckoutIdempotencyKey(orderId)` ensures the same key is reused if the user retries the checkout for the same order, which prevents duplicate order submissions.
 
-## Tech Stack
+---
+
+## 💻 Tech Stack
 
 - Next.js 15 (App Router, Turbopack)
 - React 19
@@ -294,7 +319,9 @@ The Zustand store in `cartStore.ts` is the coordination layer between pages:
 - shadcn/ui base components
 - lucide-react icons
 
-## Testing
+---
+
+## 🧪 Testing
 
 The project uses Vitest with jsdom for unit and component tests.
 
@@ -316,7 +343,9 @@ Test files:
 | `features/cart/hooks/__tests__/useGroupedCartItems.test.ts` | Cart item grouping by product and modifiers |
 | `features/orders/ui/__tests__/OrderEventRow.test.tsx` | Event row rendering and expand/collapse |
 
-## Troubleshooting
+---
+
+## 🆘 Troubleshooting
 
 ### "Missing NEXT_PUBLIC_API_URL environment variable"
 
@@ -367,8 +396,23 @@ Remove-Item -Force package-lock.json
 npm install
 ```
 
-## Author
+---
 
-**Juliana García Corredor**  
+## ✍️ Author
+
+**Juliana GarcÃ­a Corredor**  
 GitHub: [@JuliGeralDev](https://github.com/JuliGeralDev)  
 Email: juligeral.c@gmail.com
+
+---
+
+## 🖼️ Screenshots
+
+This section is reserved for the frontend screenshots that will be added next.
+
+- Menu
+- Product Customization Modal
+- Cart
+- Order History
+- Order Detail
+- Order Timeline

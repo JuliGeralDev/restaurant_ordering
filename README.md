@@ -2,12 +2,71 @@
 
 Restaurant ordering platform composed of two applications that run together locally:
 
-- a backend API built with Serverless Framework and DynamoDB Local
-- a frontend built with Next.js for menu browsing, cart management, checkout, order history, and event timeline visualization
+- A backend API built with Serverless Framework and DynamoDB Local
+- A frontend built with Next.js for menu browsing, cart management, checkout, order history, and event timeline visualization
 
 This repository is the workspace container for both projects. The backend and frontend still keep their own dedicated README files for implementation-specific details, while this root README acts as the main entry point for setup, architecture overview, and navigation.
 
-## Documentation Strategy
+## 📑 Table of Contents
+
+- [Screenshots](#-screenshots)
+- [Documentation Strategy](#-documentation-strategy)
+- [Repository Structure](#-repository-structure)
+- [Project Components](#-project-components)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+- [Architecture Overview](#-architecture-overview)
+  - [Frontend Architecture](#frontend-architecture)
+  - [Backend Architecture](#backend-architecture)
+- [Development Model](#-development-model)
+- [Prerequisites](#-prerequisites)
+- [Environment Setup](#-environment-setup)
+  - [Backend](#backend-1)
+  - [Frontend](#frontend-1)
+- [Ports](#-ports)
+- [Installation](#-installation)
+- [Local Run Flow](#-local-run-flow)
+- [Root Scripts](#-root-scripts)
+- [Main API Endpoints](#-main-api-endpoints)
+- [Seed Data](#-seed-data)
+- [Mock Users](#-mock-users)
+- [Money Representation](#-money-representation)
+- [Postman Collection](#-postman-collection)
+- [Recommended Reading Order](#-recommended-reading-order)
+- [Additional Notes](#-additional-notes)
+
+
+## 🖼️ Screenshots
+
+<table>
+<tr>
+<td rowspan="2" width="50%">
+
+<strong>Aditionals</strong><br>
+<img src="./assets/aditionals.png" width="100%">
+
+</td>
+
+<td width="50%">
+
+<strong>Menu</strong><br>
+<img src="./assets/menu_desktop.png" width="100%">
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+<strong>Cart</strong><br>
+<img src="./assets/cart_desktop.png" width="100%">
+
+</td>
+</tr>
+</table>
+---
+
+## 📘 Documentation Strategy
 
 This workspace follows a documentation structure that is common and practical for multi-application projects:
 
@@ -17,11 +76,13 @@ This workspace follows a documentation structure that is common and practical fo
 
 This is generally the best balance for projects like this. Keeping only a short general README is usually not enough, but moving everything into one giant root document also becomes hard to maintain. The recommended approach is:
 
-- keep the root README as the entry point and project map
-- keep deep technical details close to each application
-- cross-link the three documents clearly so evaluators or collaborators know where to go next
+- Keep the root README as the entry point and project map
+- Keep deep technical details close to each application
+- Cross-link the three documents clearly so evaluators or collaborators know where to go next
 
-## Repository Structure
+---
+
+## 🗂️ Repository Structure
 
 ```text
 restaurant_ordering/
@@ -32,7 +93,9 @@ restaurant_ordering/
 `-- README.md
 ```
 
-## Project Components
+---
+
+## 🧩 Project Components
 
 ### Backend
 
@@ -40,12 +103,12 @@ Path: [`restaurant_ordering_backend`](C:/Users/Bruja/Documents/Proyectos/restaur
 
 Responsibilities:
 
-- expose the REST API
-- manage cart mutations
-- create and retrieve orders
-- store order timeline events
-- support idempotent checkout
-- persist data in DynamoDB Local during local development
+- Expose the REST API
+- Manage cart mutations
+- Create and retrieve orders
+- Store order timeline events
+- Support idempotent checkout
+- Persist data in DynamoDB Local during local development
 
 See the backend README for full backend documentation:
 
@@ -57,22 +120,24 @@ Path: [`restaurant_ordering_front`](C:/Users/Bruja/Documents/Proyectos/restauran
 
 Responsibilities:
 
-- render the menu
-- allow product customization
-- manage the cart flow
-- trigger checkout
-- display order history
-- display timeline events for each order
+- Render the menu
+- Allow product customization
+- Manage the cart flow
+- Trigger checkout
+- Display order history
+- Display timeline events for each order
 
 See the frontend README for full frontend documentation:
 
 - [`restaurant_ordering_front/README.md`](C:/Users/Bruja/Documents/Proyectos/restaurant_ordering/restaurant_ordering_front/README.md)
 
-## Architecture Overview
+---
+
+## 🏗️ Architecture Overview
 
 The system is intentionally split into two applications connected over HTTP.
 
-### Frontend architecture
+### Frontend Architecture
 
 The frontend uses a feature-oriented structure:
 
@@ -83,7 +148,7 @@ src/
 `-- shared/    # Reusable UI, config, hooks, stores and utilities
 ```
 
-### Backend architecture
+### Backend Architecture
 
 The backend follows a layered structure inspired by Clean Architecture:
 
@@ -95,9 +160,11 @@ src/
 `-- interfaces/      # HTTP handlers, mappers and request validation
 ```
 
-## Development Model
+---
 
-### No real authentication
+## 👤 Development Model
+
+### No Real Authentication
 
 This project does not implement login, registration, sessions, or user management.
 
@@ -109,13 +176,15 @@ NEXT_PUBLIC_USER_ID=user-test
 
 Important notes:
 
-- there is no real user module in the system
-- the frontend simulates a current user using `NEXT_PUBLIC_USER_ID`
-- cart and order requests are associated with that fixed identifier
-- order history is filtered using that same fixed identifier
-- the Postman collection included in this workspace also uses the same development user by default
+- There is no real user module in the system
+- The frontend simulates a current user using `NEXT_PUBLIC_USER_ID`
+- Cart and order requests are associated with that fixed identifier
+- Order history is filtered using that same fixed identifier
+- The Postman collection included in this workspace also uses the same development user by default
 
-## Prerequisites
+---
+
+## ✅ Prerequisites
 
 | Tool | Recommended Version | Purpose |
 |---|---|---|
@@ -124,7 +193,9 @@ Important notes:
 | Docker Desktop | Latest | DynamoDB Local |
 | AWS CLI | v2.x | `aws --version` |
 
-## Environment Setup
+---
+
+## ⚙️ Environment Setup
 
 ### Backend
 
@@ -175,7 +246,9 @@ NEXT_PUBLIC_DEFAULT_EMAIL=default.user@example.com
 NEXT_PUBLIC_DEFAULT_PHONE=+57 300 111 2233
 ```
 
-## Ports
+---
+
+## 🔌 Ports
 
 | Service | Port |
 |---|---:|
@@ -183,7 +256,9 @@ NEXT_PUBLIC_DEFAULT_PHONE=+57 300 111 2233
 | Frontend | `3001` |
 | DynamoDB Local | `8000` |
 
-## Installation
+---
+
+## 📦 Installation
 
 Install both applications from the workspace root:
 
@@ -191,7 +266,9 @@ Install both applications from the workspace root:
 npm run install:all
 ```
 
-## Local Run Flow
+---
+
+## 🚀 Local Run Flow
 
 Recommended order:
 
@@ -212,8 +289,8 @@ npm run dev
 
 This starts:
 
-- backend at `http://localhost:3000`
-- frontend at `http://localhost:3001`
+- Backend at `http://localhost:3000`
+- Frontend at `http://localhost:3001`
 
 ### Separate terminals
 
@@ -231,7 +308,9 @@ Terminal 2:
 npm run dev:frontend
 ```
 
-## Root Scripts
+---
+
+## 🛠️ Root Scripts
 
 ```bash
 npm run install:backend
@@ -250,7 +329,9 @@ npm run test:frontend
 npm run test
 ```
 
-## Main API Endpoints
+---
+
+## 🌐 Main API Endpoints
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -265,7 +346,9 @@ npm run test
 | `POST` | `/users/session` | Create or recover a mock user |
 | `GET` | `/users/:userId` | Retrieve a mock user profile |
 
-## Seed Data
+---
+
+## 🍽️ Seed Data
 
 After `npm run init:db`, the local menu includes 10 products:
 
@@ -282,7 +365,9 @@ After `npm run init:db`, the local menu includes 10 products:
 
 Products `8`, `9`, and `10` include modifiers.
 
-## Mock Users
+---
+
+## 👥 Mock Users
 
 The project supports simulated users persisted by the backend.
 
@@ -291,7 +376,9 @@ The project supports simulated users persisted by the backend.
 - From the user panel, a reviewer can create or recover a mock user by `username + name + email + phone`.
 - Orders remain linked by `userId`, so changing the active user changes the visible order history.
 
-## Money Representation
+---
+
+## 💰 Money Representation
 
 All monetary values in API payloads and persistence are stored as integer minor units.
 
@@ -299,7 +386,9 @@ All monetary values in API payloads and persistence are stored as integer minor 
 - Example: `1800000` represents `COP 18,000.00`.
 - The frontend formats these minor units back into human-readable COP values.
 
-## Postman Collection
+---
+
+## 📬 Postman Collection
 
 A ready-to-run Postman collection is included here:
 
@@ -307,17 +396,17 @@ A ready-to-run Postman collection is included here:
 
 The collection is designed for local execution and includes:
 
-- menu retrieval
-- add item to cart
-- add customized item
-- get order by id
-- update cart item
-- remove item
-- remove all instances of a product
-- list orders by user
-- place order with idempotency
-- read order timeline
-- failure cases for validation and conflict scenarios
+- Menu retrieval
+- Add item to cart
+- Add customized item
+- Get order by id
+- Update cart item
+- Remove item
+- Remove all instances of a product
+- List orders by user
+- Place order with idempotency
+- Read order timeline
+- Failure cases for validation and conflict scenarios
 
 It uses collection variables to chain requests automatically, including:
 
@@ -330,7 +419,9 @@ It uses collection variables to chain requests automatically, including:
 - `idempotencyKey`
 - `nextToken`
 
-## Recommended Reading Order
+---
+
+## 🧭 Recommended Reading Order
 
 For evaluators, reviewers, or collaborators:
 
@@ -339,8 +430,13 @@ For evaluators, reviewers, or collaborators:
 3. Read the frontend README for UI and route details.
 4. Use the Postman collection to exercise the backend flow end to end.
 
-## Additional Notes
+---
+
+## 📝 Additional Notes
 
 - The workspace is intentionally organized as two applications, not as a single merged app.
 - The current setup is suitable for local development, demonstrations, and technical evaluation.
 - The fixed user flow is intentional and documented; it is not a bug or an incomplete login implementation.
+
+---
+

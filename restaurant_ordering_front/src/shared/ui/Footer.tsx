@@ -73,6 +73,27 @@ export const Footer = () => {
           <p className="text-center text-sm text-muted-foreground">
             &copy; {currentYear} Restaurant Ordering. All rights reserved.
           </p>
+
+          <p className="mt-2 text-center text-sm text-muted-foreground">
+            Developed by{" "}
+            <a
+              href="https://juligeraldev.netlify.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground transition-colors"
+            >
+              Juliana Geralaldine García
+            </a>{" "}
+            ·{" "}
+            <a
+              href="https://github.com/JuliGeralDev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground transition-colors"
+            >
+              GitHub
+            </a>
+          </p>
         </div>
       </div>
     </footer>

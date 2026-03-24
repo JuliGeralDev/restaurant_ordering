@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "serverless offline --noPrependStageInUrl",
+    "dev:network": "serverless offline --noPrependStageInUrl --host 0.0.0.0",
     "init:db": "ts-node scripts/init-db.ts",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",

@@ -2,9 +2,12 @@
 
 Backend API for restaurant order management built with Clean Architecture, featuring event-driven timeline tracking and DynamoDB.
 
-## Overview
+---
+
+## 📘 Overview
 
 Serverless REST API for restaurant ordering with:
+
 - **Clean Architecture**: Domain, Application, Infrastructure, Interfaces layers
 - **Event Timeline**: Complete append-only audit trail for all order lifecycle events
 - **TypeScript**: Full type safety end to end
@@ -13,7 +16,9 @@ Serverless REST API for restaurant ordering with:
 - **Server-side Pricing**: Totals are never trusted from the client
 - **PII-safe Logging**: Email and phone fields are masked before being logged
 
-## Frontend
+---
+
+## 🖥️ Frontend
 
 The frontend lives in the same workspace:
 
@@ -22,7 +27,9 @@ The frontend lives in the same workspace:
 
 For instructions on running both applications together, see the [root README](../README.md).
 
-## Development User Model
+---
+
+## 👤 Development User Model
 
 This system does not include authentication, registration, or user administration.
 
@@ -34,12 +41,14 @@ NEXT_PUBLIC_USER_ID=user-test
 
 This means:
 
-- there is no real login flow
-- orders are created and queried for a simulated fixed user
+- There is no real login flow
+- Orders are created and queried for a simulated fixed user
 - Postman examples can use that same identifier safely during local testing
-- the fixed user is intentional and not an incomplete implementation
+- The fixed user is intentional and not an incomplete implementation
 
-## Prerequisites
+---
+
+## ✅ Prerequisites
 
 | Tool | Required Version | Check |
 |------|-----------------|-------|
@@ -48,13 +57,14 @@ This means:
 | AWS CLI | v2.x | `aws --version` |
 
 **Install:**
+
 - Node.js: https://nodejs.org
 - Docker: https://www.docker.com/products/docker-desktop
 - AWS CLI: https://aws.amazon.com/cli/
 
 **Important:** Before running `npm run setup`, `npm run init:db`, or `docker-compose up -d`, make sure Docker Desktop is open and the Docker CLI is running correctly on your machine.
 
-### Managing Node.js Version with nvm
+### Managing Node.js Version With nvm
 
 If you don't have Node.js 18.x or need to switch versions, we recommend using **nvm** (Node Version Manager):
 
@@ -82,7 +92,9 @@ node --version  # Should show v18.x.x
 nvm alias default 18
 ```
 
-## Getting Started
+---
+
+## 🚀 Getting Started
 
 ### Quick Setup (Recommended)
 
@@ -141,7 +153,7 @@ aws dynamodb list-tables --endpoint-url http://localhost:8000 --region us-east-1
 
 Should return empty list: `{ "TableNames": [] }`
 
-**⚠️ Important:** DynamoDB runs in-memory mode. All data is lost when you stop the container. Run `npm run init:db` again after restarting.
+**âš ï¸ Important:** DynamoDB runs in-memory mode. All data is lost when you stop the container. Run `npm run init:db` again after restarting.
 
 #### Step 3: Create Tables and Seed Data
 
@@ -150,15 +162,16 @@ npm run init:db
 ```
 
 You should see:
+
 ```
-✓ Connected to DynamoDB Local
-✓ Table orders created successfully
-✓ Table order_timeline created successfully
-✓ Table menu created successfully
-✓ Table idempotency created successfully
-✓ Added menu item: Classic Burger
+âœ“ Connected to DynamoDB Local
+âœ“ Table orders created successfully
+âœ“ Table order_timeline created successfully
+âœ“ Table menu created successfully
+âœ“ Table idempotency created successfully
+âœ“ Added menu item: Classic Burger
 ...
-✅ Database initialization completed successfully!
+âœ… Database initialization completed successfully!
 ```
 
 #### Step 4: Start the API
@@ -175,7 +188,9 @@ curl http://localhost:3000/menu
 
 If you see a JSON array of menu products, **you're done!**
 
-## Quick Reference
+---
+
+## 🛠️ Quick Reference
 
 ### Daily Commands
 
@@ -202,7 +217,9 @@ docker-compose up -d
 npm run init:db
 ```
 
-## API Endpoints
+---
+
+## 🌐 API Endpoints
 
 All endpoints run at `http://localhost:3000` in local development.
 
@@ -267,8 +284,8 @@ curl -X PUT http://localhost:3000/cart/items \
 
 Remove a cart item. Supports two modes:
 
-- by `cartItemId`: removes or decrements that specific instance
-- by `productId`: removes all instances of that product
+- By `cartItemId`: removes or decrements that specific instance
+- By `productId`: removes all instances of that product
 
 ```bash
 curl -X DELETE http://localhost:3000/cart/items \
@@ -343,7 +360,9 @@ curl -X POST http://localhost:3000/users/session \
 
 Retrieve an existing mock user profile.
 
-## Postman Collection
+---
+
+## 📬 Postman Collection
 
 A ready-to-run Postman collection for the local API is included in this repository:
 
@@ -351,19 +370,21 @@ A ready-to-run Postman collection for the local API is included in this reposito
 
 The collection covers the end-to-end local flow:
 
-- get menu
-- add simple product
-- add customized product
-- get order by id
-- update item in cart
-- remove item from cart
-- remove all instances of a product
-- list orders by user
-- place order with idempotency
-- inspect timeline events
-- validate common failure scenarios
+- Get menu
+- Add simple product
+- Add customized product
+- Get order by id
+- Update item in cart
+- Remove item from cart
+- Remove all instances of a product
+- List orders by user
+- Place order with idempotency
+- Inspect timeline events
+- Validate common failure scenarios
 
-## Sample Data
+---
+
+## 🍽️ Sample Data
 
 After `npm run init:db`, you get **10 menu items**:
 
@@ -378,30 +399,32 @@ After `npm run init:db`, you get **10 menu items**:
 - **ID 9**: Custom Hot Dog ($15,000) - **with modifiers** (protein, toppings, sauces)
 - **ID 10**: Custom Tacos ($20,000) - **with modifiers** (protein, toppings, sauces)
 
-## Architecture
+---
+
+## 🏗️ Architecture
 
 The backend follows Clean Architecture with four layers that depend inward: the domain has no external dependencies, the application layer depends only on the domain, the infrastructure layer implements domain contracts, and the interfaces layer handles HTTP.
 
 ```
 src/
-├── domain/          # Core business rules. No framework dependencies.
-├── application/     # Use cases that orchestrate domain logic.
-├── infrastructure/  # DynamoDB clients and repository implementations.
-└── interfaces/      # Lambda handlers, validators, and mappers.
+â”œâ”€â”€ domain/          # Core business rules. No framework dependencies.
+â”œâ”€â”€ application/     # Use cases that orchestrate domain logic.
+â”œâ”€â”€ infrastructure/  # DynamoDB clients and repository implementations.
+â””â”€â”€ interfaces/      # Lambda handlers, validators, and mappers.
 ```
 
-### Domain layer
+### Domain Layer
 
 Contains everything that defines what the application does, independently of how it does it.
 
-- **Entities**: `Order`, `OrderItem`, `TimelineEvent`, `IdempotencyRecord` — domain objects with identity and behavior.
-- **Value objects**: `Money` — encapsulates integer minor units (for COP, centavos), prevents floating-point math, immutable.
-- **Repository interfaces**: `OrderRepository`, `TimelineRepository`, `MenuRepository`, `IdempotencyRepository` — contracts the infrastructure must fulfill.
+- **Entities**: `Order`, `OrderItem`, `TimelineEvent`, `IdempotencyRecord` â€” domain objects with identity and behavior.
+- **Value objects**: `Money` â€” encapsulates integer minor units (for COP, centavos), prevents floating-point math, immutable.
+- **Repository interfaces**: `OrderRepository`, `TimelineRepository`, `MenuRepository`, `IdempotencyRepository` â€” contracts the infrastructure must fulfill.
 - **Domain services**: `PricingService` (subtotal, tax, service fee, total), `ModifierSelectionService` (validates required/max constraints per modifier group).
-- **Factories**: `TimelineEventFactory` — builds events with monotonic timestamps to guarantee sort order.
+- **Factories**: `TimelineEventFactory` â€” builds events with monotonic timestamps to guarantee sort order.
 - **Errors**: `ValidationError` (400), `NotFoundError` (404), `IdempotencyConflictError` (409).
 
-### Application layer
+### Application Layer
 
 Contains use cases that coordinate domain objects and services to execute a business operation.
 
@@ -417,17 +440,17 @@ Application services support the use cases:
 - **`CartItemService`**: Fetches product from menu, validates modifiers, detects duplicate items.
 - **`OrderService`**: Loads order from repository, creates new orders, finds items by id.
 - **`OrderPricingService`**: Orchestrates `PricingService` and saves a `PRICING_CALCULATED` event.
-- **`CartOperationOrchestrator`**: Sequences save-order → save-item-event → save-pricing-event.
-- **`OrderPlacementProcessorService`**: Async finalizer that transitions `PROCESSING → PLACED` after ~800ms.
+- **`CartOperationOrchestrator`**: Sequences save-order â†’ save-item-event â†’ save-pricing-event.
+- **`OrderPlacementProcessorService`**: Async finalizer that transitions `PROCESSING â†’ PLACED` after ~800ms.
 
-### Infrastructure layer
+### Infrastructure Layer
 
 Implements the contracts defined by the domain using AWS SDK v3 and DynamoDB Local.
 
 | Class | Table | Key design |
 |---|---|---|
-| `DynamoOrderRepository` | `orders` | PK `orderId` · GSI `userId-createdAt-index` |
-| `DynamoTimelineRepository` | `order_timeline` | PK `eventId` · GSI `orderId-timestamp-index` |
+| `DynamoOrderRepository` | `orders` | PK `orderId` Â· GSI `userId-createdAt-index` |
+| `DynamoTimelineRepository` | `order_timeline` | PK `eventId` Â· GSI `orderId-timestamp-index` |
 | `DynamoMenuRepository` | `menu` | PK `productId` |
 | `DynamoIdempotencyRepository` | `idempotency` | PK `key` |
 
@@ -437,41 +460,44 @@ Timeline pagination uses `LastEvaluatedKey` encoded as a Base64 `nextToken`.
 
 The `logger` utility wraps all output through `pii-mask.util.ts` before writing to console, masking email and phone fields.
 
-### Interfaces layer
+### Interfaces Layer
 
 Exposes the application as a set of Lambda functions via Serverless Framework.
 
 - **`apiHandler` wrapper**: Parses body, headers, path and query params; validates payload size (max 16 KB); maps errors to HTTP status codes; records `VALIDATION_FAILED` timeline events when relevant.
-- **`OrderMapper`**: Converts domain `Order` → response DTO (Money value objects serialized as plain numbers).
+- **`OrderMapper`**: Converts domain `Order` â†’ response DTO (Money value objects serialized as plain numbers).
 - **Validators**: `cart-validators.ts` enforces required fields and normalizes modifier input before use cases are called.
 
-### Order status flow
+### Order Status Flow
 
 ```
-CREATED  →  (cart operations)  →  PROCESSING  →  PLACED
-   ↑                                  ↑               ↑
+CREATED  â†’  (cart operations)  â†’  PROCESSING  â†’  PLACED
+   â†‘                                  â†‘               â†‘
 First item added           POST /orders        ~800ms async
 ```
 
-### Pricing formula
+### Pricing Formula
 
-```
-subtotal   = Σ (basePrice × quantity) + Σ (modifierPrice × quantity)
-tax        = subtotal × 0.10   (rounded to nearest cent)
-serviceFee = subtotal × 0.05   (rounded to nearest cent)
+```text
+subtotal   = Î£ (basePrice Ã— quantity) + Î£ (modifierPrice Ã— quantity)
+tax        = subtotal Ã— 0.10   (rounded to nearest cent)
+serviceFee = subtotal Ã— 0.05   (rounded to nearest cent)
 total      = subtotal + tax + serviceFee
 ```
 
 All values are stored and returned as **integer minor units**. For COP this means centavos, so `1800000` represents `COP 18,000.00`. The `Money` value object rejects non-integer inputs at construction time.
 
 **Tech Stack:**
+
 - Serverless Framework 3.40.0
 - TypeScript 5.9.3
 - DynamoDB (AWS SDK v3.967.0)
 - esbuild 0.27.4
 - Jest 29.x / ts-jest (testing)
 
-## Testing
+---
+
+## 🧪 Testing
 
 The project includes comprehensive unit tests covering core business logic.
 
@@ -491,6 +517,7 @@ npm run test:coverage
 ### Test Coverage
 
 **53 tests** covering:
+
 - Money value object (12 tests)
 - Pricing service (14 tests)
 - Timeline event factory (8 tests)
@@ -498,17 +525,21 @@ npm run test:coverage
 - Cart item service (8 tests)
 
 Example output:
-```
+
+```text
 Test Suites: 5 passed, 5 total
 Tests:       53 passed, 53 total
 Time:        4.686 s
 ```
 
-## Troubleshooting
+---
+
+## 🆘 Troubleshooting
 
 ### "Cannot connect to DynamoDB"
 
 Start DynamoDB:
+
 ```bash
 docker-compose up -d
 ```
@@ -516,6 +547,7 @@ docker-compose up -d
 ### "Table does not exist"
 
 Create tables:
+
 ```bash
 npm run init:db
 ```
@@ -523,6 +555,7 @@ npm run init:db
 ### "Port 8000 already in use"
 
 Remove old container:
+
 ```bash
 docker rm -f dynamodb
 docker-compose up -d
@@ -531,6 +564,7 @@ docker-compose up -d
 ### "npm run dev failed"
 
 Check if there are TypeScript errors:
+
 ```bash
 npm install
 ```
@@ -547,7 +581,9 @@ npm run init:db
 npm run dev
 ```
 
-## Database Tables
+---
+
+## 🗃️ Database Tables
 
 - **orders**: Order data (PK: `orderId`)
 - **order_timeline**: Events (PK: `eventId`, GSI: `orderId` + `timestamp`)
@@ -555,7 +591,9 @@ npm run dev
 - **idempotency**: Idempotency keys (PK: `key`)
 - **users**: Mock users (PK: `userId`, GSI: `identityKey`)
 
-## Event Types
+---
+
+## 🕒 Event Types
 
 All events share the same schema: `eventId`, `timestamp` (ISO 8601), `orderId`, `userId`, `type`, `source` (`web | api | worker`), `correlationId`, and `payload`.
 
@@ -571,12 +609,26 @@ All events share the same schema: `eventId`, `timestamp` (ISO 8601), `orderId`, 
 
 Timeline events are **append-only** and **deduplicated** by `eventId` at the database level using DynamoDB condition expressions. The timeline is always sorted by timestamp regardless of arrival order.
 
-## License
+---
+
+## 📄 License
 
 ISC
 
-## Author
+---
 
-**Juliana García Corredor**  
+## ✍️ Author
+
+**Juliana GarcÃ­a Corredor**  
 GitHub: [@JuliGeralDev](https://github.com/JuliGeralDev)  
 Email: juliana.c@gmail.com
+
+---
+
+## 🖼️ Screenshots
+
+This section is reserved for the backend-related screenshots that will be added next.
+
+- Local API Running
+- Sample Endpoints
+- Timeline Responses
