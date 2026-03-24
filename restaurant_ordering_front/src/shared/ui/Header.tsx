@@ -24,23 +24,15 @@ export const Header = () => {
   useEffect(() => {
     if (!isProfileOpen && !isMobileNavOpen) return;
 
-    const handlePointerDown = (event: MouseEvent) => {
-      const target = event.target as Node;
-
-      if (!profileRef.current?.contains(target)) {
-        setIsProfileOpen(false);
-      }
-
-      if (!mobileNavRef.current?.contains(target)) {
-        setIsMobileNavOpen(false);
-      }      
+    const handlePointerDown = ({ target }: MouseEvent) => {
+      if (!profileRef.current?.contains(target as Node)) setIsProfileOpen(false);
+      if (!mobileNavRef.current?.contains(target as Node)) setIsMobileNavOpen(false);
     };
 
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsProfileOpen(false);
-        setIsMobileNavOpen(false);
-      }
+    const handleEscape = ({ key }: KeyboardEvent) => {
+      if (key !== "Escape") return;
+      setIsProfileOpen(false);
+      setIsMobileNavOpen(false);
     };
 
     document.addEventListener("mousedown", handlePointerDown);
